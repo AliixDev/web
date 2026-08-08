@@ -11,16 +11,21 @@ create extension if not exists "pgcrypto";
 -- ---------------------------------------------------------------------
 -- Enums
 -- ---------------------------------------------------------------------
-create type public.order_status as enum (
-  'pending_payment',
-  'cod_pending',
-  'paid',
-  'processing',
-  'shipped',
-  'delivered',
-  'cancelled',
-  'refunded'
-);
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'order_status') THEN
+        CREATE TYPE public.order_status AS ENUM (
+          'pending_payment',
+          'cod_pending',
+          'paid',
+          'processing',
+          'shipped',
+          'delivered',
+          'cancelled',
+          'refunded'
+        );
+    END IF;
+END $$;
 
 create type public.payment_method as enum (
   'stripe',
