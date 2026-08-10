@@ -2,6 +2,12 @@
 
 export type Currency = "USD" | "PKR";
 
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 export interface ProductVariant {
   id: string;
   product_id: string;
@@ -38,4 +44,10 @@ export interface CartItem {
   unit_price_pkr_paisa: number;
   quantity: number;
   max_stock: number;
+}
+
+/** A category enriched with a representative image + product count (computed at build time). */
+export interface CategoryCard extends Category {
+  image_url: string | null;
+  product_count: number;
 }

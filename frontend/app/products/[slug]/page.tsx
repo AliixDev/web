@@ -1,10 +1,14 @@
 // frontend/app/products/[slug]/page.tsx
 
-import { createClient } from "@supabase/supabase-js";
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import Image from "next/image";
-import type { Product } from "@/lib/types";
+import { createClient } from "@supabase/supabase-js";
+import { ChevronRight } from "lucide-react";
+import type { Product, ProductVariant } from "@/lib/types";
+import ProductImage from "@/components/product/ProductImage";
 import ProductDetail from "./ProductDetail";
+import ProductGrid from "@/components/product/ProductGrid";
+import Reveal from "@/components/Reveal";
 
 function getSupabase() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -19,17 +23,16 @@ function getSupabase() {
 export async function generateStaticParams() {
   try {
     const supabase = getSupabase();
-    if (!supabase) return [];
+    if (!supabase) return [{ slug: "placeholder" }];
 
     const { data, error } = await supabase.from("products").select("slug").eq("is_active", true);
-    if (error) {
-      console.error("generateStaticParams: failed to fetch product slugs", error);
-      return [];
-    }
-    return (data ?? []).map((product) => ({ slug: product.slug as string }));
-  } catch (err) {
-    console.error("generateStaticParams: unexpected error", err);
-    return [];
+    if (error) return [{ slug: "placeholder" }];
+    const slugs = (data ?? []).map((product) => ({ slug: product.slug as string }));
+    // `output: 'export'` requires at least one param; a placeholder entry
+    // simply renders the 404 page and is replaced by real slugs in CI.
+    return slugs.length > 0 ? slugs : [{ slug: "placeholder" }];
+  } catch {
+    return [{ slug: "placeholder" }];
   }
 }
 
@@ -37,33 +40,113 @@ async function getProduct(slug: string): Promise<Product | null> {
   const supabase = getSupabase();
   if (!supabase) return null;
 
-  const { data, error } = await supabase
-    .from("products")
-    .select("*, product_variants(*)")
-    .eq("slug", slug)
-    .eq("is_active", true)
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*, product_variants(*)")
+      .eq("slug", slug)
+      .eq("is_active", true)
+      .single();
+    if (error || !data) return null;
+    return {
+      ...data,
+      product_variants: (data.product_variants ?? []).filter(
+        (variant: ProductVariant) => variant.is_active,
+      ),
+    } as Product;
+  } catch {
+    return null;
+  }
+}
 
-  if (error || !data) return null;
-  return data as Product;
+async function getRelated(product: Product): Promise<Product[]> {
+  const supabase = getSupabase();
+  if (!supabase) return [];
+
+  try {
+    const query = supabase
+      .from("products")
+      .select("*, product_variants(*)")
+      .eq("is_active", true)
+      .neq("id", product.id)
+      .limit(4);
+
+    if (product.category_id) query.eq("category_id", product.category_id);
+
+    const { data, error } = await query;
+    if (error) return [];
+    return (data ?? []) as Product[];
+  } catch {
+    return [];
+  }
 }
 
 export default async function ProductPage({ params }: { params: { slug: string } }) {
   const product = await getProduct(params.slug);
   if (!product) notFound();
 
+  const related = await getRelated(product);
+
   return (
-    <div className="grid gap-8 md:grid-cols-2">
-      <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-muted">
-        {product.image_url ? (
-          <Image src={product.image_url} alt={product.name} fill unoptimized className="object-cover" />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-muted-foreground">
-            No image
+    <>
+      <div className="container py-8 md:py-12">
+        {/* Breadcrumbs */}
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-neutral-400">
+          <Link href="/" className="transition-colors hover:text-foreground">Home</Link>
+          <ChevronRight className="h-3 w-3" aria-hidden />
+          <Link href="/shop" className="transition-colors hover:text-foreground">Shop</Link>
+          <ChevronRight className="h-3 w-3" aria-hidden />
+          <span className="text-foreground">{product.name}</span>
+        </nav>
+
+        <div className="mt-8 grid gap-10 lg:grid-cols-2 lg:gap-16">
+          {/* Gallery */}
+          <div className="lg:sticky lg:top-24 lg:self-start">
+            <div className="relative aspect-square overflow-hidden bg-neutral-100">
+              <ProductImage
+                src={product.image_url}
+                alt={product.name}
+                priority
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                imgClassName="transition-transform duration-700 ease-out hover:scale-[1.03]"
+              />
+            </div>
+            <div className="mt-4 flex items-center justify-between">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-neutral-400">Product photography</p>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-neutral-400">1 / 1</p>
+            </div>
           </div>
-        )}
+
+          {/* Purchase panel */}
+          <ProductDetail product={product} />
+        </div>
       </div>
-      <ProductDetail product={product} />
-    </div>
+
+      {/* Related */}
+      {related.length > 0 && (
+        <section className="border-t border-border">
+          <div className="container py-16">
+            <Reveal>
+              <div className="flex items-end justify-between gap-6">
+                <div>
+                  <p className="eyebrow text-neutral-400">Keep exploring</p>
+                  <h2 className="mt-3 text-3xl font-light tracking-tight md:text-4xl">You may also like</h2>
+                </div>
+                <Link
+                  href="/shop"
+                  className="group hidden shrink-0 items-center gap-1.5 text-sm font-medium underline decoration-neutral-300 underline-offset-8 transition-colors hover:text-neutral-500 sm:inline-flex"
+                >
+                  View all
+                  <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
+                </Link>
+              </div>
+            </Reveal>
+            <div className="mt-10">
+              <ProductGrid products={related} />
+            </div>
+          </div>
+        </section>
+      )}
+    </>
   );
 }
