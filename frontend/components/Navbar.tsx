@@ -26,7 +26,7 @@ export default function Navbar() {
     return () => listener.subscription.unsubscribe();
   }, []);
 
- async function handleAuthClick() {
+async function handleAuthClick() {
   if (userEmail) {
     await supabase.auth.signOut();
     return;
@@ -35,22 +35,20 @@ export default function Navbar() {
   const email = window.prompt("Enter your email for a magic sign-in link:");
   if (!email) return;
 
-  // Works both locally and on GitHub Pages.
-  // GitHub Pages uses /<repository-name> as the base path.
-  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-  const redirectTo = `${window.location.origin}${basePath}/`;
+  const redirectTo = `${window.location.origin}/web/`;
 
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
       emailRedirectTo: redirectTo,
+      shouldCreateUser: true,
     },
   });
 
   if (error) {
     window.alert(error.message);
   } else {
-    window.alert("Check your email for a sign-in link.");
+    window.alert("Check your email for the sign-in link.");
   }
 }
 
