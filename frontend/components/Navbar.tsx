@@ -35,7 +35,10 @@ async function handleAuthClick() {
   const email = window.prompt("Enter your email for a magic sign-in link:");
   if (!email) return;
 
-  const redirectTo = `${window.location.origin}/web/`;
+  const redirectTo =
+    process.env.NODE_ENV === "production"
+      ? "https://aliixdev.github.io/web/"
+      : "http://localhost:3000/";
 
   const { error } = await supabase.auth.signInWithOtp({
     email,
