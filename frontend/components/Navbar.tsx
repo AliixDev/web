@@ -26,20 +26,33 @@ export default function Navbar() {
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  async function handleAuthClick() {
-    if (userEmail) {
-      await supabase.auth.signOut();
-      return;
-    }
-    const email = window.prompt("Enter your email for a magic sign-in link:");
-    if (!email) return;
-    const { error } = await supabase.auth.signInWithOtp({ email });
-    if (error) {
-      window.alert(error.message);
-    } else {
-      window.alert("Check your email for a sign-in link.");
-    }
+ async function handleAuthClick() {
+  if (userEmail) {
+    await supabase.auth.signOut();
+    return;
   }
+
+  const email = window.prompt("Enter your email for a magic sign-in link:");
+  if (!email) return;
+
+  // Works both locally and on GitHub Pages.
+  // GitHub Pages uses /<repository-name> as the base path.
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+  const redirectTo = `${window.location.origin}${basePath}/`;
+
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      emailRedirectTo: redirectTo,
+    },
+  });
+
+  if (error) {
+    window.alert(error.message);
+  } else {
+    window.alert("Check your email for a sign-in link.");
+  }
+}
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
