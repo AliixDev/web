@@ -14,7 +14,7 @@
 //   SUPABASE_ANON_KEY
 //   SUPABASE_SERVICE_ROLE_KEY
 
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
+import { createClient } from "jsr:@supabase/supabase-js@2";
 import { corsHeaders, handleCorsPreflight, jsonResponse } from "../_shared/cors.ts";
 import { getServiceRoleClient, priceCart, CartLineInput } from "../_shared/pricing.ts";
 
