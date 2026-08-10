@@ -66,7 +66,15 @@ export default function CheckoutForm() {
       "Enter your email to sign in and place this order (we'll send a magic link):",
     );
     if (!email) return false;
-    const { error: signInError } = await supabase.auth.signInWithOtp({ email });
+    const redirectTo = window.location.href;
+
+const { error: signInError } = await supabase.auth.signInWithOtp({
+  email,
+  options: {
+    emailRedirectTo: redirectTo,
+    shouldCreateUser: true,
+  },
+});
     if (signInError) {
       setError(signInError.message);
       return false;
