@@ -41,11 +41,19 @@ export function isSupabaseConfigured(): boolean {
   return Boolean(supabaseUrl && supabaseAnonKey);
 }
 
-/** Base URL for calling Supabase Edge Functions directly via fetch. */
+/**
+ * Base URL for calling Supabase Edge Functions directly via fetch.
+ *
+ * An env var injected as an empty string (rather than unset) would slip
+ * past `??` and produce a broken relative URL like "/cod-order" — the
+ * browser would then hit the static host (HTML 405) instead of Supabase.
+ * Empty values therefore fall back to the derived URL, and trailing
+ * slashes are stripped so the caller can append "/<function-name>".
+ */
 export function getFunctionsUrl(): string {
-  return (
-    process.env.NEXT_PUBLIC_SUPABASE_FUNCTIONS_URL ?? `${supabaseUrl}/functions/v1`
-  );
+  const configured = process.env.NEXT_PUBLIC_SUPABASE_FUNCTIONS_URL?.trim();
+  if (configured) return configured.replace(/\/+$/, "");
+  return `${supabaseUrl ?? ""}`.replace(/\/+$/, "") + "/functions/v1";
 }
 
 /**
@@ -70,6 +78,17 @@ export async function callEdgeFunction<TResponse = unknown>(
   } = await supabase.auth.getSession();
 
   const url = `${getFunctionsUrl()}/${functionName}`;
+
+  // Safety net: if the resolved URL isn't absolute, fetching it would
+  // hit the current origin (the static host) rather than Supabase and
+  // return an HTML page. Fail fast with setup guidance instead.
+  if (!/^https?:\/\//i.test(url)) {
+    throw new Error(
+      `Checkout isn't configured correctly: the Edge Function URL resolved to "${url}". ` +
+        `Set NEXT_PUBLIC_SUPABASE_FUNCTIONS_URL to https://<project-ref>.supabase.co/functions/v1 ` +
+        `(or remove it so it is derived from NEXT_PUBLIC_SUPABASE_URL) in the project API Keys.`,
+    );
+  }
 
   const response = await fetch(url, {
     method: "POST",
