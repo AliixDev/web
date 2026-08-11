@@ -18,6 +18,26 @@ const SORT_LABELS: Record<SortKey, string> = {
   name: "Name: A–Z",
 };
 
+"use client";
+
+import { useEffect, useState } from "react";
+
+export default function ShopClient({ products, categories }) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    // Any code that uses window/browser APIs goes here
+  }, []);
+
+  // If you need window before rendering, guard it:
+  if (!isMounted) return null;
+
+  return (
+    // Your JSX here
+  );
+}
+
 function ShopContent({ products, categories }: { products: Product[]; categories: Category[] }) {
   const router = useRouter();
   const pathname = usePathname();
