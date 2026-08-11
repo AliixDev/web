@@ -13,7 +13,7 @@ export default function ProductGrid({ products, className }: ProductGridProps) {
   return (
     <ul
       className={cn(
-        "grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 lg:grid-cols-3 xl:grid-cols-4",
+        "grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-5 lg:grid-cols-3 xl:grid-cols-4 lg:gap-y-10",
         className,
       )}
     >

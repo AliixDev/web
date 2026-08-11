@@ -159,45 +159,48 @@ export default function AccountPage() {
     }
   }
 
+  // Unconfigured state
   if (!isSupabaseConfigured()) {
     return (
       <div className="container flex flex-col items-center gap-5 py-28 text-center">
         <p className="text-neutral-500">{error}</p>
-        <p className="max-w-sm text-sm text-neutral-400">
+        <p className="max-w-sm text-[13px] text-neutral-400">
           Add the Supabase environment variables in API Keys to enable accounts.
         </p>
       </div>
     );
   }
 
+  // Loading state
   if (loading) {
     return (
       <div className="container py-14">
-        <div className="h-10 w-56 animate-pulse bg-neutral-100" />
+        <div className="skeleton h-8 w-48" />
         <div className="mt-10 grid gap-10 lg:grid-cols-3">
-          <div className="h-72 animate-pulse bg-neutral-100 lg:col-span-1" />
-          <div className="h-72 animate-pulse bg-neutral-100 lg:col-span-2" />
+          <div className="skeleton h-80 lg:col-span-1" />
+          <div className="skeleton h-80 lg:col-span-2" />
         </div>
       </div>
     );
   }
 
+  // Not signed in
   if (!email) {
     return (
       <div className="container flex flex-col items-center gap-6 py-28 text-center">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full border border-border bg-neutral-50">
-          <User className="h-6 w-6 text-neutral-400" strokeWidth={1.25} aria-hidden />
+        <div className="flex h-16 w-16 items-center justify-center rounded-full border border-neutral-200 bg-neutral-50">
+          <User className="h-6 w-6 text-neutral-300" strokeWidth={1.25} aria-hidden />
         </div>
         <div>
           <h1 className="font-display text-3xl font-light tracking-tight">Your account</h1>
-          <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-neutral-500">
+          <p className="mx-auto mt-3 max-w-sm text-[14px] leading-relaxed text-neutral-500">
             Sign in to view your profile, order history, and delivery preferences.
           </p>
         </div>
         <button
           type="button"
           onClick={() => setAuthOpen(true)}
-          className="inline-flex h-12 items-center gap-2 bg-foreground px-7 text-sm font-medium text-background transition-opacity hover:opacity-85"
+          className="btn-press inline-flex h-12 items-center gap-2 bg-foreground px-7 text-[13px] font-medium text-background transition-opacity hover:opacity-85"
         >
           Sign in <ArrowRight className="h-4 w-4" aria-hidden />
         </button>
@@ -210,10 +213,10 @@ export default function AccountPage() {
     <div className="container py-10 md:py-14">
       <p className="eyebrow text-neutral-400">Account</p>
       <h1 className="mt-2 text-4xl font-light tracking-tight md:text-5xl">Hello, {fullName || email.split("@")[0]}</h1>
-      <p className="mt-2 text-sm text-neutral-500">{email}</p>
+      <p className="mt-2 text-[13px] text-neutral-500">{email}</p>
 
       {error && (
-        <p className="mt-6 max-w-md rounded-sm border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive" role="alert">
+        <p className="mt-6 max-w-md border border-destructive/20 bg-destructive/5 px-4 py-3 text-[13px] text-destructive" role="alert">
           {error}
         </p>
       )}
@@ -239,7 +242,7 @@ export default function AccountPage() {
                 id="currency"
                 value={defaultCurrency}
                 onChange={(e) => setDefaultCurrency(e.target.value)}
-                className="h-11 w-full cursor-pointer rounded-sm border border-input bg-background px-3.5 text-sm transition-colors hover:border-foreground/40 focus:border-foreground focus:outline-none focus:ring-0"
+                className="h-11 w-full cursor-pointer border border-neutral-200 bg-background px-3.5 text-[13px] transition-colors hover:border-neutral-300 focus:border-foreground focus:outline-none focus:ring-0"
               >
                 <option value="USD">USD — US Dollar</option>
                 <option value="PKR">PKR — Pakistani Rupee</option>
@@ -248,7 +251,7 @@ export default function AccountPage() {
             <button
               type="submit"
               disabled={saving}
-              className="flex h-11 w-full items-center justify-center gap-2 bg-foreground text-sm font-medium text-background transition-opacity hover:opacity-85 disabled:opacity-60"
+              className="btn-press flex h-11 w-full items-center justify-center gap-2 bg-foreground text-[13px] font-medium text-background transition-opacity hover:opacity-85 disabled:opacity-50"
             >
               {saving ? (
                 <>
@@ -270,18 +273,18 @@ export default function AccountPage() {
           </h2>
 
           {orders.length === 0 ? (
-            <div className="mt-5 flex flex-col items-center gap-4 border border-dashed border-border py-16 text-center">
-              <Package className="h-8 w-8 text-neutral-300" strokeWidth={1.25} aria-hidden />
-              <p className="text-sm text-neutral-500">You haven&apos;t placed any orders yet.</p>
+            <div className="mt-5 flex flex-col items-center gap-4 border border-dashed border-neutral-200 py-16 text-center">
+              <Package className="h-8 w-8 text-neutral-200" strokeWidth={1.25} aria-hidden />
+              <p className="text-[13px] text-neutral-500">You haven&apos;t placed any orders yet.</p>
               <Link
                 href="/shop"
-                className="inline-flex h-11 items-center justify-center bg-foreground px-6 text-sm font-medium text-background transition-opacity hover:opacity-85"
+                className="btn-press inline-flex h-11 items-center justify-center bg-foreground px-6 text-[13px] font-medium text-background transition-opacity hover:opacity-85"
               >
                 Start shopping
               </Link>
             </div>
           ) : (
-            <ul className="mt-5 divide-y divide-border border-y border-border">
+            <ul className="mt-5 divide-y divide-neutral-100 border-y border-neutral-100">
               {orders.map((order) => {
                 const total = priceForCurrency(
                   order.currency === "PKR" ? "PKR" : "USD",
@@ -292,10 +295,10 @@ export default function AccountPage() {
                   <li key={order.id} className="py-6">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div>
-                        <p className="text-sm font-medium">
+                        <p className="text-[13px] font-medium">
                           Order <span className="font-mono">{order.id.slice(0, 8)}</span>
                         </p>
-                        <p className="mt-0.5 text-xs text-neutral-400">
+                        <p className="mt-0.5 text-[12px] text-neutral-400">
                           {new Date(order.created_at).toLocaleDateString(undefined, {
                             year: "numeric",
                             month: "long",
@@ -306,20 +309,20 @@ export default function AccountPage() {
                       <div className="flex items-center gap-3">
                         <span
                           className={cn(
-                            "rounded-sm border px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.12em]",
+                            "border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.15em]",
                             order.status === "cancelled"
-                              ? "border-destructive/30 text-destructive"
-                              : "border-border text-neutral-600",
+                              ? "border-destructive/20 text-destructive"
+                              : "border-neutral-200 text-neutral-500",
                           )}
                         >
                           {STATUS_LABEL[order.status] ?? order.status.replace("_", " ")}
                         </span>
-                        <span className="text-sm font-medium tabular-nums">
+                        <span className="text-[13px] font-medium tabular-nums">
                           {formatMoney(total, order.currency === "PKR" ? "PKR" : "USD")}
                         </span>
                       </div>
                     </div>
-                    <ul className="mt-4 space-y-1.5 text-[13px] text-neutral-500">
+                    <ul className="mt-4 space-y-1.5 text-[12px] text-neutral-500">
                       {order.order_items.map((item) => (
                         <li key={item.id} className="flex justify-between gap-4">
                           <span className="truncate">

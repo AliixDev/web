@@ -20,7 +20,6 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
   const removeFromCart = useStore((s) => s.removeFromCart);
   const subtotal = useStore((s) => s.cartSubtotalMinor());
 
-  // Lock body scroll + close on Escape while open
   useEffect(() => {
     if (!open) return;
     const previous = document.body.style.overflow;
@@ -44,47 +43,47 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
         type="button"
         aria-label="Close cart"
         onClick={onClose}
-        className="animate-fade-in absolute inset-0 cursor-default bg-black/30 backdrop-blur-[2px]"
+        className="animate-fade-in absolute inset-0 cursor-default bg-black/25 backdrop-blur-[1px]"
       />
 
       {/* Panel */}
-      <aside className="animate-slide-in-right absolute inset-y-0 right-0 flex w-full max-w-md flex-col bg-background shadow-panel">
+      <aside className="animate-slide-in-right absolute inset-y-0 right-0 flex w-full max-w-[440px] flex-col bg-background shadow-panel">
         <header className="flex items-center justify-between border-b border-border px-6 py-5">
           <h2 className="font-display text-xl font-medium tracking-tight">
-            Cart <span className="text-sm text-neutral-400">({cart.length})</span>
+            Cart <span className="text-sm font-sans font-normal text-neutral-400">({cart.length})</span>
           </h2>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="flex h-9 w-9 items-center justify-center rounded-sm text-neutral-500 transition-colors hover:bg-accent hover:text-foreground"
+            className="flex h-9 w-9 items-center justify-center text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-foreground"
           >
-            <X className="h-4 w-4" aria-hidden />
+            <X className="h-[18px] w-[18px]" strokeWidth={1.5} aria-hidden />
           </button>
         </header>
 
         {cart.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-5 px-6 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full border border-border bg-neutral-50">
-              <ShoppingBag className="h-6 w-6 text-neutral-400" strokeWidth={1.25} aria-hidden />
+            <div className="flex h-16 w-16 items-center justify-center rounded-full border border-neutral-200 bg-neutral-50">
+              <ShoppingBag className="h-6 w-6 text-neutral-300" strokeWidth={1.25} aria-hidden />
             </div>
             <div>
-              <p className="font-display text-lg font-medium">Your cart is empty</p>
-              <p className="mt-1 text-sm text-neutral-500">
+              <p className="font-display text-lg font-medium tracking-tight">Your cart is empty</p>
+              <p className="mt-1 text-[13px] text-neutral-500">
                 Discover handcrafted goods from Pakistan.
               </p>
             </div>
             <Link
               href="/shop"
               onClick={onClose}
-              className="inline-flex h-11 items-center justify-center bg-foreground px-6 text-sm font-medium text-background transition-opacity hover:opacity-85"
+              className="btn-press inline-flex h-11 items-center justify-center bg-foreground px-6 text-[13px] font-medium text-background transition-opacity hover:opacity-85"
             >
               Start shopping
             </Link>
           </div>
         ) : (
           <>
-            <ul className="flex-1 divide-y divide-border overflow-y-auto">
+            <ul className="flex-1 divide-y divide-neutral-100 overflow-y-auto custom-scrollbar">
               {cart.map((item) => {
                 const unit = priceForCurrency(
                   currency,
@@ -96,16 +95,16 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                     <Link
                       href={`/products/${item.slug}`}
                       onClick={onClose}
-                      className="relative block h-24 w-20 shrink-0 overflow-hidden bg-neutral-100"
+                      className="relative block h-[88px] w-[72px] shrink-0 overflow-hidden bg-neutral-100"
                     >
-                      <ProductImage src={item.image_url} alt={item.name} sizes="80px" />
+                      <ProductImage src={item.image_url} alt={item.name} sizes="72px" />
                     </Link>
                     <div className="flex min-w-0 flex-1 flex-col">
                       <div className="flex items-start justify-between gap-3">
                         <Link
                           href={`/products/${item.slug}`}
                           onClick={onClose}
-                          className="line-clamp-2 text-sm font-medium leading-snug transition-opacity hover:opacity-60"
+                          className="line-clamp-2 text-[13px] font-medium leading-snug transition-opacity duration-200 hover:opacity-60"
                         >
                           {item.name}
                         </Link>
@@ -113,30 +112,30 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                           type="button"
                           onClick={() => removeFromCart(item.product_id, item.variant_id)}
                           aria-label={`Remove ${item.name} from cart`}
-                          className="shrink-0 text-neutral-400 transition-colors hover:text-destructive"
+                          className="shrink-0 text-neutral-300 transition-colors duration-200 hover:text-destructive"
                         >
-                          <Trash2 className="h-4 w-4" aria-hidden />
+                          <Trash2 className="h-[15px] w-[15px]" strokeWidth={1.5} aria-hidden />
                         </button>
                       </div>
                       {item.variant_name && (
-                        <p className="mt-0.5 text-xs uppercase tracking-[0.12em] text-neutral-400">
+                        <p className="mt-0.5 text-[11px] font-medium uppercase tracking-[0.15em] text-neutral-400">
                           {item.variant_name}
                         </p>
                       )}
                       <div className="mt-auto flex items-center justify-between pt-3">
-                        <div className="flex items-center border border-border">
+                        <div className="flex items-center border border-neutral-200">
                           <button
                             type="button"
                             onClick={() =>
                               updateQuantity(item.product_id, item.variant_id, item.quantity - 1)
                             }
                             aria-label="Decrease quantity"
-                            className="flex h-8 w-8 items-center justify-center text-neutral-500 transition-colors hover:bg-accent disabled:opacity-40"
+                            className="flex h-8 w-8 items-center justify-center text-neutral-500 transition-colors hover:bg-neutral-50 disabled:opacity-30"
                             disabled={item.quantity <= 1}
                           >
                             <Minus className="h-3 w-3" aria-hidden />
                           </button>
-                          <span className="w-8 text-center text-sm tabular-nums" aria-live="polite">
+                          <span className="w-8 text-center text-[13px] tabular-nums" aria-live="polite">
                             {item.quantity}
                           </span>
                           <button
@@ -146,12 +145,12 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                             }
                             aria-label="Increase quantity"
                             disabled={item.quantity >= item.max_stock}
-                            className="flex h-8 w-8 items-center justify-center text-neutral-500 transition-colors hover:bg-accent disabled:opacity-40"
+                            className="flex h-8 w-8 items-center justify-center text-neutral-500 transition-colors hover:bg-neutral-50 disabled:opacity-30"
                           >
                             <Plus className="h-3 w-3" aria-hidden />
                           </button>
                         </div>
-                        <p className="text-sm font-medium tabular-nums">
+                        <p className="text-[13px] font-medium tabular-nums">
                           {formatMoney(unit * item.quantity, currency)}
                         </p>
                       </div>
@@ -162,26 +161,26 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
             </ul>
 
             <footer className="space-y-4 border-t border-border px-6 py-5">
-              <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center justify-between text-[13px]">
                 <span className="text-neutral-500">Subtotal</span>
-                <span className="text-base font-medium tabular-nums">
+                <span className="text-[15px] font-medium tabular-nums">
                   {formatMoney(subtotal, currency)}
                 </span>
               </div>
-              <p className="text-xs text-neutral-400">
+              <p className="text-[12px] text-neutral-400">
                 Shipping and final total are calculated at checkout.
               </p>
               <Link
                 href="/checkout"
                 onClick={onClose}
-                className="flex h-12 w-full items-center justify-center bg-foreground text-sm font-medium text-background transition-opacity hover:opacity-85"
+                className="btn-press flex h-12 w-full items-center justify-center bg-foreground text-[13px] font-medium text-background transition-opacity hover:opacity-85"
               >
                 Checkout
               </Link>
               <Link
                 href="/cart"
                 onClick={onClose}
-                className="flex h-12 w-full items-center justify-center border border-foreground/20 text-sm font-medium transition-colors hover:border-foreground hover:bg-foreground hover:text-background"
+                className="flex h-11 w-full items-center justify-center border border-neutral-200 text-[13px] font-medium text-foreground transition-all duration-200 hover:border-foreground hover:bg-foreground hover:text-background"
               >
                 View full cart
               </Link>

@@ -36,7 +36,7 @@ export default function ProductCard({ product }: { product: Product }) {
       max_stock: product.stock_quantity,
     });
     setJustAdded(true);
-    window.setTimeout(() => setJustAdded(false), 1600);
+    window.setTimeout(() => setJustAdded(false), 1800);
   }
 
   return (
@@ -50,23 +50,23 @@ export default function ProductCard({ product }: { product: Product }) {
         <ProductImage
           src={product.image_url}
           alt={product.name}
-          sizes="(min-width: 1024px) 25vw, 50vw"
+          sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
           className={cn(outOfStock && "grayscale")}
-          imgClassName="transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+          imgClassName="img-zoom"
         />
 
         {outOfStock && (
-          <span className="absolute left-3 top-3 bg-background/90 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-foreground backdrop-blur">
+          <span className="absolute left-3 top-3 bg-background/95 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground backdrop-blur-sm">
             Sold out
           </span>
         )}
 
-        {/* Hover action */}
-        <div className="absolute inset-x-0 bottom-0 translate-y-full bg-background transition-transform duration-300 ease-out group-hover:translate-y-0 group-focus-within:translate-y-0">
+        {/* Hover action bar */}
+        <div className="absolute inset-x-0 bottom-0 translate-y-full bg-background transition-transform duration-300 ease-premium group-hover:translate-y-0 group-focus-within:translate-y-0">
           {hasVariants ? (
             <Link
               href={`/products/${product.slug}`}
-              className="flex h-11 w-full items-center justify-center gap-1.5 border-t border-border text-[13px] font-medium transition-colors hover:bg-foreground hover:text-background"
+              className="flex h-11 w-full items-center justify-center gap-1.5 border-t border-border text-[13px] font-medium transition-colors duration-200 hover:bg-foreground hover:text-background"
             >
               Choose options
               <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
@@ -77,7 +77,7 @@ export default function ProductCard({ product }: { product: Product }) {
               onClick={handleQuickAdd}
               disabled={outOfStock}
               className={cn(
-                "flex h-11 w-full items-center justify-center gap-1.5 border-t border-border text-[13px] font-medium transition-colors",
+                "flex h-11 w-full items-center justify-center gap-1.5 border-t border-border text-[13px] font-medium transition-colors duration-200",
                 outOfStock
                   ? "cursor-not-allowed text-neutral-400"
                   : "hover:bg-foreground hover:text-background",
@@ -99,21 +99,21 @@ export default function ProductCard({ product }: { product: Product }) {
       </Link>
 
       {/* Meta */}
-      <div className="flex items-start justify-between gap-3 pt-3.5">
+      <div className="flex items-start justify-between gap-3 pt-3">
         <div className="min-w-0">
           <Link
             href={`/products/${product.slug}`}
-            className="line-clamp-1 text-[13.5px] font-medium tracking-tight text-foreground transition-opacity hover:opacity-60"
+            className="line-clamp-1 text-[13px] font-medium text-foreground transition-opacity duration-200 hover:opacity-60"
           >
             {product.name}
           </Link>
           {hasVariants && (
-            <p className="mt-0.5 text-[11px] uppercase tracking-[0.14em] text-neutral-400">
+            <p className="mt-0.5 text-[11px] font-medium uppercase tracking-[0.15em] text-neutral-400">
               {variants.length} options
             </p>
           )}
         </div>
-        <p className="shrink-0 text-[13.5px] font-medium tabular-nums">
+        <p className="shrink-0 text-[13px] font-medium tabular-nums">
           {hasVariants && <span className="text-neutral-400">from </span>}
           {formatMoney(unitPrice, currency)}
         </p>

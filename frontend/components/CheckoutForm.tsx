@@ -96,8 +96,6 @@ export default function CheckoutForm() {
   async function ensureSignedIn(): Promise<boolean> {
     const { data } = await getSupabase().auth.getSession();
     if (data.session) return true;
-
-    // Open the magic-link modal; the order must be resubmitted after sign-in.
     setAuthOpen(true);
     return false;
   }
@@ -155,7 +153,6 @@ export default function CheckoutForm() {
         return;
       }
 
-      // jazzcash / safepay — mock local gateway template
       const result = await callEdgeFunction<CheckoutResponse>("local-gateway-checkout", {
         gateway: paymentMethod,
         items: cartLines,
@@ -179,7 +176,7 @@ export default function CheckoutForm() {
         <button
           type="button"
           onClick={() => router.push("/shop")}
-          className="inline-flex h-11 items-center justify-center bg-foreground px-6 text-sm font-medium text-background transition-opacity hover:opacity-85"
+          className="btn-press inline-flex h-11 items-center justify-center bg-foreground px-6 text-[13px] font-medium text-background transition-opacity hover:opacity-85"
         >
           Browse the shop
         </button>
@@ -224,7 +221,7 @@ export default function CheckoutForm() {
 
       {/* Right: payment + summary */}
       <section className="lg:col-span-2" aria-labelledby="payment-heading">
-        <div className="lg:sticky lg:top-24">
+        <div className="lg:sticky lg:top-28">
           <h2 id="payment-heading" className="font-display text-2xl font-medium tracking-tight">
             Payment
           </h2>
@@ -243,7 +240,7 @@ export default function CheckoutForm() {
                     "flex w-full items-start gap-4 border p-4 text-left transition-all duration-200",
                     selected
                       ? "border-foreground bg-foreground/[0.03]"
-                      : "border-border bg-background hover:border-foreground/40",
+                      : "border-neutral-200 bg-background hover:border-neutral-400",
                   )}
                 >
                   <span
@@ -256,11 +253,11 @@ export default function CheckoutForm() {
                     {selected && <span className="h-2.5 w-2.5 rounded-full bg-foreground" />}
                   </span>
                   <span className="flex-1">
-                    <span className="flex items-center gap-2 text-sm font-medium">
+                    <span className="flex items-center gap-2 text-[13px] font-medium">
                       <option.icon className="h-4 w-4 text-neutral-400" strokeWidth={1.75} aria-hidden />
                       {option.label}
                     </span>
-                    <span className="mt-1 block text-xs leading-relaxed text-neutral-500">
+                    <span className="mt-1 block text-[12px] leading-relaxed text-neutral-500">
                       {option.description}
                     </span>
                   </span>
@@ -270,8 +267,8 @@ export default function CheckoutForm() {
           </div>
 
           {/* Summary */}
-          <div className="mt-8 border-t border-border pt-6">
-            <dl className="space-y-2.5 text-sm">
+          <div className="mt-8 border-t border-neutral-200 pt-6">
+            <dl className="space-y-2.5 text-[13px]">
               <div className="flex items-center justify-between">
                 <dt className="text-neutral-500">Subtotal</dt>
                 <dd className="font-medium tabular-nums">{formatMoney(subtotalMinor, currency)}</dd>
@@ -280,20 +277,20 @@ export default function CheckoutForm() {
                 <dt className="text-neutral-500">Shipping</dt>
                 <dd className="text-neutral-400">Calculated at checkout</dd>
               </div>
-              <div className="flex items-center justify-between border-t border-border pt-3">
+              <div className="flex items-center justify-between border-t border-neutral-200 pt-3">
                 <dt className="font-medium">Total</dt>
-                <dd className="text-lg font-medium tabular-nums">{formatMoney(subtotalMinor, currency)}</dd>
+                <dd className="text-[17px] font-medium tabular-nums">{formatMoney(subtotalMinor, currency)}</dd>
               </div>
             </dl>
           </div>
 
           {notice && (
-            <p className="mt-5 rounded-sm border border-foreground/15 bg-neutral-50 px-4 py-3 text-sm text-neutral-700">
+            <p className="mt-5 border border-neutral-200 bg-neutral-50 px-4 py-3 text-[13px] text-neutral-600">
               {notice}
             </p>
           )}
           {error && (
-            <p className="mt-5 rounded-sm border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive" role="alert">
+            <p className="mt-5 border border-destructive/20 bg-destructive/5 px-4 py-3 text-[13px] text-destructive" role="alert">
               {error}
             </p>
           )}
@@ -301,7 +298,7 @@ export default function CheckoutForm() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="mt-6 flex h-12 w-full items-center justify-center gap-2 bg-foreground text-sm font-medium text-background transition-opacity hover:opacity-85 disabled:opacity-60"
+            className="btn-press mt-6 flex h-12 w-full items-center justify-center gap-2 bg-foreground text-[13px] font-medium text-background transition-opacity hover:opacity-85 disabled:opacity-50"
           >
             {isSubmitting ? (
               <>
@@ -313,7 +310,7 @@ export default function CheckoutForm() {
               </>
             )}
           </button>
-          <p className="mt-4 text-center text-xs text-neutral-400">
+          <p className="mt-4 text-center text-[11px] text-neutral-400">
             Secure checkout · Stripe for international cards · COD across Pakistan
           </p>
         </div>

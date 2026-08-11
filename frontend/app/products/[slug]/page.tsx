@@ -17,9 +17,6 @@ function getSupabase() {
   return createClient(supabaseUrl, supabaseAnonKey);
 }
 
-// Required for `output: 'export'`: every dynamic [slug] route must be
-// known and pre-rendered at build time, since there is no server to
-// resolve new slugs on demand once deployed to GitHub Pages.
 export async function generateStaticParams() {
   try {
     const supabase = getSupabase();
@@ -28,8 +25,6 @@ export async function generateStaticParams() {
     const { data, error } = await supabase.from("products").select("slug").eq("is_active", true);
     if (error) return [{ slug: "placeholder" }];
     const slugs = (data ?? []).map((product) => ({ slug: product.slug as string }));
-    // `output: 'export'` requires at least one param; a placeholder entry
-    // simply renders the 404 page and is replaced by real slugs in CI.
     return slugs.length > 0 ? slugs : [{ slug: "placeholder" }];
   } catch {
     return [{ slug: "placeholder" }];
@@ -91,17 +86,17 @@ export default async function ProductPage({ params }: { params: { slug: string }
     <>
       <div className="container py-8 md:py-12">
         {/* Breadcrumbs */}
-        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-neutral-400">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[11px] text-neutral-400">
           <Link href="/" className="transition-colors hover:text-foreground">Home</Link>
           <ChevronRight className="h-3 w-3" aria-hidden />
           <Link href="/shop" className="transition-colors hover:text-foreground">Shop</Link>
           <ChevronRight className="h-3 w-3" aria-hidden />
-          <span className="text-foreground">{product.name}</span>
+          <span className="text-foreground font-medium">{product.name}</span>
         </nav>
 
         <div className="mt-8 grid gap-10 lg:grid-cols-2 lg:gap-16">
           {/* Gallery */}
-          <div className="lg:sticky lg:top-24 lg:self-start">
+          <div className="lg:sticky lg:top-28 lg:self-start">
             <div className="relative aspect-square overflow-hidden bg-neutral-100">
               <ProductImage
                 src={product.image_url}
@@ -111,9 +106,13 @@ export default async function ProductPage({ params }: { params: { slug: string }
                 imgClassName="transition-transform duration-700 ease-out hover:scale-[1.03]"
               />
             </div>
-            <div className="mt-4 flex items-center justify-between">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-neutral-400">Product photography</p>
-              <p className="text-[11px] uppercase tracking-[0.18em] text-neutral-400">1 / 1</p>
+            <div className="mt-3 flex items-center justify-between">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-300">
+                Product photography
+              </p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-300">
+                1 / 1
+              </p>
             </div>
           </div>
 
@@ -122,10 +121,10 @@ export default async function ProductPage({ params }: { params: { slug: string }
         </div>
       </div>
 
-      {/* Related */}
+      {/* Related products */}
       {related.length > 0 && (
         <section className="border-t border-border">
-          <div className="container py-16">
+          <div className="container py-16 md:py-20">
             <Reveal>
               <div className="flex items-end justify-between gap-6">
                 <div>
@@ -134,10 +133,10 @@ export default async function ProductPage({ params }: { params: { slug: string }
                 </div>
                 <Link
                   href="/shop"
-                  className="group hidden shrink-0 items-center gap-1.5 text-sm font-medium underline decoration-neutral-300 underline-offset-8 transition-colors hover:text-neutral-500 sm:inline-flex"
+                  className="group hidden shrink-0 items-center gap-1.5 text-[13px] font-medium text-neutral-500 transition-colors hover:text-foreground sm:inline-flex"
                 >
                   View all
-                  <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
+                  <ChevronRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden />
                 </Link>
               </div>
             </Reveal>

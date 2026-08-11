@@ -53,8 +53,16 @@ const config: Config = {
         sm: "var(--radius)",
       },
       boxShadow: {
-        lift: "0 1px 2px rgba(0,0,0,0.04), 0 8px 24px -8px rgba(0,0,0,0.12)",
-        panel: "0 0 0 1px rgba(0,0,0,0.05), 0 24px 64px -16px rgba(0,0,0,0.18)",
+        lift: "0 1px 3px rgba(0,0,0,0.03), 0 8px 32px -12px rgba(0,0,0,0.10)",
+        panel: "0 0 0 1px rgba(0,0,0,0.06), 0 24px 80px -16px rgba(0,0,0,0.16)",
+        "panel-sm": "0 0 0 1px rgba(0,0,0,0.04), 0 8px 32px -8px rgba(0,0,0,0.10)",
+        elevated: "0 2px 4px rgba(0,0,0,0.02), 0 12px 48px -12px rgba(0,0,0,0.12)",
+      },
+      transitionTimingFunction: {
+        premium: "cubic-bezier(0.22, 1, 0.36, 1)",
+      },
+      transitionDuration: {
+        350: "350ms",
       },
     },
   },

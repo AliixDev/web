@@ -17,19 +17,19 @@ export default function CartPage() {
   if (cart.length === 0) {
     return (
       <div className="container flex flex-col items-center justify-center gap-6 py-28 text-center">
-        <div className="flex h-20 w-20 items-center justify-center rounded-full border border-border bg-neutral-50">
-          <ShoppingBag className="h-8 w-8 text-neutral-300" strokeWidth={1.25} aria-hidden />
+        <div className="flex h-20 w-20 items-center justify-center rounded-full border border-neutral-200 bg-neutral-50">
+          <ShoppingBag className="h-8 w-8 text-neutral-200" strokeWidth={1.25} aria-hidden />
         </div>
         <div>
           <h1 className="font-display text-3xl font-light tracking-tight">Your cart is empty</h1>
-          <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-neutral-500">
+          <p className="mx-auto mt-3 max-w-sm text-[14px] leading-relaxed text-neutral-500">
             Handcrafted apparel, home textiles, and electronics from Pakistan are
             waiting for you.
           </p>
         </div>
         <Link
           href="/shop"
-          className="inline-flex h-12 items-center gap-2 bg-foreground px-7 text-sm font-medium text-background transition-opacity hover:opacity-85"
+          className="btn-press inline-flex h-12 items-center gap-2 bg-foreground px-7 text-[13px] font-medium text-background transition-opacity hover:opacity-85"
         >
           Start shopping <ArrowRight className="h-4 w-4" aria-hidden />
         </Link>
@@ -37,27 +37,30 @@ export default function CartPage() {
     );
   }
 
+  const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+
   return (
     <div className="container py-10 md:py-14">
       <div className="flex items-end justify-between gap-6">
         <div>
           <p className="eyebrow text-neutral-400">Your selection</p>
           <h1 className="mt-2 text-4xl font-light tracking-tight md:text-5xl">Cart</h1>
-          <p className="mt-2 text-sm text-neutral-500">
-            {cart.reduce((sum, item) => sum + item.quantity, 0)} items
+          <p className="mt-2 text-[13px] text-neutral-500">
+            {itemCount} {itemCount === 1 ? "item" : "items"}
           </p>
         </div>
         <Link
           href="/shop"
-          className="hidden items-center gap-1.5 text-sm font-medium underline decoration-neutral-300 underline-offset-8 transition-colors hover:text-neutral-500 sm:inline-flex"
+          className="hidden items-center gap-1.5 text-[13px] font-medium text-neutral-500 transition-colors hover:text-foreground sm:inline-flex"
         >
           Continue shopping
+          <ArrowRight className="h-4 w-4" aria-hidden />
         </Link>
       </div>
 
       <div className="mt-10 grid gap-10 lg:grid-cols-3 lg:gap-14">
         {/* Line items */}
-        <ul className="divide-y divide-border border-y border-border lg:col-span-2">
+        <ul className="divide-y divide-neutral-100 border-y border-neutral-100 lg:col-span-2">
           {cart.map((item) => {
             const unit = priceForCurrency(
               currency,
@@ -68,7 +71,7 @@ export default function CartPage() {
               <li key={`${item.product_id}-${item.variant_id ?? "base"}`} className="flex gap-5 py-6">
                 <Link
                   href={`/products/${item.slug}`}
-                  className="relative block h-28 w-24 shrink-0 overflow-hidden bg-neutral-100"
+                  className="relative block h-[112px] w-[96px] shrink-0 overflow-hidden bg-neutral-100"
                 >
                   <ProductImage src={item.image_url} alt={item.name} sizes="96px" />
                 </Link>
@@ -78,12 +81,12 @@ export default function CartPage() {
                     <div className="min-w-0">
                       <Link
                         href={`/products/${item.slug}`}
-                        className="line-clamp-2 text-[15px] font-medium leading-snug transition-opacity hover:opacity-60"
+                        className="line-clamp-2 text-[14px] font-medium leading-snug transition-opacity duration-200 hover:opacity-60"
                       >
                         {item.name}
                       </Link>
                       {item.variant_name && (
-                        <p className="mt-1 text-xs uppercase tracking-[0.14em] text-neutral-400">
+                        <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.15em] text-neutral-400">
                           {item.variant_name}
                         </p>
                       )}
@@ -92,14 +95,14 @@ export default function CartPage() {
                       type="button"
                       onClick={() => removeFromCart(item.product_id, item.variant_id)}
                       aria-label={`Remove ${item.name} from cart`}
-                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm text-neutral-400 transition-colors hover:bg-accent hover:text-destructive"
+                      className="flex h-9 w-9 shrink-0 items-center justify-center text-neutral-300 transition-colors duration-200 hover:text-destructive"
                     >
-                      <Trash2 className="h-4 w-4" aria-hidden />
+                      <Trash2 className="h-[15px] w-[15px]" strokeWidth={1.5} aria-hidden />
                     </button>
                   </div>
 
                   <div className="mt-auto flex flex-wrap items-end justify-between gap-4 pt-4">
-                    <div className="flex items-center border border-border">
+                    <div className="flex items-center border border-neutral-200">
                       <button
                         type="button"
                         onClick={() =>
@@ -107,11 +110,11 @@ export default function CartPage() {
                         }
                         aria-label="Decrease quantity"
                         disabled={item.quantity <= 1}
-                        className="flex h-10 w-10 items-center justify-center text-neutral-500 transition-colors hover:bg-accent disabled:opacity-40"
+                        className="flex h-10 w-10 items-center justify-center text-neutral-500 transition-colors hover:bg-neutral-50 disabled:opacity-30"
                       >
                         <Minus className="h-3.5 w-3.5" aria-hidden />
                       </button>
-                      <span className="w-10 text-center text-sm tabular-nums" aria-live="polite">
+                      <span className="w-10 text-center text-[13px] tabular-nums" aria-live="polite">
                         {item.quantity}
                       </span>
                       <button
@@ -121,12 +124,12 @@ export default function CartPage() {
                         }
                         aria-label="Increase quantity"
                         disabled={item.quantity >= item.max_stock}
-                        className="flex h-10 w-10 items-center justify-center text-neutral-500 transition-colors hover:bg-accent disabled:opacity-40"
+                        className="flex h-10 w-10 items-center justify-center text-neutral-500 transition-colors hover:bg-neutral-50 disabled:opacity-30"
                       >
                         <Plus className="h-3.5 w-3.5" aria-hidden />
                       </button>
                     </div>
-                    <p className="text-[15px] font-medium tabular-nums">
+                    <p className="text-[14px] font-medium tabular-nums">
                       {formatMoney(unit * item.quantity, currency)}
                     </p>
                   </div>
@@ -137,10 +140,10 @@ export default function CartPage() {
         </ul>
 
         {/* Summary */}
-        <aside className="lg:sticky lg:top-24 lg:self-start">
-          <div className="border border-border bg-neutral-50/60 p-7">
+        <aside className="lg:sticky lg:top-28 lg:self-start">
+          <div className="border border-neutral-200 bg-neutral-50/50 p-7">
             <h2 className="font-display text-xl font-medium tracking-tight">Order summary</h2>
-            <dl className="mt-6 space-y-3 text-sm">
+            <dl className="mt-6 space-y-3 text-[13px]">
               <div className="flex items-center justify-between">
                 <dt className="text-neutral-500">Subtotal</dt>
                 <dd className="font-medium tabular-nums">{formatMoney(subtotal, currency)}</dd>
@@ -149,22 +152,32 @@ export default function CartPage() {
                 <dt className="text-neutral-500">Shipping</dt>
                 <dd className="text-neutral-400">Calculated at checkout</dd>
               </div>
-              <div className="flex items-center justify-between border-t border-border pt-4">
+              <div className="flex items-center justify-between border-t border-neutral-200 pt-4">
                 <dt className="font-medium">Total</dt>
-                <dd className="text-lg font-medium tabular-nums">{formatMoney(subtotal, currency)}</dd>
+                <dd className="text-[17px] font-medium tabular-nums">{formatMoney(subtotal, currency)}</dd>
               </div>
             </dl>
             <Link
               href="/checkout"
-              className="mt-7 flex h-12 w-full items-center justify-center gap-2 bg-foreground text-sm font-medium text-background transition-opacity hover:opacity-85"
+              className="btn-press mt-7 flex h-12 w-full items-center justify-center gap-2 bg-foreground text-[13px] font-medium text-background transition-opacity hover:opacity-85"
             >
               Proceed to checkout <ArrowRight className="h-4 w-4" aria-hidden />
             </Link>
-            <p className="mt-4 text-center text-xs leading-relaxed text-neutral-400">
+            <p className="mt-4 text-center text-[11px] leading-relaxed text-neutral-400">
               Cash on delivery across Pakistan · Secure card checkout worldwide
             </p>
           </div>
         </aside>
+      </div>
+
+      {/* Mobile continue shopping */}
+      <div className="mt-8 text-center sm:hidden">
+        <Link
+          href="/shop"
+          className="inline-flex items-center gap-1.5 text-[13px] font-medium text-neutral-500 transition-colors hover:text-foreground"
+        >
+          Continue shopping <ArrowRight className="h-4 w-4" aria-hidden />
+        </Link>
       </div>
     </div>
   );

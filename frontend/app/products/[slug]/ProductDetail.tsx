@@ -47,7 +47,7 @@ export default function ProductDetail({ product }: { product: Product }) {
       max_stock: stock,
     });
     setAdding("added");
-    window.setTimeout(() => setAdding("idle"), 1600);
+    window.setTimeout(() => setAdding("idle"), 1800);
   }
 
   function handleBuyNow() {
@@ -61,16 +61,19 @@ export default function ProductDetail({ product }: { product: Product }) {
       <p className="eyebrow text-neutral-400">
         {product.category_id ? "From the collection" : "SitaraSouq"}
       </p>
-      <h1 className="mt-3 text-4xl font-light leading-tight tracking-tight md:text-5xl">
+      <h1 className="mt-3 text-[32px] font-light leading-[1.1] tracking-tight md:text-[40px]">
         {product.name}
       </h1>
 
-      <p className="mt-5 text-2xl font-medium tabular-nums">
-        {formatMoney(unitPrice * quantity, currency)}
-      </p>
-      <p className="mt-1 text-xs text-neutral-400">
-        {currency === "PKR" ? "Pakistani Rupees" : "US Dollars"} · prices verified at checkout
-      </p>
+      {/* Price */}
+      <div className="mt-5 flex items-baseline gap-3">
+        <p className="text-2xl font-medium tabular-nums">
+          {formatMoney(unitPrice * quantity, currency)}
+        </p>
+        <p className="text-[12px] text-neutral-400">
+          {currency === "PKR" ? "Pakistani Rupees" : "US Dollars"} · verified at checkout
+        </p>
+      </div>
 
       <div className="mt-8 space-y-7">
         {/* Variants */}
@@ -94,11 +97,11 @@ export default function ProductDetail({ product }: { product: Product }) {
                     disabled={disabled}
                     aria-pressed={selectedVariant?.id === variant.id}
                     className={cn(
-                      "min-w-[3.5rem] border px-4 py-2.5 text-[13px] transition-all duration-200",
+                      "min-w-[3.5rem] border px-4 py-2.5 text-[13px] font-medium transition-all duration-200",
                       selectedVariant?.id === variant.id
                         ? "border-foreground bg-foreground text-background"
-                        : "border-border bg-background text-foreground hover:border-foreground/60",
-                      disabled && "cursor-not-allowed opacity-40",
+                        : "border-neutral-200 bg-background text-foreground hover:border-neutral-400",
+                      disabled && "cursor-not-allowed opacity-30",
                     )}
                   >
                     {variant.name}
@@ -106,7 +109,7 @@ export default function ProductDetail({ product }: { product: Product }) {
                 );
               })}
             </div>
-            <p className="mt-2.5 text-xs text-neutral-400" aria-live="polite">
+            <p className="mt-2.5 text-[12px] text-neutral-400" aria-live="polite">
               {selectedVariant
                 ? `${selectedVariant.stock_quantity} available${selectedVariant.sku ? ` · ${selectedVariant.sku}` : ""}`
                 : "Select an option"}
@@ -115,7 +118,7 @@ export default function ProductDetail({ product }: { product: Product }) {
         )}
 
         {/* Stock state */}
-        <p className={cn("flex items-center gap-2 text-[13px]", outOfStock ? "text-destructive" : "text-neutral-600")}>
+        <p className={cn("flex items-center gap-2 text-[13px]", outOfStock ? "text-destructive" : "text-neutral-500")}>
           <span className={cn("h-1.5 w-1.5 rounded-full", outOfStock ? "bg-destructive" : "bg-foreground")} aria-hidden />
           {outOfStock ? "Currently out of stock" : `${stock} in stock`}
         </p>
@@ -123,17 +126,17 @@ export default function ProductDetail({ product }: { product: Product }) {
         {/* Quantity */}
         <div className="flex items-center gap-4">
           <span className="text-[13px] font-medium">Quantity</span>
-          <div className="flex items-center border border-border">
+          <div className="flex items-center border border-neutral-200">
             <button
               type="button"
               onClick={() => setQuantity((q) => Math.max(1, q - 1))}
               disabled={quantity <= 1}
               aria-label="Decrease quantity"
-              className="flex h-11 w-11 items-center justify-center text-neutral-500 transition-colors hover:bg-accent disabled:opacity-40"
+              className="flex h-11 w-11 items-center justify-center text-neutral-500 transition-colors hover:bg-neutral-50 disabled:opacity-30"
             >
               <Minus className="h-3.5 w-3.5" aria-hidden />
             </button>
-            <span className="w-10 text-center text-sm tabular-nums" aria-live="polite">
+            <span className="w-10 text-center text-[13px] font-medium tabular-nums" aria-live="polite">
               {quantity}
             </span>
             <button
@@ -141,7 +144,7 @@ export default function ProductDetail({ product }: { product: Product }) {
               onClick={() => setQuantity((q) => Math.min(stock, q + 1))}
               disabled={outOfStock || quantity >= stock}
               aria-label="Increase quantity"
-              className="flex h-11 w-11 items-center justify-center text-neutral-500 transition-colors hover:bg-accent disabled:opacity-40"
+              className="flex h-11 w-11 items-center justify-center text-neutral-500 transition-colors hover:bg-neutral-50 disabled:opacity-30"
             >
               <Plus className="h-3.5 w-3.5" aria-hidden />
             </button>
@@ -155,9 +158,9 @@ export default function ProductDetail({ product }: { product: Product }) {
             onClick={handleAddToCart}
             disabled={outOfStock}
             className={cn(
-              "flex h-[3.25rem] items-center justify-center gap-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] disabled:opacity-40",
+              "btn-press flex h-[3.25rem] items-center justify-center gap-2 text-[13px] font-medium transition-all duration-200 disabled:opacity-30",
               adding === "added"
-                ? "bg-neutral-200 text-foreground"
+                ? "bg-neutral-100 text-foreground"
                 : "bg-foreground text-background hover:opacity-90",
             )}
           >
@@ -173,7 +176,7 @@ export default function ProductDetail({ product }: { product: Product }) {
             type="button"
             onClick={handleBuyNow}
             disabled={outOfStock}
-            className="flex h-[3.25rem] items-center justify-center gap-2 border border-foreground/20 text-sm font-medium transition-colors hover:border-foreground hover:bg-foreground hover:text-background disabled:opacity-40"
+            className="btn-press flex h-[3.25rem] items-center justify-center gap-2 border border-neutral-300 text-[13px] font-medium transition-all duration-200 hover:border-foreground hover:bg-foreground hover:text-background disabled:opacity-30"
           >
             {adding === "buying" ? (
               <>
@@ -187,17 +190,17 @@ export default function ProductDetail({ product }: { product: Product }) {
       </div>
 
       {/* Description */}
-      <div className="mt-10 border-t border-border pt-8">
+      <div className="mt-10 border-t border-neutral-200 pt-8">
         <h2 className="eyebrow text-neutral-400">About this piece</h2>
-        <p className="mt-3 max-w-prose text-[15px] leading-relaxed text-neutral-600">
+        <p className="mt-3 max-w-prose text-[14px] leading-[1.7] text-neutral-500">
           {product.description}
         </p>
       </div>
 
       {/* Delivery info */}
-      <div className="mt-8 space-y-4 border-t border-border pt-8">
+      <div className="mt-8 space-y-5 border-t border-neutral-200 pt-8">
         <div className="flex items-start gap-3.5">
-          <Banknote className="mt-0.5 h-5 w-5 shrink-0 text-neutral-400" strokeWidth={1.5} aria-hidden />
+          <Banknote className="mt-0.5 h-5 w-5 shrink-0 text-neutral-400" strokeWidth={1.25} aria-hidden />
           <div>
             <p className="text-[13px] font-medium">Cash on delivery</p>
             <p className="mt-0.5 text-[13px] leading-relaxed text-neutral-500">
@@ -206,7 +209,7 @@ export default function ProductDetail({ product }: { product: Product }) {
           </div>
         </div>
         <div className="flex items-start gap-3.5">
-          <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-neutral-400" strokeWidth={1.5} aria-hidden />
+          <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-neutral-400" strokeWidth={1.25} aria-hidden />
           <div>
             <p className="text-[13px] font-medium">Secure international checkout</p>
             <p className="mt-0.5 text-[13px] leading-relaxed text-neutral-500">
