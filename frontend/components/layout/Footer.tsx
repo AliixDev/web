@@ -108,6 +108,11 @@ export default function Footer({ categories }: { categories: Category[] }) {
             <li className="text-neutral-600">Returns &amp; exchanges</li>
             <li className="text-neutral-600">FAQ</li>
             <li className="text-neutral-600">Contact us</li>
+            <li className="pt-1">
+              <Link href="/seller/login" className="inline-flex items-center gap-1 text-neutral-700 transition-colors hover:text-foreground">
+                Seller login
+              </Link>
+            </li>
           </ul>
         </div>
 
