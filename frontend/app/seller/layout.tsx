@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { getSupabase, isSupabaseConfigured } from "@/lib/supabaseClient";
 import { isSeller } from "@/lib/seller";
 import SellerShell from "@/components/seller/SellerShell";
@@ -34,6 +34,12 @@ function SellerLoading() {
 
 export default function SellerLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
+  // The login page is its own standalone screen — it must render
+  // directly instead of being gated by this layout (which would
+  // otherwise redirect the signed-out visitor back to the same URL
+  // and never show the form).
+  const isLoginRoute = pathname === "/seller/login";
   const [status, setStatus] = useState<"loading" | "authorized" | "denied">("loading");
   const [email, setEmail] = useState<string | null>(null);
 
@@ -96,9 +102,10 @@ export default function SellerLayout({ children }: { children: ReactNode }) {
   // Unauthenticated / non-seller users are sent to the Seller login.
   // Note: this is UX only — the database rejects any seller-scoped
   // query through RLS regardless of what the UI does.
+  // Never redirect when already on the login route (would loop).
   useEffect(() => {
-    if (status === "denied") router.replace("/seller/login");
-  }, [status, router]);
+    if (!isLoginRoute && status === "denied") router.replace("/seller/login");
+  }, [status, router, isLoginRoute]);
 
   async function handleSignOut() {
     try {
@@ -108,6 +115,9 @@ export default function SellerLayout({ children }: { children: ReactNode }) {
     }
     setStatus("denied");
   }
+
+  // The login screen renders on its own (no sidebar, no auth gate).
+  if (isLoginRoute) return <>{children}</>;
 
   if (status !== "authorized") return <SellerLoading />;
 
