@@ -18,27 +18,7 @@ const SORT_LABELS: Record<SortKey, string> = {
   name: "Name: A–Z",
 };
 
-"use client";
-
-import { useEffect, useState } from "react";
-
-export default function ShopClient({ products, categories }) {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-    // Any code that uses window/browser APIs goes here
-  }, []);
-
-  // If you need window before rendering, guard it:
-  if (!isMounted) return null;
-
-  return (
-    // Your JSX here
-  );
-}
-
-function ShopContent({ products, categories }: { products: Product[]; categories: Category[] }) {
+function ShopContentInner({ products, categories }: { products: Product[]; categories: Category[] }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -160,7 +140,7 @@ function ShopContent({ products, categories }: { products: Product[]; categories
               setSort(value);
               updateParams({ sort: value });
             }}
-            className="h-10 cursor-pointer border border-neutral-200 bg-background px-3 pr-8 text-[13px] text-foreground transition-colors hover:border-neutral-300 focus:border-foreground focus:outline-none focus:ring-0"
+            className="h-10 cursor-pointer border border-neutral-200 bg-background px-3 pr-8 text-[13px] text-foreground transition-colors hover:border-neutral-300 focus:border-foreground focus:outline-none"
           >
             {Object.entries(SORT_LABELS).map(([value, label]) => (
               <option key={value} value={value}>
@@ -196,7 +176,7 @@ function ShopContent({ products, categories }: { products: Product[]; categories
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search the collection…"
           aria-label="Search the collection"
-          className="h-11 w-full border border-neutral-200 bg-background pl-10 pr-3 text-[13px] transition-colors placeholder:text-neutral-400 hover:border-neutral-300 focus:border-foreground focus:outline-none focus:ring-0"
+          className="h-11 w-full border border-neutral-200 bg-background pl-10 pr-3 text-[13px] transition-colors placeholder:text-neutral-400 hover:border-neutral-300 focus:border-foreground focus:outline-none"
         />
       </form>
 
@@ -265,7 +245,7 @@ function CategoryChip({
 export default function ShopClient({ products, categories }: { products: Product[]; categories: Category[] }) {
   return (
     <Suspense fallback={<div className="container py-24 text-center text-[13px] text-neutral-400">Loading shop…</div>}>
-      <ShopContent products={products} categories={categories} />
+      <ShopContentInner products={products} categories={categories} />
     </Suspense>
   );
 }
