@@ -38,13 +38,17 @@ export async function getProducts(): Promise<Product[]> {
   }
 }
 
-/** All categories. */
+/** All visible categories (hidden ones are excluded from the store). */
 export async function getCategories(): Promise<Category[]> {
   const supabase = getClient();
   if (!supabase) return [];
 
   try {
-    const { data, error } = await supabase.from("categories").select("id, name, slug").order("name");
+    const { data, error } = await supabase
+      .from("categories")
+      .select("id, name, slug")
+      .eq("is_active", true)
+      .order("name");
     if (error) return [];
     return (data ?? []) as Category[];
   } catch {
