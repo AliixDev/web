@@ -48,7 +48,7 @@ function OrderConfirmationContent() {
   if (!orderId) {
     return (
       <div className="container flex flex-col items-center gap-5 py-28 text-center">
-        <p className="text-neutral-500">No order reference was found.</p>
+        <p className="text-neutral-600">No order reference was found.</p>
         <Link
           href="/"
           className="btn-press inline-flex h-11 items-center justify-center bg-foreground px-6 text-[13px] font-medium text-background transition-opacity hover:opacity-85"
@@ -65,10 +65,8 @@ function OrderConfirmationContent() {
         <div className="animate-scale-in mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-foreground">
           <CheckCircle2 className="h-8 w-8 text-background" strokeWidth={1.5} aria-hidden />
         </div>
-        <h1 className="mt-7 font-display text-4xl font-light tracking-tight">
-          Thank you for your order
-        </h1>
-        <p className="mt-3 text-[13px] leading-relaxed text-neutral-500">
+        <h1 className="mt-7 font-display text-4xl font-light tracking-tight">Thank you for your order</h1>
+        <p className="mt-3 text-[13px] leading-relaxed text-neutral-600">
           Your order reference is{" "}
           <span className="font-mono text-[13px] text-foreground">{orderId}</span>
         </p>
@@ -81,26 +79,44 @@ function OrderConfirmationContent() {
               <div className="skeleton h-10" />
             </div>
           ) : order ? (
-            <dl className="divide-y divide-neutral-100 border-y border-neutral-100 text-[13px]">
-              <div className="flex items-center justify-between py-3.5">
-                <dt className="text-neutral-500">Status</dt>
-                <dd className="font-medium capitalize">{order.status.replace("_", " ")}</dd>
-              </div>
-              <div className="flex items-center justify-between py-3.5">
-                <dt className="text-neutral-500">Payment method</dt>
-                <dd className="font-medium capitalize">{order.payment_method}</dd>
-              </div>
-              <div className="flex items-center justify-between py-3.5">
-                <dt className="text-neutral-500">Payment status</dt>
-                <dd className="font-medium capitalize">{order.payment_status.replace("_", " ")}</dd>
-              </div>
-            </dl>
+            <>
+              <dl className="divide-y divide-neutral-100 border-y border-neutral-100 text-[13px]">
+                <div className="flex items-center justify-between py-3.5">
+                  <dt className="text-neutral-600">Status</dt>
+                  <dd className="font-medium capitalize">{order.status.replace("_", " ")}</dd>
+                </div>
+                <div className="flex items-center justify-between py-3.5">
+                  <dt className="text-neutral-600">Payment method</dt>
+                  <dd className="font-medium capitalize">{order.payment_method}</dd>
+                </div>
+                <div className="flex items-center justify-between py-3.5">
+                  <dt className="text-neutral-600">Payment status</dt>
+                  <dd className="font-medium capitalize">{order.payment_status.replace("_", " ")}</dd>
+                </div>
+              </dl>
+              <ol className="space-y-3 border border-neutral-200 bg-neutral-50 px-5 py-5">
+                {[
+                  "We've received your order and are preparing it.",
+                  order.payment_method === "cod"
+                    ? "Keep cash ready — you'll pay the delivery partner when your order arrives."
+                    : "Your payment is being confirmed. You'll receive a confirmation once it clears.",
+                  "Track your order anytime from your account.",
+                ].map((step, index) => (
+                  <li key={step} className="flex items-start gap-3 text-[13px] leading-relaxed text-neutral-700">
+                    <span className="mt-px font-display text-sm font-light text-neutral-400" aria-hidden>
+                      {index + 1}
+                    </span>
+                    {step}
+                  </li>
+                ))}
+              </ol>
+            </>
           ) : isCod ? (
-            <p className="border border-neutral-200 bg-neutral-50 px-5 py-4 text-[13px] leading-relaxed text-neutral-600">
+            <p className="border border-neutral-200 bg-neutral-50 px-5 py-4 text-[13px] leading-relaxed text-neutral-700">
               Your Cash on Delivery order has been placed — pay in cash when it arrives.
             </p>
           ) : (
-            <p className="border border-neutral-200 bg-neutral-50 px-5 py-4 text-[13px] leading-relaxed text-neutral-600">
+            <p className="border border-neutral-200 bg-neutral-50 px-5 py-4 text-[13px] leading-relaxed text-neutral-700">
               We couldn&apos;t load this order&apos;s details, but your reference number above is saved.
             </p>
           )}

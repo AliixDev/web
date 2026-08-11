@@ -1,6 +1,7 @@
 // frontend/app/layout.tsx
 
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { Fraunces, Inter } from "next/font/google";
 import { createClient } from "@supabase/supabase-js";
 import "./globals.css";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
@@ -8,10 +9,39 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import type { Category } from "@/lib/types";
 
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "SitaraSouq — Global Storefront from Pakistan",
+  title: {
+    default: "SitaraSouq — Global Storefront from Pakistan",
+    template: "%s · SitaraSouq",
+  },
   description:
     "Shop handcrafted apparel, home goods, and electronics from Pakistan, with local Cash on Delivery and international card checkout.",
+  applicationName: "SitaraSouq",
+  authors: [{ name: "SitaraSouq" }],
+  openGraph: {
+    title: "SitaraSouq — Global Storefront from Pakistan",
+    description:
+      "Handcrafted apparel, home textiles, and everyday electronics from Pakistan. Cash on delivery across Pakistan, secure card checkout worldwide.",
+    type: "website",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#ffffff",
 };
 
 async function getCategories(): Promise<Category[]> {
@@ -33,15 +63,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const categories = await getCategories();
 
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter:wght@400;500;600&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
       <body className="min-h-screen">
         {/* Skip to content — accessibility */}
         <a

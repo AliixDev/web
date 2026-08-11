@@ -47,6 +47,17 @@ const STATUS_LABEL: Record<string, string> = {
   refunded: "Refunded",
 };
 
+const STATUS_STYLE: Record<string, string> = {
+  pending_payment: "border-neutral-200 text-neutral-600",
+  cod_pending: "border-neutral-300 text-neutral-700",
+  paid: "border-neutral-400 text-neutral-800",
+  processing: "border-neutral-300 text-neutral-700",
+  shipped: "border-neutral-400 text-neutral-800",
+  delivered: "border-neutral-400 text-neutral-800",
+  cancelled: "border-destructive/30 text-destructive",
+  refunded: "border-destructive/30 text-destructive",
+};
+
 export default function AccountPage() {
   const [email, setEmail] = useState<string | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -146,9 +157,7 @@ export default function AccountPage() {
         phone: phone.trim() || null,
         default_currency: defaultCurrency,
       };
-      const { error: upsertError } = await supabase
-        .from("profiles")
-        .upsert({ id: session.user.id, ...payload });
+      const { error: upsertError } = await supabase.from("profiles").upsert({ id: session.user.id, ...payload });
       if (upsertError) throw upsertError;
       setSaved(true);
       window.setTimeout(() => setSaved(false), 2000);
@@ -163,8 +172,8 @@ export default function AccountPage() {
   if (!isSupabaseConfigured()) {
     return (
       <div className="container flex flex-col items-center gap-5 py-28 text-center">
-        <p className="text-neutral-500">{error}</p>
-        <p className="max-w-sm text-[13px] text-neutral-400">
+        <p className="text-neutral-600">{error}</p>
+        <p className="max-w-sm text-[13px] leading-relaxed text-neutral-400">
           Add the Supabase environment variables in API Keys to enable accounts.
         </p>
       </div>
@@ -175,10 +184,10 @@ export default function AccountPage() {
   if (loading) {
     return (
       <div className="container py-14">
-        <div className="skeleton h-8 w-48" />
+        <div className="skeleton h-8 w-56" />
         <div className="mt-10 grid gap-10 lg:grid-cols-3">
-          <div className="skeleton h-80 lg:col-span-1" />
-          <div className="skeleton h-80 lg:col-span-2" />
+          <div className="skeleton h-96 lg:col-span-1" />
+          <div className="skeleton h-96 lg:col-span-2" />
         </div>
       </div>
     );
@@ -193,7 +202,7 @@ export default function AccountPage() {
         </div>
         <div>
           <h1 className="font-display text-3xl font-light tracking-tight">Your account</h1>
-          <p className="mx-auto mt-3 max-w-sm text-[14px] leading-relaxed text-neutral-500">
+          <p className="mx-auto mt-3 max-w-sm text-[14px] leading-[1.7] text-neutral-600">
             Sign in to view your profile, order history, and delivery preferences.
           </p>
         </div>
@@ -211,17 +220,22 @@ export default function AccountPage() {
 
   return (
     <div className="container py-10 md:py-14">
-      <p className="eyebrow text-neutral-400">Account</p>
-      <h1 className="mt-2 text-4xl font-light tracking-tight md:text-5xl">Hello, {fullName || email.split("@")[0]}</h1>
-      <p className="mt-2 text-[13px] text-neutral-500">{email}</p>
+      <p className="eyebrow">Account</p>
+      <h1 className="mt-2 text-4xl font-light tracking-tight md:text-5xl">
+        Hello, {fullName || email.split("@")[0]}
+      </h1>
+      <p className="mt-2 text-[13px] text-neutral-600">{email}</p>
 
       {error && (
-        <p className="mt-6 max-w-md border border-destructive/20 bg-destructive/5 px-4 py-3 text-[13px] text-destructive" role="alert">
+        <p
+          className="mt-6 max-w-md border border-destructive/20 bg-destructive/5 px-4 py-3 text-[13px] text-destructive"
+          role="alert"
+        >
           {error}
         </p>
       )}
 
-      <div className="mt-10 grid gap-10 lg:grid-cols-3">
+      <div className="mt-10 grid gap-12 lg:grid-cols-3">
         {/* Profile */}
         <section aria-labelledby="profile-heading">
           <h2 id="profile-heading" className="font-display text-xl font-medium tracking-tight">
@@ -230,11 +244,11 @@ export default function AccountPage() {
           <form onSubmit={handleSaveProfile} className="mt-5 space-y-4">
             <div className="space-y-2">
               <Label htmlFor="full-name">Full name</Label>
-              <Input id="full-name" value={fullName} onChange={(e) => setFullName(e.target.value)} />
+              <Input id="full-name" autoComplete="name" value={fullName} onChange={(e) => setFullName(e.target.value)} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="phone">Phone</Label>
-              <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
+              <Input id="phone" type="tel" autoComplete="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="currency">Default currency</Label>
@@ -274,8 +288,8 @@ export default function AccountPage() {
 
           {orders.length === 0 ? (
             <div className="mt-5 flex flex-col items-center gap-4 border border-dashed border-neutral-200 py-16 text-center">
-              <Package className="h-8 w-8 text-neutral-200" strokeWidth={1.25} aria-hidden />
-              <p className="text-[13px] text-neutral-500">You haven&apos;t placed any orders yet.</p>
+              <Package className="h-8 w-8 text-neutral-300" strokeWidth={1.25} aria-hidden />
+              <p className="text-[13px] text-neutral-600">You haven&apos;t placed any orders yet.</p>
               <Link
                 href="/shop"
                 className="btn-press inline-flex h-11 items-center justify-center bg-foreground px-6 text-[13px] font-medium text-background transition-opacity hover:opacity-85"
@@ -286,14 +300,11 @@ export default function AccountPage() {
           ) : (
             <ul className="mt-5 divide-y divide-neutral-100 border-y border-neutral-100">
               {orders.map((order) => {
-                const total = priceForCurrency(
-                  order.currency === "PKR" ? "PKR" : "USD",
-                  order.total_minor,
-                  order.total_minor,
-                );
+                const orderCurrency = order.currency === "PKR" ? "PKR" : "USD";
+                const total = priceForCurrency(orderCurrency, order.total_minor, order.total_minor);
                 return (
                   <li key={order.id} className="py-6">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
                         <p className="text-[13px] font-medium">
                           Order <span className="font-mono">{order.id.slice(0, 8)}</span>
@@ -310,24 +321,29 @@ export default function AccountPage() {
                         <span
                           className={cn(
                             "border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.15em]",
-                            order.status === "cancelled"
-                              ? "border-destructive/20 text-destructive"
-                              : "border-neutral-200 text-neutral-500",
+                            STATUS_STYLE[order.status] ?? "border-neutral-200 text-neutral-500",
                           )}
                         >
                           {STATUS_LABEL[order.status] ?? order.status.replace("_", " ")}
                         </span>
                         <span className="text-[13px] font-medium tabular-nums">
-                          {formatMoney(total, order.currency === "PKR" ? "PKR" : "USD")}
+                          {formatMoney(total, orderCurrency)}
                         </span>
                       </div>
                     </div>
-                    <ul className="mt-4 space-y-1.5 text-[12px] text-neutral-500">
+                    <ul className="mt-4 space-y-1.5 border-t border-neutral-100 pt-3 text-[12px] text-neutral-600">
                       {order.order_items.map((item) => (
                         <li key={item.id} className="flex justify-between gap-4">
                           <span className="truncate">
                             {item.quantity}× {item.product_name}
                             {item.variant_name ? ` — ${item.variant_name}` : ""}
+                          </span>
+                          <span className="shrink-0 tabular-nums text-neutral-500">
+                            {formatMoney(
+                              priceForCurrency(orderCurrency, item.unit_price_minor, item.unit_price_minor) *
+                                item.quantity,
+                              orderCurrency,
+                            )}
                           </span>
                         </li>
                       ))}

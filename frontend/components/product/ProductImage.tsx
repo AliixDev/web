@@ -16,8 +16,8 @@ interface ProductImageProps {
 }
 
 /**
- * Product image with skeleton loading, fade-in on load,
- * and graceful fallback if the image is missing or fails.
+ * Product image with skeleton loading, a soft scale+fade reveal on load,
+ * and a graceful fallback if the image is missing or fails.
  */
 export default function ProductImage({
   src,
@@ -33,9 +33,7 @@ export default function ProductImage({
   return (
     <div className={cn("relative h-full w-full overflow-hidden bg-neutral-100", className)}>
       {/* Skeleton shimmer behind image */}
-      {!loaded && !failed && (
-        <div className="skeleton absolute inset-0" aria-hidden />
-      )}
+      {!loaded && !failed && <div className="skeleton absolute inset-0" aria-hidden />}
 
       {!failed ? (
         <Image
@@ -48,15 +46,17 @@ export default function ProductImage({
           onLoad={() => setLoaded(true)}
           onError={() => setFailed(true)}
           className={cn(
-            "object-cover transition-opacity duration-500 ease-out",
-            loaded ? "opacity-100" : "opacity-0",
+            "object-cover transition-[opacity,transform] duration-700 ease-premium",
+            loaded ? "opacity-100 scale-100" : "opacity-0 scale-[1.03]",
             imgClassName,
           )}
         />
       ) : (
         <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-neutral-100 text-neutral-300">
           <Package className="h-7 w-7" strokeWidth={1.25} aria-hidden />
-          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-300">No image</span>
+          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
+            No image
+          </span>
         </div>
       )}
     </div>

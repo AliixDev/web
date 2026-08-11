@@ -4,6 +4,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { ArrowRight, Loader2, MailCheck, X } from "lucide-react";
 import { getSupabase, isSupabaseConfigured } from "@/lib/supabaseClient";
+import { useDialog } from "@/lib/useDialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -13,7 +14,7 @@ interface AuthModalProps {
   context?: "signin" | "checkout" | "account";
 }
 
-type Stage = "idle" | "loading" | "sent" | "error" | "unconfigured";
+type Stage = "idle" | "loading" | "sent" | "error";
 
 const COPY = {
   signin: {
@@ -24,8 +25,7 @@ const COPY = {
   checkout: {
     title: "Sign in to place your order",
     body: "Orders are tied to your account. We'll email you a sign-in link.",
-    confirm:
-      "We've emailed your sign-in link. Open it, then come back and submit your order.",
+    confirm: "We've emailed your sign-in link. Open it, then come back and submit your order.",
   },
   account: {
     title: "Sign in to view your account",
@@ -39,18 +39,12 @@ export default function AuthModal({ open, onClose, context = "signin" }: AuthMod
   const [stage, setStage] = useState<Stage>("idle");
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
+  const dialogRef = useDialog(open, onClose);
 
+  // Reset the form each time the dialog opens.
   useEffect(() => {
     if (open) {
-      setStage(isSupabaseConfigured() ? "idle" : "unconfigured");
+      setStage("idle");
       setMessage("");
       setEmail("");
     }
@@ -59,6 +53,7 @@ export default function AuthModal({ open, onClose, context = "signin" }: AuthMod
   if (!open) return null;
 
   const copy = COPY[context];
+  const isConfigured = isSupabaseConfigured();
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -90,9 +85,16 @@ export default function AuthModal({ open, onClose, context = "signin" }: AuthMod
   }
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label={copy.title}>
+    <div
+      ref={dialogRef}
+      className="fixed inset-0 z-[80] flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label={copy.title}
+    >
       <button
         type="button"
+        tabIndex={-1}
         aria-label="Close"
         onClick={onClose}
         className="animate-fade-in absolute inset-0 cursor-default bg-black/30 backdrop-blur-[2px]"
@@ -109,14 +111,15 @@ export default function AuthModal({ open, onClose, context = "signin" }: AuthMod
 
         <h2 className="font-display text-[22px] font-medium tracking-tight">{copy.title}</h2>
 
-        {stage === "unconfigured" ? (
+        {!isConfigured ? (
           <div className="mt-5 space-y-3">
-            <p className="text-[13px] leading-relaxed text-neutral-500">
-              Sign-in isn&apos;t available yet because the Supabase environment variables
-              haven&apos;t been configured for this workspace.
+            <p className="text-[13px] leading-relaxed text-neutral-600">
+              Sign-in isn&apos;t available yet because the Supabase environment variables haven&apos;t
+              been configured for this workspace.
             </p>
-            <p className="text-[11px] text-neutral-400">
-              Add <code className="rounded bg-neutral-100 px-1.5 py-0.5 font-mono">NEXT_PUBLIC_SUPABASE_URL</code> and{" "}
+            <p className="text-[11px] leading-relaxed text-neutral-400">
+              Add <code className="rounded bg-neutral-100 px-1.5 py-0.5 font-mono">NEXT_PUBLIC_SUPABASE_URL</code>{" "}
+              and{" "}
               <code className="rounded bg-neutral-100 px-1.5 py-0.5 font-mono">NEXT_PUBLIC_SUPABASE_ANON_KEY</code>{" "}
               in API Keys to enable it.
             </p>
@@ -126,7 +129,7 @@ export default function AuthModal({ open, onClose, context = "signin" }: AuthMod
             <div className="flex h-11 w-11 items-center justify-center rounded-full bg-neutral-100">
               <MailCheck className="h-5 w-5 text-neutral-600" strokeWidth={1.5} aria-hidden />
             </div>
-            <p className="text-[13px] leading-relaxed text-neutral-500">{copy.confirm}</p>
+            <p className="text-[13px] leading-relaxed text-neutral-600">{copy.confirm}</p>
             <p className="text-[12px] text-neutral-400">Didn&apos;t receive it? Check your spam folder.</p>
             <button
               type="button"
@@ -138,7 +141,7 @@ export default function AuthModal({ open, onClose, context = "signin" }: AuthMod
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-            <p className="text-[13px] leading-relaxed text-neutral-500">{copy.body}</p>
+            <p className="text-[13px] leading-relaxed text-neutral-600">{copy.body}</p>
             <div className="space-y-2">
               <Label htmlFor="auth-email">Email address</Label>
               <Input
@@ -153,7 +156,10 @@ export default function AuthModal({ open, onClose, context = "signin" }: AuthMod
             </div>
 
             {stage === "error" && (
-              <p className="border border-destructive/20 bg-destructive/5 px-3 py-2 text-[12px] text-destructive" role="alert">
+              <p
+                className="border border-destructive/20 bg-destructive/5 px-3 py-2 text-[12px] text-destructive"
+                role="alert"
+              >
                 {message}
               </p>
             )}

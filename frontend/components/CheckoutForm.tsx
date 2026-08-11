@@ -3,12 +3,13 @@
 
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import { Banknote, CreditCard, Loader2, Lock, Smartphone, Wallet } from "lucide-react";
+import { Banknote, CreditCard, Loader2, Lock, ShieldCheck, Smartphone, Wallet } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { callEdgeFunction, getSupabase } from "@/lib/supabaseClient";
-import { formatMoney } from "@/lib/currency";
+import { formatMoney, priceForCurrency } from "@/lib/currency";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import ProductImage from "@/components/product/ProductImage";
 import AuthModal from "@/components/auth/AuthModal";
 import { cn } from "@/lib/utils";
 
@@ -89,7 +90,9 @@ export default function CheckoutForm() {
     quantity: item.quantity,
   }));
 
-  const availableMethods = (Object.entries(PAYMENT_OPTIONS) as [PaymentMethod, (typeof PAYMENT_OPTIONS)[PaymentMethod]][])
+  const availableMethods = (
+    Object.entries(PAYMENT_OPTIONS) as [PaymentMethod, (typeof PAYMENT_OPTIONS)[PaymentMethod]][]
+  )
     .filter(([, option]) => option.region === currency)
     .map(([key]) => key);
 
@@ -172,7 +175,7 @@ export default function CheckoutForm() {
   if (cart.length === 0 && !isSubmitting) {
     return (
       <div className="flex flex-col items-center gap-5 py-20 text-center">
-        <p className="text-neutral-500">Your cart is empty, so there&apos;s nothing to check out yet.</p>
+        <p className="text-neutral-600">Your cart is empty, so there&apos;s nothing to check out yet.</p>
         <button
           type="button"
           onClick={() => router.push("/shop")}
@@ -184,47 +187,97 @@ export default function CheckoutForm() {
     );
   }
 
-  return (
-    <form onSubmit={handleSubmit} className="grid gap-12 lg:grid-cols-5">
-      {/* Left: shipping details */}
-      <section className="lg:col-span-3" aria-labelledby="shipping-heading">
-        <h2 id="shipping-heading" className="font-display text-2xl font-medium tracking-tight">
-          Delivery
-        </h2>
-        <div className="mt-6 grid gap-5 sm:grid-cols-2">
-          <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="name">Full name</Label>
-            <Input id="name" required value={shipping.name} onChange={(e) => setShipping({ ...shipping, name: e.target.value })} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone number</Label>
-            <Input id="phone" type="tel" required value={shipping.phone} onChange={(e) => setShipping({ ...shipping, phone: e.target.value })} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="country">Country</Label>
-            <Input id="country" required value={shipping.country} onChange={(e) => setShipping({ ...shipping, country: e.target.value })} />
-          </div>
-          <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="address1">Address line 1</Label>
-            <Input id="address1" required value={shipping.address_line1} onChange={(e) => setShipping({ ...shipping, address_line1: e.target.value })} />
-          </div>
-          <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="address2">Address line 2 (optional)</Label>
-            <Input id="address2" value={shipping.address_line2} onChange={(e) => setShipping({ ...shipping, address_line2: e.target.value })} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="city">City</Label>
-            <Input id="city" required value={shipping.city} onChange={(e) => setShipping({ ...shipping, city: e.target.value })} />
-          </div>
-        </div>
-      </section>
+  const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-      {/* Right: payment + summary */}
-      <section className="lg:col-span-2" aria-labelledby="payment-heading">
-        <div className="lg:sticky lg:top-28">
-          <h2 id="payment-heading" className="font-display text-2xl font-medium tracking-tight">
-            Payment
-          </h2>
+  return (
+    <form onSubmit={handleSubmit} className="grid gap-12 lg:grid-cols-5 lg:gap-16">
+      {/* Left: details */}
+      <div className="space-y-14 lg:col-span-3">
+        {/* Delivery */}
+        <section aria-labelledby="shipping-heading">
+          <div className="flex items-baseline gap-3">
+            <span className="font-display text-sm font-light text-neutral-400" aria-hidden>
+              01
+            </span>
+            <h2 id="shipping-heading" className="font-display text-2xl font-medium tracking-tight">
+              Delivery
+            </h2>
+          </div>
+          <div className="mt-6 grid gap-5 sm:grid-cols-2">
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="name">Full name</Label>
+              <Input
+                id="name"
+                autoComplete="name"
+                required
+                value={shipping.name}
+                onChange={(e) => setShipping({ ...shipping, name: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone number</Label>
+              <Input
+                id="phone"
+                type="tel"
+                autoComplete="tel"
+                inputMode="tel"
+                required
+                value={shipping.phone}
+                onChange={(e) => setShipping({ ...shipping, phone: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="country">Country</Label>
+              <Input
+                id="country"
+                autoComplete="country-name"
+                required
+                value={shipping.country}
+                onChange={(e) => setShipping({ ...shipping, country: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="address1">Address line 1</Label>
+              <Input
+                id="address1"
+                autoComplete="address-line1"
+                required
+                value={shipping.address_line1}
+                onChange={(e) => setShipping({ ...shipping, address_line1: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="address2">Address line 2 (optional)</Label>
+              <Input
+                id="address2"
+                autoComplete="address-line2"
+                value={shipping.address_line2}
+                onChange={(e) => setShipping({ ...shipping, address_line2: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="city">City</Label>
+              <Input
+                id="city"
+                autoComplete="address-level2"
+                required
+                value={shipping.city}
+                onChange={(e) => setShipping({ ...shipping, city: e.target.value })}
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Payment */}
+        <section aria-labelledby="payment-heading">
+          <div className="flex items-baseline gap-3">
+            <span className="font-display text-sm font-light text-neutral-400" aria-hidden>
+              02
+            </span>
+            <h2 id="payment-heading" className="font-display text-2xl font-medium tracking-tight">
+              Payment
+            </h2>
+          </div>
 
           <div className="mt-6 space-y-3">
             {availableMethods.map((method) => {
@@ -257,7 +310,7 @@ export default function CheckoutForm() {
                       <option.icon className="h-4 w-4 text-neutral-400" strokeWidth={1.75} aria-hidden />
                       {option.label}
                     </span>
-                    <span className="mt-1 block text-[12px] leading-relaxed text-neutral-500">
+                    <span className="mt-1 block text-[12px] leading-relaxed text-neutral-600">
                       {option.description}
                     </span>
                   </span>
@@ -266,31 +319,16 @@ export default function CheckoutForm() {
             })}
           </div>
 
-          {/* Summary */}
-          <div className="mt-8 border-t border-neutral-200 pt-6">
-            <dl className="space-y-2.5 text-[13px]">
-              <div className="flex items-center justify-between">
-                <dt className="text-neutral-500">Subtotal</dt>
-                <dd className="font-medium tabular-nums">{formatMoney(subtotalMinor, currency)}</dd>
-              </div>
-              <div className="flex items-center justify-between">
-                <dt className="text-neutral-500">Shipping</dt>
-                <dd className="text-neutral-400">Calculated at checkout</dd>
-              </div>
-              <div className="flex items-center justify-between border-t border-neutral-200 pt-3">
-                <dt className="font-medium">Total</dt>
-                <dd className="text-[17px] font-medium tabular-nums">{formatMoney(subtotalMinor, currency)}</dd>
-              </div>
-            </dl>
-          </div>
-
           {notice && (
             <p className="mt-5 border border-neutral-200 bg-neutral-50 px-4 py-3 text-[13px] text-neutral-600">
               {notice}
             </p>
           )}
           {error && (
-            <p className="mt-5 border border-destructive/20 bg-destructive/5 px-4 py-3 text-[13px] text-destructive" role="alert">
+            <p
+              className="mt-5 border border-destructive/20 bg-destructive/5 px-4 py-3 text-[13px] text-destructive"
+              role="alert"
+            >
               {error}
             </p>
           )}
@@ -298,7 +336,7 @@ export default function CheckoutForm() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="btn-press mt-6 flex h-12 w-full items-center justify-center gap-2 bg-foreground text-[13px] font-medium text-background transition-opacity hover:opacity-85 disabled:opacity-50"
+            className="btn-press mt-8 flex h-12 w-full items-center justify-center gap-2 bg-foreground text-[13px] font-medium text-background transition-opacity hover:opacity-85 disabled:opacity-50"
           >
             {isSubmitting ? (
               <>
@@ -306,15 +344,82 @@ export default function CheckoutForm() {
               </>
             ) : (
               <>
-                <Lock className="h-4 w-4" aria-hidden /> Place order · {formatMoney(subtotalMinor, currency)}
+                <Lock className="h-4 w-4" strokeWidth={1.75} aria-hidden /> Place order ·{" "}
+                {formatMoney(subtotalMinor, currency)}
               </>
             )}
           </button>
-          <p className="mt-4 text-center text-[11px] text-neutral-400">
+          <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-[11px] text-neutral-400">
+            <ShieldCheck className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
             Secure checkout · Stripe for international cards · COD across Pakistan
           </p>
+        </section>
+      </div>
+
+      {/* Right: order summary */}
+      <aside className="lg:col-span-2" aria-label="Order summary">
+        <div className="lg:sticky lg:top-28">
+          <h2 className="font-display text-2xl font-medium tracking-tight">
+            Order summary{" "}
+            <span className="font-sans text-sm font-normal text-neutral-400">
+              ({itemCount} {itemCount === 1 ? "item" : "items"})
+            </span>
+          </h2>
+
+          <ul className="mt-6 divide-y divide-neutral-100 border-y border-neutral-100">
+            {cart.map((item) => {
+              const unit = priceForCurrency(
+                currency,
+                item.unit_price_usd_cents,
+                item.unit_price_pkr_paisa,
+              );
+              return (
+                <li key={`${item.product_id}-${item.variant_id ?? "base"}`} className="flex gap-4 py-4">
+                  <div className="relative h-[72px] w-[60px] shrink-0 overflow-hidden bg-neutral-100">
+                    <ProductImage src={item.image_url} alt={item.name} sizes="60px" />
+                  </div>
+                  <div className="flex min-w-0 flex-1 flex-col">
+                    <p className="line-clamp-1 text-[13px] font-medium">{item.name}</p>
+                    {item.variant_name && (
+                      <p className="mt-0.5 text-[11px] uppercase tracking-[0.15em] text-neutral-400">
+                        {item.variant_name}
+                      </p>
+                    )}
+                    <p className="mt-auto text-[12px] text-neutral-400">
+                      Qty {item.quantity} × {formatMoney(unit, currency)}
+                    </p>
+                  </div>
+                  <p className="shrink-0 text-[13px] font-medium tabular-nums">
+                    {formatMoney(unit * item.quantity, currency)}
+                  </p>
+                </li>
+              );
+            })}
+          </ul>
+
+          <dl className="mt-5 space-y-2.5 text-[13px]">
+            <div className="flex items-center justify-between">
+              <dt className="text-neutral-600">Subtotal</dt>
+              <dd className="font-medium tabular-nums">{formatMoney(subtotalMinor, currency)}</dd>
+            </div>
+            <div className="flex items-center justify-between">
+              <dt className="text-neutral-600">Shipping</dt>
+              <dd className="text-neutral-400">Calculated at checkout</dd>
+            </div>
+            <div className="flex items-center justify-between border-t border-neutral-200 pt-3">
+              <dt className="font-medium">Total</dt>
+              <dd className="text-[17px] font-medium tabular-nums">
+                {formatMoney(subtotalMinor, currency)}
+              </dd>
+            </div>
+          </dl>
+
+          <p className="mt-6 border border-neutral-200 bg-neutral-50 px-4 py-3 text-[12px] leading-relaxed text-neutral-600">
+            You&apos;ll be asked to sign in before placing the order — orders are tied to your
+            account so you can track them later.
+          </p>
         </div>
-      </section>
+      </aside>
 
       <AuthModal
         open={authOpen}

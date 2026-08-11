@@ -50,7 +50,7 @@ export default function ProductCard({ product }: { product: Product }) {
         <ProductImage
           src={product.image_url}
           alt={product.name}
-          sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+          sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 33vw, 50vw"
           className={cn(outOfStock && "grayscale")}
           imgClassName="img-zoom"
         />
@@ -78,9 +78,7 @@ export default function ProductCard({ product }: { product: Product }) {
               disabled={outOfStock}
               className={cn(
                 "flex h-11 w-full items-center justify-center gap-1.5 border-t border-border text-[13px] font-medium transition-colors duration-200",
-                outOfStock
-                  ? "cursor-not-allowed text-neutral-400"
-                  : "hover:bg-foreground hover:text-background",
+                outOfStock ? "cursor-not-allowed text-neutral-400" : "hover:bg-foreground hover:text-background",
               )}
               aria-label={justAdded ? "Added to cart" : `Add ${product.name} to cart`}
             >
@@ -99,21 +97,21 @@ export default function ProductCard({ product }: { product: Product }) {
       </Link>
 
       {/* Meta */}
-      <div className="flex items-start justify-between gap-3 pt-3">
+      <div className="flex items-start justify-between gap-3 pt-3.5">
         <div className="min-w-0">
           <Link
             href={`/products/${product.slug}`}
-            className="line-clamp-1 text-[13px] font-medium text-foreground transition-opacity duration-200 hover:opacity-60"
+            className="line-clamp-1 font-display text-[15px] font-medium tracking-tight text-foreground transition-opacity duration-200 hover:opacity-60"
           >
             {product.name}
           </Link>
           {hasVariants && (
-            <p className="mt-0.5 text-[11px] font-medium uppercase tracking-[0.15em] text-neutral-400">
+            <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-400">
               {variants.length} options
             </p>
           )}
         </div>
-        <p className="shrink-0 text-[13px] font-medium tabular-nums">
+        <p className="shrink-0 pt-0.5 text-[13px] font-medium tabular-nums">
           {hasVariants && <span className="text-neutral-400">from </span>}
           {formatMoney(unitPrice, currency)}
         </p>
