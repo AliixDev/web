@@ -22,6 +22,7 @@ function ShopContentInner({ products, categories }: { products: Product[]; categ
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [isReady, setIsReady] = useState(false);
 
   const urlQuery = searchParams.get("q") ?? "";
   const urlCategory = searchParams.get("category") ?? "";
@@ -29,6 +30,11 @@ function ShopContentInner({ products, categories }: { products: Product[]; categ
 
   const [query, setQuery] = useState(urlQuery);
   const [sort, setSort] = useState<SortKey>(urlSort);
+
+  // Ensure component is ready after hydration
+  useEffect(() => {
+    setIsReady(true);
+  }, []);
 
   useEffect(() => {
     setQuery(urlQuery);
@@ -87,6 +93,11 @@ function ShopContentInner({ products, categories }: { products: Product[]; categ
   function handleSearch(e: FormEvent) {
     e.preventDefault();
     updateParams({ q: query.trim() });
+  }
+
+  // Only render interactive content after hydration
+  if (!isReady) {
+    return null;
   }
 
   return (
