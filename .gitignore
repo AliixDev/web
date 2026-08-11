@@ -5,6 +5,7 @@ node_modules/
 frontend/.next/
 frontend/out/
 frontend/next-env.d.ts
+frontend/tsconfig.tsbuildinfo
 
 # Env files (never commit real secrets)
 .env

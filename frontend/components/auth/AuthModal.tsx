@@ -66,7 +66,17 @@ export default function AuthModal({ open, onClose, context = "signin" }: AuthMod
     setMessage("");
     try {
       const supabase = getSupabase();
-      const { error } = await supabase.auth.signInWithOtp({ email });
+      // Redirect back to the current page after the magic link is clicked.
+      // Derived from window.location so it works on any base path — both
+      // local dev (localhost) and the GitHub Pages /web/ deployment.
+      const redirectTo = `${window.location.origin}${window.location.pathname}`;
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: redirectTo,
+          shouldCreateUser: true,
+        },
+      });
       if (error) {
         setMessage(error.message);
         setStage("error");
