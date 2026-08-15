@@ -77,21 +77,21 @@ export default async function HomePage() {
                   <dt className="sr-only">Products in the collection</dt>
                   <dd className="font-display text-2xl font-light tabular-nums">{products.length}</dd>
                   <dd className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
-                    Pieces
+                    ITEMS
                   </dd>
                 </div>
                 <div>
                   <dt className="sr-only">Supported currencies</dt>
                   <dd className="font-display text-2xl font-light">8 currencies</dd>
                   <dd className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
-                    Currencies
+                    Supported
                   </dd>
                 </div>
                 <div>
                   <dt className="sr-only">Payment options</dt>
-                  <dd className="font-display text-2xl font-light">COD + Card</dd>
+                  <dd className="font-display text-2xl font-light">Multiple</dd>
                   <dd className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
-                    Ways to pay
+                    Payment Options
                   </dd>
                 </div>
               </dl>
