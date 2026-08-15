@@ -40,18 +40,21 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # The storefront is served from the ROOT of the custom domain
+      # (https://www.sdbbuy.com/), so no basePath is set in next.config.js
+      # and no NEXT_PUBLIC_BASE_PATH is written here. A repository-subpath
+      # base would prefix every asset with /<repo>/ and 404 on the custom
+      # domain, leaving the site unstyled.
       - name: Write production environment variables
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_SUPABASE_FUNCTIONS_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_FUNCTIONS_URL }}
         run: |
-          REPO_NAME="${GITHUB_REPOSITORY#*/}"
           {
             echo "NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}"
             echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}"
             echo "NEXT_PUBLIC_SUPABASE_FUNCTIONS_URL=${NEXT_PUBLIC_SUPABASE_FUNCTIONS_URL}"
-            echo "NEXT_PUBLIC_BASE_PATH=/${REPO_NAME}"
           } >> .env.production
 
       - name: Build static export

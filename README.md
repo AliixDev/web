@@ -93,7 +93,7 @@ seeds three example products.
 supabase secrets set \
   STRIPE_SECRET_KEY=sk_test_xxx \
   STRIPE_WEBHOOK_SIGNING_SECRET=whsec_xxx \
-  SITE_URL=https://YOUR_USERNAME.github.io/YOUR_REPO
+  SITE_URL=https://www.sdbbuy.com
 ```
 
 `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are injected automatically into
@@ -143,7 +143,7 @@ In your repo → Settings → Secrets and variables → Actions, add:
 | `SUPABASE_DB_PASSWORD` | Your project's database password |
 | `STRIPE_SECRET_KEY` | Stripe → Developers → API keys |
 | `STRIPE_WEBHOOK_SIGNING_SECRET` | From step 6 |
-| `SITE_URL` | `https://YOUR_USERNAME.github.io/YOUR_REPO` |
+| `SITE_URL` | `https://www.sdbbuy.com` |
 
 In Settings → Pages, set **Source** to **GitHub Actions**.
 
@@ -160,12 +160,14 @@ git push -u origin main
 Pushing to `main` triggers `.github/workflows/deploy.yml`, which:
 
 1. Builds the Next.js static export with your Supabase secrets baked in as
-   `NEXT_PUBLIC_*` env vars, and a `basePath` of `/YOUR_REPO`.
+   `NEXT_PUBLIC_*` env vars. No `basePath` is set: the storefront is served
+   from the **root** of the custom domain, so all assets are root-relative
+   (`/_next/...`) and load correctly from `https://www.sdbbuy.com/`.
 2. Publishes `frontend/out` to GitHub Pages.
 3. Links the Supabase project, runs `supabase db push`, deploys all four Edge
    Functions, and syncs their secrets — in parallel, as a second job.
 
-Your storefront will be live at `https://YOUR_USERNAME.github.io/YOUR_REPO/`.
+Your storefront is live at `https://www.sdbbuy.com/`.
 
 ## Rebuilding after a catalog change
 

@@ -62,8 +62,8 @@ export default function AuthModal({ open, onClose, context = "signin" }: AuthMod
     try {
       const supabase = getSupabase();
       // Redirect back to the current page after the magic link is clicked.
-      // Derived from window.location so it works on any base path — both
-      // local dev (localhost) and the GitHub Pages /web/ deployment.
+      // Derived from window.location so it works on any host — local dev
+      // (localhost), GitHub Pages, or the custom domain (sdbbuy.com).
       const redirectTo = `${window.location.origin}${window.location.pathname}`;
       const { error } = await supabase.auth.signInWithOtp({
         email,
