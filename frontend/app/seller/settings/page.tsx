@@ -270,7 +270,7 @@ export default function SellerSettingsPage() {
                     id="s-store-name"
                     value={store.store_name}
                     onChange={(e) => setStore({ ...store, store_name: e.target.value })}
-                    placeholder="SitaraSouq"
+                    placeholder="SDBBUY"
                   />
                 </div>
                 <div className="space-y-2">
@@ -290,7 +290,7 @@ export default function SellerSettingsPage() {
                       type="email"
                       value={store.contact_email}
                       onChange={(e) => setStore({ ...store, contact_email: e.target.value })}
-                      placeholder="hello@sitarasouq.com"
+                      placeholder="hello@sdbbuy.com"
                     />
                   </div>
                   <div className="space-y-2">

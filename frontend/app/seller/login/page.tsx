@@ -119,7 +119,7 @@ export default function SellerLoginPage() {
             <div>
               <p className="font-display text-xl font-medium tracking-tight">Seller Central</p>
               <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
-                SitaraSouq
+                SDBBUY
               </p>
             </div>
           </div>

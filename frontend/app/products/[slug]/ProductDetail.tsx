@@ -79,7 +79,7 @@ export default function ProductDetail({ product }: { product: Product }) {
   return (
     <>
       <div>
-        <p className="eyebrow">{product.category_id ? "From the collection" : "SitaraSouq"}</p>
+        <p className="eyebrow">{product.category_id ? "From the collection" : "SDBBUY"}</p>
         <h1 className="mt-3 text-[32px] font-light leading-[1.08] tracking-tight md:text-[42px]">
           {product.name}
         </h1>

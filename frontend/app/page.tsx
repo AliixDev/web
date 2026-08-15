@@ -46,7 +46,7 @@ export default async function HomePage() {
               className="animate-fade-up mt-6 max-w-md text-[15px] leading-[1.75] text-neutral-600"
               style={{ animationDelay: "160ms" }}
             >
-              Hand-finished apparel, home textiles, and everyday electronics — priced in the
+              Leather jackets, fashion apparel, boxing gear, and gym wear — priced in the
               currency you choose, verified server-side before any order is placed.
             </p>
             <div
@@ -117,7 +117,7 @@ export default async function HomePage() {
                 ) : (
                   <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-neutral-200">
                     <span className="font-display text-8xl font-light">S</span>
-                    <span className="eyebrow text-neutral-300">SitaraSouq</span>
+                    <span className="eyebrow text-neutral-300">SDBBUY</span>
                   </div>
                 )}
               </div>
@@ -322,7 +322,7 @@ export default async function HomePage() {
               {
                 icon: Package,
                 title: "Made in Pakistan",
-                body: "Apparel, textiles, and electronics from local makers.",
+                body: "Leather, apparel, and performance gear from local makers.",
               },
               {
                 icon: Globe2,

@@ -23,17 +23,17 @@ const fraunces = Fraunces({
 
 export const metadata: Metadata = {
   title: {
-    default: "SitaraSouq — Global Storefront from Pakistan",
-    template: "%s · SitaraSouq",
+    default: "SDBBUY — Leather, Apparel & Lifestyle",
+    template: "%s · SDBBUY",
   },
   description:
-    "Shop handcrafted apparel, home goods, and electronics from Pakistan, with local Cash on Delivery and international card checkout.",
-  applicationName: "SitaraSouq",
-  authors: [{ name: "SitaraSouq" }],
+    "Leather garments, fashion apparel, boxing gear, and gym wear — from a brand with roots in 2017. Cash on Delivery across Pakistan, secure card checkout worldwide.",
+  applicationName: "SDBBUY",
+  authors: [{ name: "SDBBUY" }],
   openGraph: {
-    title: "SitaraSouq — Global Storefront from Pakistan",
+    title: "SDBBUY — Leather, Apparel & Lifestyle",
     description:
-      "Handcrafted apparel, home textiles, and everyday electronics from Pakistan. Cash on delivery across Pakistan, secure card checkout worldwide.",
+      "Leather jackets, fashion apparel, boxing gear, and fitness wear from SDBBUY — rooted in 2017. Cash on delivery across Pakistan, secure card checkout worldwide.",
     type: "website",
   },
 };

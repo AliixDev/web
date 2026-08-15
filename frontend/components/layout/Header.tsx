@@ -206,7 +206,7 @@ export default function Header({ categories }: HeaderProps) {
               href="/"
               className="font-display text-[21px] font-medium tracking-tight transition-opacity hover:opacity-70 lg:text-[24px]"
             >
-              Sitara<span className="font-light text-neutral-400">Souq</span>
+              SDB<span className="font-light text-neutral-400">BUY</span>
             </Link>
           </div>
 

@@ -202,7 +202,7 @@ export default function SellerShell({
         <div className={cn("flex items-center border-b border-neutral-200 py-5", collapsed ? "justify-center px-2" : "justify-between px-5")}>
           {!collapsed && (
             <Link href="/seller" className="font-display text-[18px] font-medium tracking-tight">
-              Sitara<span className="font-light text-neutral-400">Souq</span>
+              SDB<span className="font-light text-neutral-400">BUY</span>
               <span className="ml-2 align-middle border border-neutral-300 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
                 Seller
               </span>
@@ -210,7 +210,7 @@ export default function SellerShell({
           )}
           {collapsed && (
             <Link href="/seller" className="font-display text-[18px] font-medium tracking-tight" aria-label="Seller Central home">
-              S<span className="text-neutral-400">S</span>
+              S<span className="text-neutral-400">B</span>
             </Link>
           )}
           <button
@@ -411,7 +411,7 @@ export default function SellerShell({
           <div className="animate-slide-in-right absolute inset-y-0 left-0 flex w-[86%] max-w-[320px] flex-col bg-background shadow-panel">
             <div className="flex items-center justify-between border-b border-border px-5 py-4">
               <span className="font-display text-lg font-medium tracking-tight">
-                Sitara<span className="font-light text-neutral-400">Souq</span>
+                SDB<span className="font-light text-neutral-400">BUY</span>
               </span>
               <button
                 type="button"

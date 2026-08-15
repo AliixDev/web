@@ -18,7 +18,7 @@ type Stage = "idle" | "loading" | "sent" | "error";
 
 const COPY = {
   signin: {
-    title: "Sign in to SitaraSouq",
+    title: "Sign in to SDBBUY",
     body: "We'll email you a secure sign-in link. No password needed.",
     confirm: "We've emailed your sign-in link. Open it to sign in, then close this window.",
   },

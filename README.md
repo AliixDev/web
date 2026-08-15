@@ -1,4 +1,4 @@
-# SitaraSouq — Global Jamstack Storefront (Pakistan)
+# SDBBUY — Global Jamstack Storefront (Pakistan)
 
 A production-ready, **100% free-to-host** e-commerce platform: a statically
 exported Next.js storefront on **GitHub Pages**, backed entirely by

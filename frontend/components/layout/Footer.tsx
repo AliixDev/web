@@ -67,11 +67,12 @@ export default function Footer({ categories }: { categories: Category[] }) {
         {/* Brand column */}
         <div className="md:col-span-5">
           <Link href="/" className="font-display text-xl font-medium tracking-tight">
-            Sitara<span className="font-light text-neutral-400">Souq</span>
+            SDB<span className="font-light text-neutral-400">BUY</span>
           </Link>
           <p className="mt-4 max-w-sm text-[13px] leading-[1.7] text-neutral-600">
-            Handcrafted apparel, home textiles, and everyday electronics from Pakistan. Cash on
-            delivery across Pakistan, secure card checkout worldwide.
+            Since 2017, SDBBUY has grown from leather garments and jackets into fashion
+            apparel, boxing gear, and gym wear for modern lifestyles. Cash on delivery across
+            Pakistan, secure card checkout worldwide.
           </p>
           <p className="mt-6 text-[12px] leading-[1.7] text-neutral-400">
             Prices are verified server-side at checkout in USD or PKR — no hidden conversions.
@@ -101,25 +102,56 @@ export default function Footer({ categories }: { categories: Category[] }) {
         </nav>
 
         {/* Help links */}
-        <div className="md:col-span-2">
+        <nav aria-label="Help" className="md:col-span-2">
           <h2 className="eyebrow">Help</h2>
           <ul className="mt-5 space-y-2.5 text-[13px]">
-            <li className="text-neutral-600">Delivery information</li>
-            <li className="text-neutral-600">Returns &amp; exchanges</li>
-            <li className="text-neutral-600">FAQ</li>
-            <li className="text-neutral-600">Contact us</li>
+            <li>
+              <Link href="/faq" className="text-neutral-700 transition-colors hover:text-foreground">
+                FAQ
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact" className="text-neutral-700 transition-colors hover:text-foreground">
+                Contact us
+              </Link>
+            </li>
+            <li>
+              <Link href="/shipping-policy" className="text-neutral-700 transition-colors hover:text-foreground">
+                Shipping
+              </Link>
+            </li>
+            <li>
+              <Link href="/return-policy" className="text-neutral-700 transition-colors hover:text-foreground">
+                Returns &amp; exchanges
+              </Link>
+            </li>
+            <li>
+              <Link href="/size-guide" className="text-neutral-700 transition-colors hover:text-foreground">
+                Size guide
+              </Link>
+            </li>
+            <li>
+              <Link href="/order-tracking" className="text-neutral-700 transition-colors hover:text-foreground">
+                Track order
+              </Link>
+            </li>
             <li className="pt-1">
               <Link href="/seller/login" className="inline-flex items-center gap-1 text-neutral-700 transition-colors hover:text-foreground">
                 Seller login
               </Link>
             </li>
           </ul>
-        </div>
+        </nav>
 
         {/* Payment methods */}
         <div className="md:col-span-2">
           <h2 className="eyebrow">Payment</h2>
           <ul className="mt-5 space-y-2.5 text-[13px]">
+            <li>
+              <Link href="/payment-information" className="text-neutral-700 transition-colors hover:text-foreground">
+                Payment methods
+              </Link>
+            </li>
             <li className="text-neutral-600">Cash on Delivery</li>
             <li className="text-neutral-600">Credit / Debit Card</li>
             <li className="text-neutral-600">Stripe (USD)</li>
@@ -131,13 +163,16 @@ export default function Footer({ categories }: { categories: Category[] }) {
       {/* Bottom bar */}
       <div className="border-t border-border">
         <div className="container flex flex-col gap-2 py-5 text-[11px] text-neutral-400 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {year} SitaraSouq. All rights reserved.</p>
-          <div className="flex items-center gap-4">
-            <span className="cursor-default transition-colors hover:text-foreground/60">Privacy</span>
-            <span className="text-neutral-200">·</span>
-            <span className="cursor-default transition-colors hover:text-foreground/60">Terms</span>
-            <span className="text-neutral-200">·</span>
-            <span>Built with Next.js &amp; Supabase</span>
+          <p>© {year} SDBBUY. All rights reserved.</p>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <Link href="/about" className="transition-colors hover:text-foreground/60">About</Link>
+            <Link href="/privacy-policy" className="transition-colors hover:text-foreground/60">Privacy</Link>
+            <Link href="/terms" className="transition-colors hover:text-foreground/60">Terms</Link>
+            <Link href="/return-policy" className="transition-colors hover:text-foreground/60">Returns</Link>
+            <Link href="/shipping-policy" className="transition-colors hover:text-foreground/60">Shipping</Link>
+            <Link href="/cancellation-policy" className="transition-colors hover:text-foreground/60">Cancellations</Link>
+            <Link href="/cookie-policy" className="transition-colors hover:text-foreground/60">Cookies</Link>
+            <a href="https://b2b.sdbbuy.com" className="transition-colors hover:text-foreground/60">Wholesale B2B</a>
           </div>
         </div>
       </div>
