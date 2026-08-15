@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { Check } from "lucide-react";
+import LanguageSelector from "@/components/layout/LanguageSelector";
 import type { Category } from "@/lib/types";
 
 export default function Footer({ categories }: { categories: Category[] }) {
@@ -162,7 +163,7 @@ export default function Footer({ categories }: { categories: Category[] }) {
 
       {/* Bottom bar */}
       <div className="border-t border-border">
-        <div className="container flex flex-col gap-2 py-5 text-[11px] text-neutral-400 sm:flex-row sm:items-center sm:justify-between">
+        <div className="container flex flex-col gap-3 py-5 text-[11px] text-neutral-400 sm:flex-row sm:items-center sm:justify-between">
           <p>© {year} SDBBUY. All rights reserved.</p>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
             <Link href="/about" className="transition-colors hover:text-foreground/60">About</Link>
@@ -173,6 +174,8 @@ export default function Footer({ categories }: { categories: Category[] }) {
             <Link href="/cancellation-policy" className="transition-colors hover:text-foreground/60">Cancellations</Link>
             <Link href="/cookie-policy" className="transition-colors hover:text-foreground/60">Cookies</Link>
             <a href="https://b2b.sdbbuy.com" className="transition-colors hover:text-foreground/60">Wholesale B2B</a>
+            <span aria-hidden className="hidden text-neutral-300 sm:inline">·</span>
+            <LanguageSelector />
           </div>
         </div>
       </div>

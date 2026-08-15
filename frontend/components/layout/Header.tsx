@@ -24,7 +24,6 @@ import type { Category } from "@/lib/types";
 import CartDrawer from "@/components/cart/CartDrawer";
 import AuthModal from "@/components/auth/AuthModal";
 import CurrencySelector from "@/components/layout/CurrencySelector";
-import LanguageSelector from "@/components/layout/LanguageSelector";
 import { cn } from "@/lib/utils";
 
 interface HeaderProps {
@@ -48,7 +47,6 @@ export default function Header({ categories }: HeaderProps) {
   const [searchExpanded, setSearchExpanded] = useState(false);
   const [showRecent, setShowRecent] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [mobileLangOpen, setMobileLangOpen] = useState(false);
 
   const accountRef = useRef<HTMLDivElement | null>(null);
   const searchBoxRef = useRef<HTMLDivElement | null>(null);
@@ -317,10 +315,9 @@ export default function Header({ categories }: HeaderProps) {
               )}
             </div>
 
-            {/* Currency + Language selectors */}
+            {/* Currency selector */}
             <div className="hidden items-center sm:flex">
               <CurrencySelector />
-              <LanguageSelector />
             </div>
 
             {/* Account */}
@@ -479,10 +476,9 @@ export default function Header({ categories }: HeaderProps) {
               <div className="my-4 border-t border-border" />
 
               <div className="space-y-0.5">
-                {/* Mobile currency/language row */}
+                {/* Mobile currency */}
                 <div className="flex items-center gap-1 px-3 py-2">
                   <CurrencySelector />
-                  <LanguageSelector />
                 </div>
 
                 {user ? (
