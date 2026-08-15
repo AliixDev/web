@@ -82,7 +82,7 @@ export default async function HomePage() {
                 </div>
                 <div>
                   <dt className="sr-only">Supported currencies</dt>
-                  <dd className="font-display text-2xl font-light">USD · PKR</dd>
+                  <dd className="font-display text-2xl font-light">8 currencies</dd>
                   <dd className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
                     Currencies
                   </dd>
@@ -145,9 +145,9 @@ export default async function HomePage() {
       {/* ------------------------------------------------------------ */}
       <section aria-hidden className="bg-foreground py-3 text-background">
         <div className="container flex flex-wrap items-center justify-center gap-x-8 gap-y-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-background/70 sm:gap-x-12">
-          <span>Cash on delivery — Pakistan</span>
+          <span>Multiple payment options</span>
           <span className="hidden text-background/25 sm:inline">·</span>
-          <span>Stripe · USD worldwide</span>
+          <span>Secure checkout worldwide</span>
           <span className="hidden text-background/25 sm:inline">·</span>
           <span>Server-verified pricing</span>
         </div>
@@ -286,8 +286,7 @@ export default async function HomePage() {
             </h2>
             <p className="mx-auto mt-6 max-w-xl text-[14px] leading-[1.8] text-background/60">
               No hidden conversions, no surprises. Prices are confirmed server-side before your
-              order is placed — in USD for international orders, and in PKR for cash on delivery
-              across Pakistan.
+              order is placed — in the currency you select at checkout.
             </p>
             <Link
               href="/shop"
@@ -326,8 +325,8 @@ export default async function HomePage() {
               },
               {
                 icon: Globe2,
-                title: "Dual-currency",
-                body: "Order in USD or PKR — the storefront serves customers globally.",
+                title: "Global checkout",
+                body: "Pay in your preferred currency — multiple payment methods worldwide.",
               },
             ].map((item, index) => (
               <Reveal key={item.title} delay={index * 90}>

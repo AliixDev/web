@@ -233,7 +233,7 @@ export default function ProductDetail({ product }: { product: Product }) {
             <div>
               <p className="text-[13px] font-medium">Secure international checkout</p>
               <p className="mt-0.5 text-[13px] leading-relaxed text-neutral-600">
-                Pay with your card via Stripe, in USD, from anywhere in the world.
+                Pay with your card via Stripe from anywhere in the world.
               </p>
             </div>
           </div>

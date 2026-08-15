@@ -22,11 +22,14 @@ describe("sumByCurrency", () => {
       { currency: "USD", total_minor: 2500 },
       { currency: "PKR", total_minor: 50000 },
     ]);
-    expect(result).toEqual({ USD: 3500, PKR: 50000 });
+    expect(result.USD).toBe(3500);
+    expect(result.PKR).toBe(50000);
   });
 
   it("handles empty input", () => {
-    expect(sumByCurrency([])).toEqual({ USD: 0, PKR: 0 });
+    const result = sumByCurrency([]);
+    expect(result.USD).toBe(0);
+    expect(result.PKR).toBe(0);
   });
 });
 

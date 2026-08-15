@@ -135,7 +135,8 @@ function ShopContent({ products, categories }: { products: Product[]; categories
     updateParams({ q: query.trim() });
   }
 
-  const priceCurrencyLabel = currency === "USD" ? "$" : "Rs";
+  // Currency symbol for price inputs — derived from the selected currency
+  const priceCurrencyLabel = currency === "USD" ? "$" : currency === "EUR" ? "€" : currency === "GBP" ? "£" : currency + " ";
 
   const filterControls = (
     <div className="space-y-8">

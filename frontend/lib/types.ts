@@ -1,6 +1,6 @@
 // frontend/lib/types.ts
 
-export type Currency = "USD" | "PKR";
+export type Currency = "USD" | "EUR" | "GBP" | "AED" | "SAR" | "CAD" | "AUD" | "CHF" | "PKR";
 
 export interface Category {
   id: string;

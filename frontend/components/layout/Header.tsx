@@ -7,7 +7,6 @@ import { useEffect, useRef, useState, useCallback, type FormEvent } from "react"
 import {
   ArrowRight,
   Clock3,
-  Globe,
   LogOut,
   Menu,
   Package,
@@ -24,6 +23,8 @@ import { useDialog } from "@/lib/useDialog";
 import type { Category } from "@/lib/types";
 import CartDrawer from "@/components/cart/CartDrawer";
 import AuthModal from "@/components/auth/AuthModal";
+import CurrencySelector from "@/components/layout/CurrencySelector";
+import LanguageSelector from "@/components/layout/LanguageSelector";
 import { cn } from "@/lib/utils";
 
 interface HeaderProps {
@@ -34,8 +35,6 @@ export default function Header({ categories }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const currency = useStore((s) => s.currency);
-  const setCurrency = useStore((s) => s.setCurrency);
   const cartCount = useStore((s) => s.cartCount());
 
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -49,6 +48,7 @@ export default function Header({ categories }: HeaderProps) {
   const [searchExpanded, setSearchExpanded] = useState(false);
   const [showRecent, setShowRecent] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [mobileLangOpen, setMobileLangOpen] = useState(false);
 
   const accountRef = useRef<HTMLDivElement | null>(null);
   const searchBoxRef = useRef<HTMLDivElement | null>(null);
@@ -317,16 +317,11 @@ export default function Header({ categories }: HeaderProps) {
               )}
             </div>
 
-            {/* Currency toggle */}
-            <button
-              type="button"
-              onClick={() => setCurrency(currency === "USD" ? "PKR" : "USD")}
-              className="hidden h-10 items-center gap-1.5 px-2 text-[12px] font-semibold tracking-wider text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-foreground sm:flex"
-              aria-label={`Switch currency, currently ${currency}`}
-            >
-              <Globe className="h-[15px] w-[15px]" strokeWidth={1.5} aria-hidden />
-              {currency}
-            </button>
+            {/* Currency + Language selectors */}
+            <div className="hidden items-center sm:flex">
+              <CurrencySelector />
+              <LanguageSelector />
+            </div>
 
             {/* Account */}
             <div className="relative" ref={accountRef}>
@@ -484,14 +479,11 @@ export default function Header({ categories }: HeaderProps) {
               <div className="my-4 border-t border-border" />
 
               <div className="space-y-0.5">
-                <button
-                  type="button"
-                  onClick={() => setCurrency(currency === "USD" ? "PKR" : "USD")}
-                  className="flex w-full items-center gap-2.5 rounded px-3 py-3.5 text-[13px] font-medium text-neutral-700 transition-colors hover:bg-neutral-50 hover:text-foreground"
-                >
-                  <Globe className="h-4 w-4 text-neutral-400" strokeWidth={1.5} aria-hidden />
-                  Currency: <span className="text-foreground">{currency}</span>
-                </button>
+                {/* Mobile currency/language row */}
+                <div className="flex items-center gap-1 px-3 py-2">
+                  <CurrencySelector />
+                  <LanguageSelector />
+                </div>
 
                 {user ? (
                   <>

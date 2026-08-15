@@ -216,13 +216,26 @@ export function sellerBackendAvailable(): boolean {
 export function sumByCurrency(
   orders: { currency: string; total_minor: number }[],
 ): Record<Currency, number> {
-  let usd = 0;
-  let pkr = 0;
+  const result: Record<Currency, number> = {
+    USD: 0,
+    PKR: 0,
+    EUR: 0,
+    GBP: 0,
+    AED: 0,
+    SAR: 0,
+    CAD: 0,
+    AUD: 0,
+    CHF: 0,
+  };
   for (const order of orders) {
-    if (order.currency === "PKR") pkr += order.total_minor;
-    else usd += order.total_minor;
+    const key = order.currency as Currency;
+    if (key in result) {
+      result[key] += order.total_minor;
+    } else {
+      result.USD += order.total_minor;
+    }
   }
-  return { USD: usd, PKR: pkr };
+  return result;
 }
 
 export interface DateRange {

@@ -28,7 +28,7 @@ function sameLine(a: CartItem, productId: string, variantId: string | null) {
 export const useStore = create<StoreState>()(
   persist(
     (set, get) => ({
-      currency: "PKR",
+      currency: "USD",
       cart: [],
 
       setCurrency: (currency) => set({ currency }),

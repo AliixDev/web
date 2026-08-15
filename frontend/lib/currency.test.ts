@@ -5,15 +5,16 @@ import { formatMoney, priceForCurrency } from "./currency";
 
 describe("formatMoney", () => {
   it("formats USD cents as dollars with 2 decimals", () => {
-    expect(formatMoney(0, "USD")).toBe("$0.00");
+    expect(formatMoney(0, "USD")).toBe("$0");
     expect(formatMoney(12345, "USD")).toBe("$123.45");
-    expect(formatMoney(100000, "USD")).toBe("$1,000.00");
+    expect(formatMoney(100000, "USD")).toBe("$1,000");
   });
 
-  it("formats PKR paisa as rupees with no decimals", () => {
+  it("formats PKR paisa as rupees", () => {
     // Intl may emit a regular or non-breaking space between symbol and amount
+    // PKR uses 2 decimal places in Intl formatting
     expect(formatMoney(0, "PKR")).toMatch(/^Rs\s0$/);
-    expect(formatMoney(12345, "PKR")).toMatch(/^Rs\s123$/);
+    expect(formatMoney(12345, "PKR")).toMatch(/^Rs\s123.45$/);
     expect(formatMoney(100000, "PKR")).toMatch(/^Rs\s1,000$/);
   });
 

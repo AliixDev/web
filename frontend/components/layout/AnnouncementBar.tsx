@@ -1,10 +1,10 @@
 // frontend/components/layout/AnnouncementBar.tsx
 
 const ITEMS = [
-  "Cash on delivery across Pakistan",
+  "Worldwide shipping",
   "Secure international checkout",
-  "Handcrafted in Pakistan",
-  "Free shipping on orders over PKR 5,000",
+  "Established 2017",
+  "Free shipping on qualifying orders",
 ];
 
 export default function AnnouncementBar() {
