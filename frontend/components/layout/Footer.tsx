@@ -76,7 +76,7 @@ export default function Footer({ categories }: { categories: Category[] }) {
             Pakistan, secure card checkout worldwide.
           </p>
           <p className="mt-6 text-[12px] leading-[1.7] text-neutral-400">
-            Prices are verified server-side at checkout in USD or PKR — no hidden conversions.
+            Prices are verified server-side at checkout — no hidden conversions.
           </p>
         </div>
 
