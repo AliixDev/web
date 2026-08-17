@@ -31,6 +31,7 @@ export interface Product {
   price_pkr_paisa: number;
   is_active: boolean;
   stock_quantity: number;
+  created_at?: string;
   // Optional merchandising fields used by the product page. All are
   // nullable so existing catalog rows keep working unchanged.
   brand?: string | null;
@@ -39,6 +40,11 @@ export interface Product {
   review_count?: number | null;
   compare_at_price_usd_cents?: number | null;
   compare_at_price_pkr_paisa?: number | null;
+  // SEO fields managed from Seller Central and rendered into the static
+  // product pages with sensible fallbacks.
+  seo_title?: string | null;
+  seo_description?: string | null;
+  seo_keywords?: string | null;
   product_variants?: ProductVariant[];
 }
 

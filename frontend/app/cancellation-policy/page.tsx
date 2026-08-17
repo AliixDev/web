@@ -6,11 +6,11 @@ import PolicyLayout, { PolicySection } from "@/components/layout/PolicyLayout";
 export const metadata: Metadata = {
   title: "Cancellation Policy",
   description:
-    "How to cancel an order at SDBBUY. Learn about cancellation eligibility, process, and refund handling.",
+    "How to cancel an order at SDB WEAR. Learn about cancellation eligibility, process, and refund handling.",
   openGraph: {
-    title: "Cancellation Policy · SDBBUY",
+    title: "Cancellation Policy · SDB WEAR",
     description:
-      "SDBBUY cancellation policy — how and when you can cancel an order.",
+      "SDB WEAR cancellation policy — how and when you can cancel an order.",
     type: "website",
   },
 };

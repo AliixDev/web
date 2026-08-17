@@ -7,17 +7,17 @@ import Reveal from "@/components/Reveal";
 export const metadata: Metadata = {
   title: "Size Guide",
   description:
-    "SDBBUY size guide — find the right fit for leather garments, motorbike gear, boxing gear, and gym wear.",
+    "SDB WEAR size guide — find the right fit for moto suits, leather jackets, gloves, and riding footwear.",
   openGraph: {
-    title: "Size Guide · SDBBUY",
-    description: "How to find the right size for SDBBUY products.",
+    title: "Size Guide · SDB WEAR",
+    description: "How to find the right size for SDB WEAR products.",
     type: "website",
   },
 };
 
 const SIZE_TABLES = [
   {
-    title: "Leather Jackets & Outerwear",
+    title: "Leather Jackets & Vests",
     sizes: [
       { label: "S", chest: "36–38\"", waist: "30–32\"" },
       { label: "M", chest: "38–40\"", waist: "32–34\"" },
@@ -27,22 +27,31 @@ const SIZE_TABLES = [
     ],
   },
   {
-    title: "T-Shirts & Tops",
+    title: "Moto Suits (One-Piece & Two-Piece)",
     sizes: [
-      { label: "S", chest: "34–36\"", length: "27\"" },
-      { label: "M", chest: "38–40\"", length: "28\"" },
-      { label: "L", chest: "42–44\"", length: "29\"" },
-      { label: "XL", chest: "44–46\"", length: "30\"" },
+      { label: "S", chest: "36–38\"", length: "58–62\"" },
+      { label: "M", chest: "38–40\"", length: "62–66\"" },
+      { label: "L", chest: "40–42\"", length: "66–70\"" },
+      { label: "XL", chest: "42–44\"", length: "70–74\"" },
+      { label: "XXL", chest: "44–46\"", length: "74–78\"" },
     ],
   },
   {
-    title: "Boxing Gloves",
+    title: "Moto Gloves & Handcrafted Gloves",
     sizes: [
-      { label: "8 oz", weight: "Junior / petite frames" },
-      { label: "10 oz", weight: "Competition / light training" },
-      { label: "12 oz", weight: "General training" },
-      { label: "14 oz", weight: "Sparring" },
-      { label: "16 oz", weight: "Heavy sparring / larger frames" },
+      { label: "S", hand: "18–20 cm" },
+      { label: "M", hand: "20–22 cm" },
+      { label: "L", hand: "22–24 cm" },
+      { label: "XL", hand: "24–26 cm" },
+    ],
+  },
+  {
+    title: "Moto Shoes & Boots",
+    sizes: [
+      { label: "EU 40", foot: "25.5 cm" },
+      { label: "EU 42", foot: "26.5 cm" },
+      { label: "EU 44", foot: "27.5 cm" },
+      { label: "EU 46", foot: "28.5 cm" },
     ],
   },
 ];
@@ -80,8 +89,11 @@ export default function SizeGuidePage() {
                     {"length" in table.sizes[0] && (
                       <th className="py-2.5 pr-4 font-medium text-foreground">Length</th>
                     )}
-                    {"weight" in table.sizes[0] && (
-                      <th className="py-2.5 pr-4 font-medium text-foreground">Recommended for</th>
+                    {"hand" in table.sizes[0] && (
+                      <th className="py-2.5 pr-4 font-medium text-foreground">Hand circumference</th>
+                    )}
+                    {"foot" in table.sizes[0] && (
+                      <th className="py-2.5 pr-4 font-medium text-foreground">Foot length</th>
                     )}
                   </tr>
                 </thead>
@@ -98,8 +110,11 @@ export default function SizeGuidePage() {
                       {"length" in row && (
                         <td className="py-2.5 pr-4 text-neutral-600">{row.length}</td>
                       )}
-                      {"weight" in row && (
-                        <td className="py-2.5 pr-4 text-neutral-600">{row.weight}</td>
+                      {"hand" in row && (
+                        <td className="py-2.5 pr-4 text-neutral-600">{row.hand}</td>
+                      )}
+                      {"foot" in row && (
+                        <td className="py-2.5 pr-4 text-neutral-600">{row.foot}</td>
                       )}
                     </tr>
                   ))}

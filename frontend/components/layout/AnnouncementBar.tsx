@@ -1,10 +1,10 @@
 // frontend/components/layout/AnnouncementBar.tsx
 
 const ITEMS = [
-  "Worldwide shipping",
-  "Secure international checkout",
+  "Premium motorcycle protection & leather gear",
+  "Stitched. Built. Made to last.",
   "Established 2017",
-  "Free shipping on qualifying orders",
+  "Secure international checkout",
 ];
 
 export default function AnnouncementBar() {

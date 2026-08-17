@@ -6,10 +6,10 @@ import PolicyLayout, { PolicySection } from "@/components/layout/PolicyLayout";
 export const metadata: Metadata = {
   title: "Shipping Policy",
   description:
-    "SDBBUY shipping policy — methods, processing times, delivery estimates, and shipping information.",
+    "SDB WEAR shipping policy — methods, processing times, delivery estimates, and shipping information.",
   openGraph: {
-    title: "Shipping Policy · SDBBUY",
-    description: "SDBBUY shipping policy — methods, processing, delivery, and tracking information.",
+    title: "Shipping Policy · SDB WEAR",
+    description: "SDB WEAR shipping policy — methods, processing, delivery, and tracking information.",
     type: "website",
   },
 };

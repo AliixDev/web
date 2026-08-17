@@ -85,7 +85,7 @@ const FAQ_CATEGORIES = [
       },
       {
         q: "Are your products authentic?",
-        a: "Yes. All SDBBUY products are designed and sourced by our team. We do not sell counterfeit or third-party branded goods.",
+        a: "Yes. All SDB WEAR products are designed and sourced by our team. We do not sell counterfeit or third-party branded goods.",
       },
     ],
   },

@@ -6,11 +6,11 @@ import PolicyLayout, { PolicySection } from "@/components/layout/PolicyLayout";
 export const metadata: Metadata = {
   title: "Cookie Policy",
   description:
-    "How SDBBUY uses cookies and local storage. Learn about essential cookies, session management, and your choices.",
+    "How SDB WEAR uses cookies and local storage. Learn about essential cookies, session management, and your choices.",
   openGraph: {
-    title: "Cookie Policy · SDBBUY",
+    title: "Cookie Policy · SDB WEAR",
     description:
-      "SDBBUY cookie policy — essential cookies, authentication, cart, and local storage usage.",
+      "SDB WEAR cookie policy — essential cookies, authentication, cart, and local storage usage.",
     type: "website",
   },
 };
@@ -24,7 +24,7 @@ export default function CookiePolicyPage() {
 
       <PolicySection title="1. Overview">
         <p>
-          This policy explains how SDBBUY uses cookies, local storage, and similar technologies
+          This policy explains how SDB WEAR uses cookies, local storage, and similar technologies
           when you visit our website. We use these technologies to provide essential site
           functionality — not for advertising or third-party analytics tracking.
         </p>

@@ -78,8 +78,6 @@ export default function ProductDetail({ product }: { product: Product }) {
       ? Math.round(((comparePrice - unitPrice) / comparePrice) * 100)
       : 0;
 
-  const activeSku = selectedVariant?.sku ?? null;
-
   function handleAddToCart() {
     addToCart({
       product_id: product.id,
@@ -110,11 +108,7 @@ export default function ProductDetail({ product }: { product: Product }) {
       <div>
         {/* Title row with wishlist */}
         <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0">
-            <p className="eyebrow">
-              {product.brand ??
-                (product.category_id ? "From the collection" : "SDBBUY")}
-            </p>
+          <div className="min-w-0">              <p className="eyebrow">{product.brand ?? "SDB WEAR"}</p>
             <h1 className="mt-3 text-[32px] font-light leading-[1.08] tracking-tight md:text-[42px]">
               {product.name}
             </h1>
@@ -222,7 +216,7 @@ export default function ProductDetail({ product }: { product: Product }) {
               </div>
               <p className="mt-2.5 text-[12px] text-neutral-400" aria-live="polite">
                 {selectedVariant
-                  ? `${selectedVariant.stock_quantity} available${selectedVariant.sku ? ` · SKU ${selectedVariant.sku}` : ""}`
+                  ? `${selectedVariant.stock_quantity} available`
                   : "Select an option"}
               </p>
             </div>
@@ -305,12 +299,6 @@ export default function ProductDetail({ product }: { product: Product }) {
             </button>
           </div>
 
-          {/* SKU line */}
-          {activeSku && (
-            <p className="text-[11px] uppercase tracking-[0.16em] text-neutral-400">
-              SKU: <span className="tabular-nums">{activeSku}</span>
-            </p>
-          )}
         </div>
 
         {/* Description */}

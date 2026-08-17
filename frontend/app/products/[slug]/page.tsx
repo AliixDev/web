@@ -1,5 +1,6 @@
 // frontend/app/products/[slug]/page.tsx
 
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
@@ -8,6 +9,7 @@ import type { Product, ProductVariant } from "@/lib/types";
 import ProductImage from "@/components/product/ProductImage";
 import ProductGallery from "@/components/product/ProductGallery";
 import ProductDetail from "./ProductDetail";
+import ReviewList from "@/components/product/ReviewList";
 import ProductGrid from "@/components/product/ProductGrid";
 import Reveal from "@/components/Reveal";
 
@@ -60,9 +62,9 @@ async function getRelated(product: Product): Promise<Product[]> {
   if (!supabase) return [];
 
   try {
-    // Categories map: id -> parent_id, so subcategory products (e.g. a
-    // helmet inside Motorbikes) can fall back to their parent category
-    // when their own subcategory has fewer than four items.
+    // Categories map: id -> parent_id, so subcategory products can fall
+    // back to their parent category when their own subcategory has fewer
+    // than four items.
     const { data: categories } = await supabase
       .from("categories")
       .select("id, parent_id");
@@ -86,6 +88,36 @@ async function getRelated(product: Product): Promise<Product[]> {
   } catch {
     return [];
   }
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  const product = await getProduct(params.slug);
+  if (!product) {
+    return { title: "Product not found" };
+  }
+
+  const title = product.seo_title?.trim() || `${product.name} | SDB WEAR`;
+  const description =
+    product.seo_description?.trim() ||
+    (product.description ? product.description.slice(0, 158) : `Shop ${product.name} from SDB WEAR.`);
+  const image = product.image_url ?? undefined;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `https://www.sdbbuy.com/products/${product.slug}` },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      ...(image ? { images: [image] } : {}),
+    },
+    ...(product.seo_keywords ? { keywords: product.seo_keywords.split(",").map((k) => k.trim()) } : {}),
+  };
 }
 
 export default async function ProductPage({ params }: { params: { slug: string } }) {
@@ -171,7 +203,24 @@ export default async function ProductPage({ params }: { params: { slug: string }
         </div>
       </div>
 
-      {/* Related products */}
+      {/* Reviews */}
+      <section className="border-t border-border">
+        <div className="container py-16 md:py-20">
+          <Reveal>
+            <p className="eyebrow">Customer feedback</p>
+            <h2 className="mt-3 text-3xl font-light tracking-tight md:text-4xl">Reviews</h2>
+          </Reveal>
+          <div className="mt-8 max-w-2xl">
+            <Reveal>
+              {/* No review data is fabricated — customer reviews will appear
+                  here once customers leave them. */}
+              <ReviewList reviews={[]} />
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* Similar items */}
       {related.length > 0 && (
         <section className="border-t border-border">
           <div className="container py-16 md:py-20">

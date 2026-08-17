@@ -11,7 +11,7 @@ function B2BHeader() {
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-xl">
       <div className="container flex h-[60px] items-center justify-between">
         <Link href="/b2b" className="font-display text-[21px] font-medium tracking-tight">
-          SDB<span className="font-light text-neutral-400">BUY</span>
+          SDB<span className="font-light text-neutral-400">WEAR</span>
           <span className="ml-2 align-middle border border-neutral-300 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
             Wholesale
           </span>
@@ -39,7 +39,7 @@ function B2BFooter() {
   return (
     <footer className="border-t border-border bg-background">
       <div className="container py-8 text-center text-[12px] text-neutral-400">
-        <p>© {new Date().getFullYear()} SDBBUY. Wholesale &amp; B2B inquiries.</p>
+        <p>© {new Date().getFullYear()} SDB WEAR. Wholesale &amp; B2B inquiries.</p>
         <p className="mt-1">
           <a href="https://sdbbuy.com" className="underline underline-offset-2 transition-colors hover:text-foreground">
             Visit the main store
@@ -51,12 +51,12 @@ function B2BFooter() {
 }
 
 const WHOLESALE_CATEGORIES = [
-  { name: "Leather Garments", desc: "Outerwear, jackets, and leather essentials." },
-  { name: "Leather Jackets", desc: "Classic and modern leather jacket styles." },
-  { name: "Motorbike Gear", desc: "Helmets, gloves, jackets, and protective riding gear." },
-  { name: "Boxing Gear", desc: "Gloves, wraps, and training accessories." },
-  { name: "Gym / Fitness Wear", desc: "Performance wear for training environments." },
-  { name: "Accessories", desc: "Complementary lifestyle products." },
+  { name: "Moto Suits", desc: "One-piece and two-piece protective riding suits." },
+  { name: "Moto Gloves", desc: "Racing, touring, and premium leather riding gloves." },
+  { name: "Moto Shoes", desc: "Protective riding shoes and boots for the road." },
+  { name: "Leather Jackets", desc: "Biker, casual, heritage, and racing-inspired styles." },
+  { name: "Handcrafted Gloves", desc: "Stitched leather, riding, driving, and work gloves." },
+  { name: "Biker Fashion", desc: "Vests and leather apparel with a fashion edge." },
 ];
 
 export default function B2BShell() {
@@ -76,12 +76,12 @@ export default function B2BShell() {
           <div className="mx-auto max-w-3xl">
             <p className="eyebrow">Wholesale &amp; B2B</p>
             <h1 className="mt-3 text-[32px] font-light leading-[1.08] tracking-tight md:text-[42px]">
-              SDBBUY Wholesale
+              SDB WEAR Wholesale
             </h1>
             <p className="mt-6 max-w-xl text-[15px] leading-[1.75] text-neutral-600">
-              We supply leather garments, motorbike gear, boxing equipment, and gym wear for
-              retailers and businesses. If you&apos;re interested in wholesale purchasing, we&apos;d like to
-              hear from you.
+              We supply premium motorcycle protection and leather gear — moto suits, moto gloves,
+              moto shoes, leather jackets, and handcrafted stitched gloves — for retailers and
+              businesses. If you&apos;re interested in wholesale purchasing, we&apos;d like to hear from you.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a
@@ -110,7 +110,7 @@ export default function B2BShell() {
                 Product categories
               </h2>
               <p className="mt-3 text-[13px] leading-[1.7] text-neutral-600">
-                Our wholesale catalog spans the full SDBBUY product range.
+                Our wholesale catalog spans the full SDB WEAR product range.
               </p>
             </Reveal>
             <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -133,7 +133,7 @@ export default function B2BShell() {
           <div className="mx-auto max-w-3xl">
             <Reveal>
               <h2 className="font-display text-2xl font-light tracking-tight md:text-3xl">
-                Why wholesale with SDBBUY
+                Why wholesale with SDB WEAR
               </h2>
             </Reveal>
             <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2">
@@ -156,7 +156,7 @@ export default function B2BShell() {
                 {
                   icon: ShieldCheck,
                   title: "Quality assurance",
-                  body: "All products meet SDBBUY quality standards.",
+                  body: "All products meet SDB WEAR quality standards.",
                 },
               ].map((item, i) => (
                 <Reveal key={item.title} delay={i * 60}>
@@ -203,7 +203,7 @@ export default function B2BShell() {
                   { id: "b2b-country", label: "Country", type: "text", required: true, colSpan: false },
                   { id: "b2b-city", label: "City", type: "text", required: false, colSpan: false },
                   { id: "b2b-type", label: "Business type", type: "text", required: true, placeholder: "Retailer, distributor, etc.", colSpan: false },
-                  { id: "b2b-products", label: "Products interested in", type: "text", required: true, placeholder: "Leather jackets, boxing gear, etc.", colSpan: false },
+                  { id: "b2b-products", label: "Products interested in", type: "text", required: true, placeholder: "Leather jackets, moto gear, gloves, etc.", colSpan: false },
                   { id: "b2b-volume", label: "Estimated order volume", type: "text", required: false, placeholder: "e.g., 50–100 units", colSpan: false },
                 ].map((field) => (
                   <div

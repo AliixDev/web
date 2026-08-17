@@ -270,7 +270,7 @@ export default function SellerSettingsPage() {
                     id="s-store-name"
                     value={store.store_name}
                     onChange={(e) => setStore({ ...store, store_name: e.target.value })}
-                    placeholder="SDBBUY"
+                    placeholder="SDB WEAR"
                   />
                 </div>
                 <div className="space-y-2">

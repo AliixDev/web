@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useCallback, type FormEvent } from "react";
 import {
   ArrowRight,
+  ChevronDown,
   Clock3,
   LogOut,
   Menu,
@@ -112,9 +113,33 @@ export default function Header({ categories }: HeaderProps) {
   // Close the mobile menu when the route changes
   useEffect(() => setMobileOpen(false), [pathname]);
 
+  // Short nav labels for the three SDB WEAR product families. The full
+  // category names (Motorbike Gear, Leather Jackets & Biker Fashion,
+  // Handcrafted Gloves) remain in the shop filters and category pages.
+  const NAV_LABELS: Record<string, string> = {
+    "motorbike-gear": "Motorbike",
+    "leather-jackets-biker-fashion": "Leather",
+    "handcrafted-gloves": "Gloves",
+  };
+
+  const topLevelCategories = categories.filter((c) => !c.parent_id);
+  const childrenByParent = new Map<string, Category[]>();
+  for (const category of categories) {
+    if (!category.parent_id) continue;
+    const siblings = childrenByParent.get(category.parent_id) ?? [];
+    siblings.push(category);
+    childrenByParent.set(category.parent_id, siblings);
+  }
+
   const navLinks = [
-    { label: "Shop all", href: "/shop" },
-    ...categories.map((c) => ({ label: c.name, href: `/shop?category=${c.slug}` })),
+    { label: "Shop all", href: "/shop", family: null as Category | null },
+    ...topLevelCategories.map((c) => ({
+      label: NAV_LABELS[c.slug] ?? c.name,
+      href: `/shop?category=${c.slug}`,
+      family: c,
+    })),
+    { label: "About", href: "/about", family: null },
+    { label: "Contact", href: "/contact", family: null },
   ];
 
   function isNavActive(href: string): boolean {
@@ -204,26 +229,67 @@ export default function Header({ categories }: HeaderProps) {
               href="/"
               className="font-display text-[21px] font-medium tracking-tight transition-opacity hover:opacity-70 lg:text-[24px]"
             >
-              SDB<span className="font-light text-neutral-400">BUY</span>
+              SDB<span className="font-light text-neutral-400">WEAR</span>
             </Link>
           </div>
 
-          {/* Center: desktop nav */}
-          <nav aria-label="Primary" className="hidden items-center gap-8 lg:flex">
+          {/* Center: desktop nav with family dropdowns */}
+          <nav aria-label="Primary" className="hidden items-center gap-7 lg:flex">
             {navLinks.map((link) => {
               const isActive = isNavActive(link.href);
+              const children = link.family ? (childrenByParent.get(link.family.id) ?? []) : [];
+              const linkClass = cn(
+                "link-underline relative py-1 text-[13px] font-medium tracking-wide transition-colors duration-200",
+                isActive ? "text-foreground" : "text-neutral-600 hover:text-foreground",
+              );
+
+              if (children.length === 0) {
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    aria-current={isActive ? "page" : undefined}
+                    className={linkClass}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              }
+
               return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  aria-current={isActive ? "page" : undefined}
-                  className={cn(
-                    "link-underline relative py-1 text-[13px] font-medium tracking-wide transition-colors duration-200",
-                    isActive ? "text-foreground" : "text-neutral-600 hover:text-foreground",
-                  )}
-                >
-                  {link.label}
-                </Link>
+                <div key={link.href} className="group relative">
+                  <Link
+                    href={link.href}
+                    aria-current={isActive ? "page" : undefined}
+                    aria-haspopup="menu"
+                    className={cn(linkClass, "inline-flex items-center gap-1")}
+                  >
+                    {link.label}
+                    <ChevronDown
+                      className="h-3 w-3 text-neutral-400 transition-transform duration-200 group-hover:rotate-180"
+                      strokeWidth={1.75}
+                      aria-hidden
+                    />
+                  </Link>
+                  <div
+                    role="menu"
+                    aria-label={`${link.label} subcategories`}
+                    className="invisible absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3 opacity-0 transition-all duration-200 ease-premium group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100"
+                  >
+                    <div className="min-w-[230px] border border-border bg-background py-2 shadow-panel-sm">
+                      {children.map((child) => (
+                        <Link
+                          key={child.id}
+                          href={`/shop?category=${child.slug}`}
+                          role="menuitem"
+                          className="block px-4 py-2.5 text-[13px] text-neutral-600 transition-colors hover:bg-neutral-50 hover:text-foreground"
+                        >
+                          {child.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               );
             })}
           </nav>
@@ -260,7 +326,7 @@ export default function Header({ categories }: HeaderProps) {
                           refreshRecent();
                           setShowRecent(true);
                         }}
-                        placeholder="Search products…"
+                        placeholder="Search the collection…"
                         aria-label="Search products"
                         className="h-10 w-full min-w-0 bg-transparent pr-1 text-[13px] placeholder:text-neutral-400 focus:outline-none"
                       />
@@ -437,7 +503,7 @@ export default function Header({ categories }: HeaderProps) {
                   type="search"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search products"
+                  placeholder="Search the collection"
                   aria-label="Search products"
                   className="h-11 w-full border border-neutral-200 bg-neutral-50 pl-9 pr-3 text-[13px] placeholder:text-neutral-400 focus:border-foreground focus:outline-none focus:ring-0"
                 />

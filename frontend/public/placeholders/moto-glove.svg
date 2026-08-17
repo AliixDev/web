@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1500" role="img" aria-label="SDB WEAR moto glove placeholder">
+  <rect width="1200" height="1500" fill="#F7F7F7"/>
+  <rect x="40" y="40" width="1120" height="1420" fill="none" stroke="#E5E5E5" stroke-width="2"/>
+  <g fill="none" stroke="#DDDDDD" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M540 420 v200"/>
+    <path d="M540 620 l-20 150 c-40 70 -10 150 40 150 h40 v-260"/>
+    <path d="M660 420 v200"/>
+    <path d="M660 620 l20 150 c40 70 10 150 -40 150 h-40 v-260"/>
+    <path d="M540 620 h120 v-40 h-120 z"/>
+  </g>
+  <text x="600" y="1060" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="54" letter-spacing="16" fill="#808080" font-weight="600">MOTO GLOVES</text>
+  <text x="600" y="1120" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="19" letter-spacing="6" fill="#A0A0A0">RIDING PROTECTION</text>
+  <text x="600" y="1370" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="24" letter-spacing="10" fill="#A0A0A0">SDB WEAR</text>
+</svg>

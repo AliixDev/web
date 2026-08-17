@@ -7,13 +7,13 @@ import PolicyLayout from "@/components/layout/PolicyLayout";
 import Reveal from "@/components/Reveal";
 
 export const metadata: Metadata = {
-  title: "About Us",
+  title: "About SDB WEAR",
   description:
-    "Learn about SDBBUY — a brand rooted in 2017, specializing in leather garments, motorbike riding gear, boxing gear, and gym wear.",
+    "Learn about SDB WEAR — a premium motorcycle protection & leather gear brand rooted in 2017, specializing in moto suits, moto gloves, moto shoes, leather jackets and handcrafted stitched gloves.",
   openGraph: {
-    title: "About SDBBUY",
+    title: "About SDB WEAR",
     description:
-      "SDBBUY traces its roots to 2017, beginning with leather garments and jackets and expanding into motorbike gear, boxing equipment, and lifestyle products.",
+      "SDB WEAR traces its roots to 2017, beginning with leather garments and jackets and growing into premium motorcycle protection and handcrafted gear.",
     type: "website",
   },
 };
@@ -27,13 +27,13 @@ export default function AboutPage() {
           <div className="mx-auto max-w-3xl">
             <p className="eyebrow">Our story</p>
             <h1 className="mt-3 text-[32px] font-light leading-[1.08] tracking-tight md:text-[42px]">
-              Crafted with purpose.<br />
-              Built to last.
+              Built for the ride.<br />
+              Made to last.
             </h1>
             <p className="mt-6 max-w-xl text-[15px] leading-[1.75] text-neutral-600">
-              SDBBUY traces its roots to 2017, beginning with leather garments and jackets. Over
-              the years, the brand expanded its focus into motorbike riding gear and a broader
-              range of products for modern lifestyles.
+              SDB WEAR traces its roots to 2017, beginning with leather garments and jackets.
+              Today the brand is built around one idea: premium motorcycle protection and leather
+              gear that riders can trust ride after ride.
             </p>
           </div>
         </div>
@@ -45,21 +45,22 @@ export default function AboutPage() {
           <div className="mx-auto max-w-3xl">
             <Reveal>
               <h2 className="font-display text-2xl font-light tracking-tight md:text-3xl">
-                From leather to lifestyle
+                From leather to the road
               </h2>
             </Reveal>
             <Reveal delay={60}>
               <p className="mt-5 text-[14px] leading-[1.8] text-neutral-600">
                 What started as a focus on handcrafted leather garments and jackets grew into a
-                broader vision — motorbike riding gear, boxing equipment, working and gym
-                clothing, and accessories for people who value quality and function.
+                broader purpose — protective gear for riders. Moto suits, moto gloves, moto shoes,
+                leather jackets, and stitched gloves built around protection, craftsmanship, and
+                durability.
               </p>
             </Reveal>
             <Reveal delay={120}>
               <p className="mt-4 text-[14px] leading-[1.8] text-neutral-600">
-                Every product in the SDBBUY collection reflects this evolution: durable materials,
-                thoughtful construction, and a clean aesthetic that works across contexts — from the
-                gym to the street to the workshop.
+                Every piece in the SDB WEAR collection reflects this evolution: full-grain
+                materials, reinforced construction, and a clean black-and-white aesthetic that
+                works from the garage to the street.
               </p>
             </Reveal>
           </div>
@@ -77,10 +78,10 @@ export default function AboutPage() {
             </Reveal>
             <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2">
               {[
-                { label: "Leather Garments", desc: "Jackets, coats, and leather outerwear built to endure." },
-                { label: "Motorbike Gear", desc: "Helmets, riding jackets, gloves, and protective gear for riders." },
-                { label: "Boxing Gear", desc: "Gloves, wraps, and accessories for training and competition." },
-                { label: "Gym & Fitness Wear", desc: "Working clothing and gym wear for performance and durability." },
+                { label: "Motorbike Protection", desc: "Moto suits, gloves, and shoes engineered for the demands of the ride." },
+                { label: "Leather Jackets", desc: "Biker, casual, heritage, and racing-inspired jackets in full-grain leather." },
+                { label: "Handcrafted Gloves", desc: "Stitched gloves — leather, riding, driving, work, and custom — built for the hand." },
+                { label: "Honest Construction", desc: "Reinforced stitching, functional design, and materials chosen to hold up." },
               ].map((item, i) => (
                 <Reveal key={item.label} delay={i * 60}>
                   <div className="border-t border-neutral-200 pt-5">
@@ -105,7 +106,7 @@ export default function AboutPage() {
             </Reveal>
             <Reveal delay={60}>
               <p className="mt-5 text-[14px] leading-[1.8] text-neutral-600">
-                SDBBUY operates with a straightforward approach: source quality materials, build
+                SDB WEAR operates with a straightforward approach: source quality materials, build
                 products that hold up, and price them honestly. No inflated markups, no misleading
                 claims.
               </p>
@@ -128,7 +129,7 @@ export default function AboutPage() {
             <Reveal>
               <p className="eyebrow">Explore the collection</p>
               <h2 className="mt-3 font-display text-2xl font-light tracking-tight md:text-3xl">
-                See what SDBBUY has to offer
+                Ride with SDB WEAR
               </h2>
               <Link
                 href="/shop"

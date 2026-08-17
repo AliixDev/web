@@ -74,7 +74,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
             <div>
               <p className="font-display text-lg font-medium tracking-tight">Your cart is empty</p>
               <p className="mx-auto mt-1 max-w-[240px] text-[13px] leading-relaxed text-neutral-500">
-                Discover leather jackets, motorbike gear, and boxing and gym wear from Pakistan.
+                Discover premium motorcycle protection, leather jackets, and handcrafted gloves from SDB WEAR.
               </p>
             </div>
             <Link

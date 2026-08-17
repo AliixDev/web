@@ -6,11 +6,11 @@ import PolicyLayout, { PolicySection } from "@/components/layout/PolicyLayout";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description:
-    "How SDBBUY collects, uses, and protects your personal information. Learn about your privacy rights and our data practices.",
+    "How SDB WEAR collects, uses, and protects your personal information. Learn about your privacy rights and our data practices.",
   openGraph: {
-    title: "Privacy Policy · SDBBUY",
+    title: "Privacy Policy · SDB WEAR",
     description:
-      "SDBBUY privacy policy — how we handle your data, cookies, payments, and account information.",
+      "SDB WEAR privacy policy — how we handle your data, cookies, payments, and account information.",
     type: "website",
   },
 };
@@ -24,7 +24,7 @@ export default function PrivacyPolicyPage() {
 
       <PolicySection title="1. Introduction">
         <p>
-          SDBBUY (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) respects your privacy. This Privacy Policy explains how we
+          SDB WEAR (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) respects your privacy. This Privacy Policy explains how we
           collect, use, disclose, and safeguard your information when you visit our website and
           purchase our products.
         </p>

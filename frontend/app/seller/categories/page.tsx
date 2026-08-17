@@ -353,7 +353,7 @@ export default function SellerCategoriesPage() {
                   setDraft({ ...draft, name: e.target.value, slug: slugify(e.target.value) })
                 }
                 required
-                placeholder="e.g. Embroidered Lawn"
+                placeholder="e.g. Moto Gloves"
               />
             </Field>
             <Field label="Slug" htmlFor="c-slug">
@@ -362,7 +362,7 @@ export default function SellerCategoriesPage() {
                 value={draft.slug}
                 onChange={(e) => setDraft({ ...draft, slug: slugify(e.target.value) })}
                 required
-                placeholder="embroidered-lawn"
+                placeholder="moto-gloves"
               />
             </Field>
             <Field label="Parent category (subcategory)" htmlFor="c-parent">

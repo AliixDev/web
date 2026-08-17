@@ -12,13 +12,39 @@ import { priceForCurrency } from "@/lib/currency";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
-type SortKey = "featured" | "price-asc" | "price-desc" | "name";
+type SortKey = "newest" | "price-asc" | "price-desc" | "name";
 
 const SORT_LABELS: Record<SortKey, string> = {
-  featured: "Featured",
+  newest: "Newest",
   "price-asc": "Price: low to high",
   "price-desc": "Price: high to low",
   name: "Name: A–Z",
+};
+
+/** Editorial one-liners shown under each category header. */
+const CATEGORY_DESCRIPTIONS: Record<string, string> = {
+  "motorbike-gear":
+    "Protection and performance gear built around the demands of the ride.",
+  "moto-suits": "Professional riding suits — one-piece and two-piece, built for the track and the road.",
+  "moto-gloves": "Protective riding gloves engineered for grip, control, and confidence.",
+  "moto-shoes": "Protective riding footwear that looks as good off the bike as it works on it.",
+  "leather-jackets-biker-fashion":
+    "Timeless leather built for the road and beyond.",
+  "biker-leather-jackets": "Classic biker cuts in full-grain leather, made to age well.",
+  "casual-leather-jackets": "Clean, minimal leather for everyday wear.",
+  "heritage-leather": "Heritage silhouettes with racing lineage and modern construction.",
+  "racing-inspired-jackets": "Racing-inspired paneling and perforation, tuned for the street.",
+  "biker-fashion": "Leather with a fashion-forward edge — vests and jackets with attitude.",
+  "handcrafted-gloves":
+    "Stitched construction. Serious feel. Built for the hand.",
+  "leather-gloves": "Everyday stitched leather gloves with workshop-built construction.",
+  "riding-gloves": "Stitched riding gloves for the hand that holds the bars.",
+  "driving-gloves": "Classic stitched driving gloves with a ventilated backhand.",
+  "work-gloves": "Reinforced stitched gloves for the workshop and the worksite.",
+  "fashion-gloves": "Slim-profile stitched gloves designed to be seen.",
+  "mechanic-gloves": "Grippy, snug stitched gloves for the mechanic.",
+  "tactical-gloves": "Tactical-style stitched gloves with a precise, tailored feel.",
+  "custom-gloves": "Stitched gloves made to your measurements — choose the leather and the fit.",
 };
 
 function ShopContent({ products, categories }: { products: Product[]; categories: Category[] }) {
@@ -29,7 +55,7 @@ function ShopContent({ products, categories }: { products: Product[]; categories
 
   const urlQuery = searchParams.get("q") ?? "";
   const urlCategory = searchParams.get("category") ?? "";
-  const urlSort = (searchParams.get("sort") as SortKey | null) ?? "featured";
+  const urlSort = (searchParams.get("sort") as SortKey | null) ?? "newest";
 
   const [query, setQuery] = useState(urlQuery);
   const [sort, setSort] = useState<SortKey>(urlSort);
@@ -53,8 +79,8 @@ function ShopContent({ products, categories }: { products: Product[]; categories
         if (next.category) params.set("category", next.category);
         else params.delete("category");
       }
-      if (next.sort !== undefined && next.sort !== "featured") params.set("sort", next.sort);
-      else if (next.sort === "featured") params.delete("sort");
+      if (next.sort !== undefined && next.sort !== "newest") params.set("sort", next.sort);
+      else if (next.sort === "newest") params.delete("sort");
       router.replace(`${pathname}?${params.toString()}`);
     },
     [pathname, router, searchParams],
@@ -66,6 +92,10 @@ function ShopContent({ products, categories }: { products: Product[]; categories
   // filter lists show top-level categories; when a top-level category is
   // active, its subcategories are revealed beneath it. Selecting a parent
   // matches products from itself and all of its children.
+  const categoryNameById = useMemo(
+    () => new Map(categories.map((c) => [c.id, c.name])),
+    [categories],
+  );
   const topLevelCategories = useMemo(() => categories.filter((c) => !c.parent_id), [categories]);
   const activeTopLevel =
     activeCategory && activeCategory.parent_id
@@ -111,7 +141,9 @@ function ShopContent({ products, categories }: { products: Product[]; categories
         return false;
       }
       if (term) {
-        const haystack = `${product.name} ${product.description}`.toLowerCase();
+        const haystack = `${product.name} ${product.description} ${categoryNameById.get(
+          product.category_id ?? "",
+        ) ?? ""}`.toLowerCase();
         if (!haystack.includes(term)) return false;
       }
       const price = priceForCurrency(currency, product.price_usd_cents, product.price_pkr_paisa);
@@ -120,6 +152,11 @@ function ShopContent({ products, categories }: { products: Product[]; categories
     });
 
     switch (sort) {
+      case "newest":
+        list = [...list].sort((a, b) =>
+          new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime(),
+        );
+        break;
       case "price-asc":
         list = [...list].sort((a, b) => {
           const pa = priceForCurrency(currency, a.price_usd_cents, a.price_pkr_paisa);
@@ -141,7 +178,7 @@ function ShopContent({ products, categories }: { products: Product[]; categories
         break;
     }
     return list;
-  }, [products, query, filterCategoryIds, sort, currency, priceMin, priceMax]);
+  }, [products, query, filterCategoryIds, sort, currency, priceMin, priceMax, categoryNameById]);
 
   const hasFilters = Boolean(urlQuery) || Boolean(activeCategory) || priceMin > priceBounds.min || priceMax < priceBounds.max;
 
@@ -280,6 +317,13 @@ function ShopContent({ products, categories }: { products: Product[]; categories
           <h1 className="mt-2 text-4xl font-light tracking-tight md:text-5xl">
             {activeCategory ? activeCategory.name : "All products"}
           </h1>
+          {(CATEGORY_DESCRIPTIONS[activeCategory?.slug ?? ""] ??
+            CATEGORY_DESCRIPTIONS[activeTopLevel?.slug ?? ""]) && (
+            <p className="mt-3 max-w-lg text-[13px] leading-[1.7] text-neutral-600">
+              {CATEGORY_DESCRIPTIONS[activeCategory?.slug ?? ""] ??
+                CATEGORY_DESCRIPTIONS[activeTopLevel?.slug ?? ""]}
+            </p>
+          )}
           <p className="mt-2 text-[13px] text-neutral-600">
             {results.length} {results.length === 1 ? "product" : "products"}
             {hasFilters && (

@@ -20,6 +20,15 @@ export default function ProductCard({ product }: { product: Product }) {
   const hasVariants = variants.length > 0;
   const outOfStock = product.stock_quantity <= 0;
   const unitPrice = priceForCurrency(currency, product.price_usd_cents, product.price_pkr_paisa);
+  const compareAt =
+    product.compare_at_price_usd_cents != null
+      ? priceForCurrency(
+          currency,
+          product.compare_at_price_usd_cents,
+          product.compare_at_price_pkr_paisa ?? product.compare_at_price_usd_cents * 280,
+        )
+      : null;
+  const onSale = compareAt != null && compareAt > unitPrice;
 
   function handleQuickAdd() {
     if (hasVariants || outOfStock) return;
@@ -99,6 +108,11 @@ export default function ProductCard({ product }: { product: Product }) {
       {/* Meta */}
       <div className="flex items-start justify-between gap-3 pt-3.5">
         <div className="min-w-0">
+          {product.brand && (
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-400">
+              {product.brand}
+            </p>
+          )}
           <Link
             href={`/products/${product.slug}`}
             className="line-clamp-1 font-display text-[15px] font-medium tracking-tight text-foreground transition-opacity duration-200 hover:opacity-60"
@@ -111,9 +125,16 @@ export default function ProductCard({ product }: { product: Product }) {
             </p>
           )}
         </div>
-        <p className="shrink-0 pt-0.5 text-[13px] font-medium tabular-nums">
-          {hasVariants && <span className="text-neutral-400">from </span>}
-          {formatMoney(unitPrice, currency)}
+        <p className="shrink-0 text-right">
+          <span className="block text-[13px] font-medium tabular-nums">
+            {hasVariants && <span className="text-neutral-400">from </span>}
+            {formatMoney(unitPrice, currency)}
+          </span>
+          {onSale && compareAt != null && (
+            <span className="block text-[12px] text-neutral-400 line-through tabular-nums">
+              {formatMoney(compareAt, currency)}
+            </span>
+          )}
         </p>
       </div>
     </article>

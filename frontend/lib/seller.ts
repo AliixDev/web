@@ -46,6 +46,9 @@ export interface SellerProduct {
   is_active: boolean;
   stock_quantity: number;
   created_at: string;
+  seo_title?: string | null;
+  seo_description?: string | null;
+  seo_keywords?: string | null;
   product_variants?: SellerProductVariant[];
 }
 

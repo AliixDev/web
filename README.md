@@ -1,13 +1,14 @@
-# SDBBUY — Global Jamstack E-Commerce (Pakistan)
+# SDB WEAR — Premium Motorcycle Protection & Leather Gear (Pakistan)
 
-SDBBUY is a production-ready, **100% free-to-host** e-commerce platform: a
+SDB WEAR is a production-ready, **100% free-to-host** e-commerce platform: a
 statically exported Next.js storefront on **GitHub Pages** (`https://www.sdbbuy.com`),
 backed entirely by **Supabase** (Postgres, Auth, Row Level Security, Edge
 Functions). There is no traditional application server anywhere in this stack.
 
-The brand (roots in 2017, Pakistan) sells leather garments, **motorbike riding
-gear**, boxing equipment, gym/fitness wear, and accessories worldwide — with
-cash on delivery across Pakistan and secure card checkout internationally.
+The brand (roots in 2017, Pakistan) sells **premium motorcycle protection and
+leather gear** — moto suits, moto gloves, moto shoes, leather jackets and
+handcrafted stitched gloves — with cash on delivery across Pakistan and secure
+card checkout internationally.
 
 ## Architecture
 
@@ -51,48 +52,62 @@ live catalog.
 
 ## Catalog
 
-Five top-level categories (the storefront nav, homepage cards, and shop
-filters are driven entirely by the `categories` table — `parent_id` enables
+Three product families (the storefront nav, homepage cards, and shop filters
+are driven entirely by the `categories` table — `parent_id` enables
 subcategories):
 
-| Category | Subcategories |
-|---|---|
-| **Motorbikes** | Gloves, Jackets, Moto Suits, Helmets, Boots, Pants, Protective Gear, Riding Gear, Motorcycle Accessories, Other Motorbike Gear — 30 products (3 per subcategory) |
-| **Leather & Jackets** | Biker, bomber, and heritage racing jackets |
-| **Boxing** | Gloves, hand wraps, training shorts |
-| **Gym & Fitness** | Training hoodie, tees, gym shorts |
-| **Accessories** | Belts, bags, wallets |
+| Family | Subcategories | Products |
+|---|---|---|
+| **Motorbike Gear** | Moto Suits, Moto Gloves, Moto Shoes | 13 |
+| **Leather Jackets & Biker Fashion** | Biker, Casual, Heritage, Racing-Inspired jackets, Biker Fashion (vests) | 12 |
+| **Handcrafted Gloves** | Leather, Riding, Driving, Work, Fashion, Mechanic, Tactical, Custom | 12 |
 
 Products support rich merchandising fields: `brand`, multi-image galleries
 (`images` JSONB, shown with thumbnail navigation on the product page),
-`rating` / `review_count`, optional `compare_at_price_*` sale pricing, and
-size/option variants with unique SKUs. The legacy Apparel/Fashion Apparel
-categories have been removed from the catalog.
+`rating` / `review_count` (not seeded — review numbers come from real
+customers), optional `compare_at_price_*` sale pricing, SEO metadata
+(`seo_title`, `seo_description`, `seo_keywords`), and size/option variants
+with unique SKUs. All previous catalogs (legacy demo, the 2026 SDBBUY
+leather/boxing/gym catalog, and the motorbike marketplace) are deactivated;
+rows referenced by historical orders are preserved (inactive) so order
+history is never lost, while every customer-facing page shows only the new
+SDB WEAR catalog. Product imagery is elegant branded SVG placeholders — no
+fake product photography.
 
 ## Storefront features
 
-- **Shop page** (`/shop`): search, category + subcategory filters, currency-aware
-  price range, sort (featured, price ↑/↓, name), desktop sidebar + mobile
-  filter sheet, responsive grid.
+- **Homepage** (`/`): editorial black-and-white hero, motorbike protection
+  cards (suits / gloves / shoes), leather craft and stitched-gloves features,
+  featured pieces, shop-by-family, trust strip — all driven by the live
+  catalog with scroll-reveal motion.
+- **Shop page** (`/shop`): search (products + category names), category +
+  subcategory filters, currency-aware price range, sort (newest, price ↑/↓,
+  name), editorial category descriptions, desktop sidebar + mobile filter
+  sheet, responsive grid.
 - **Product page** (`/products/[slug]`): image gallery with thumbnails,
-  wishlist (persisted client-side), star rating + review count, sale badges,
-  variant/size selection, quantity, Add to cart / Buy now, stock states,
-  mobile sticky buy bar, related products, Product JSON-LD structured data.
+  wishlist (persisted client-side), brand, star rating + review count, sale
+  badges (compare-at strikethrough on cards and detail page), variant/size
+  selection, quantity, Add to cart / Buy now, stock states, mobile sticky buy
+  bar, similar items, per-product SEO metadata + Product JSON-LD structured
+  data, and a reviews section (renders real customer reviews as they arrive —
+  nothing is fabricated).
 - **Cart**: slide-out drawer + full cart page, quantity editing, mobile
   sticky checkout bar.
 - **Checkout**: sign-in required, Stripe (international, USD) · COD
   (Pakistan, PKR) · JazzCash/Safepay (mock template), server-verified totals.
 - **Account** (`/account`): order history + order tracking/confirmation pages.
-- **Seller Central** (`/seller`): role-based admin panel with orders, products,
+- **Seller Central** (`/seller`): role-based admin panel with orders, products
+  (including a live Google-style SEO preview with title/meta/keywords fields),
   categories, inventory (adjust stock + log), promotions, customers, reports,
   analytics, notifications (realtime), and settings — protected by the
   `is_seller()` RLS gate. The designated seller account is promoted on signup.
-- **  Internationalization**: 13 UI languages (English + 12; header selector
+- **Internationalization**: 13 UI languages (English + 12; header selector
   lives in the footer) and 9 display currencies (USD, PKR, EUR, GBP, AED,
   SAR, CAD, AUD, CHF).
-- **Info/legal pages**: about, contact, FAQ, size guide, payment information,
-  privacy policy, terms, return/refund/shipping/cancellation policies, cookie
-  policy, order tracking, wholesale/B2B.
+- **Info/legal pages**: about, contact, FAQ, size guide (leather jackets,
+  moto suits, gloves by hand circumference, moto shoes by EU/foot length),
+  payment information, privacy policy, terms, return/refund/shipping/
+  cancellation policies, cookie policy, order tracking, wholesale/B2B.
 
 ## Prerequisites
 
@@ -161,6 +176,12 @@ Migrations (in `supabase/migrations/`, applied in order):
 5. **Motorbike category** — removes the Apparel categories, adds Motorbikes
    with 10 subcategories and 30 gallery products, plus optional merchandising
    columns (`brand`, `images`, `rating`, `review_count`, `compare_at_*`).
+6. **SDB WEAR redesign** — adds product SEO columns, retires every previous
+   customer-facing catalog (legacy demo, SDBBUY leather/boxing/gym, motorbike
+   marketplace), preserves order-referenced rows as inactive, and seeds the
+   new three-family SDB WEAR catalog (Motorbike Gear, Leather Jackets & Biker
+   Fashion, Handcrafted Gloves — 37 products, ~200 variants, branded SVG
+   placeholders, no fabricated ratings).
 
 ## 4. Configure secrets (used by the Edge Functions)
 

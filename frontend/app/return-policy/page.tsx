@@ -6,10 +6,10 @@ import PolicyLayout, { PolicySection } from "@/components/layout/PolicyLayout";
 export const metadata: Metadata = {
   title: "Return Policy",
   description:
-    "How to return products purchased from SDBBUY. Learn about eligibility, process, and conditions for returns.",
+    "How to return products purchased from SDB WEAR. Learn about eligibility, process, and conditions for returns.",
   openGraph: {
-    title: "Return Policy · SDBBUY",
-    description: "SDBBUY return policy — eligibility, process, and conditions for returning products.",
+    title: "Return Policy · SDB WEAR",
+    description: "SDB WEAR return policy — eligibility, process, and conditions for returning products.",
     type: "website",
   },
 };

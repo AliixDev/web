@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1500" role="img" aria-label="SDB WEAR leather jacket side placeholder">
+  <rect width="1200" height="1500" fill="#EDEDED"/>
+  <rect x="40" y="40" width="1120" height="1420" fill="none" stroke="#E5E5E5" stroke-width="2"/>
+  <g fill="none" stroke="#D5D5D5" stroke-width="5" stroke-linejoin="round">
+    <path d="M660 430 l-140 34 v84 h-90 v470 h230 v-588"/>
+    <path d="M660 430 v0"/>
+    <path d="M520 548 l140 -34 140 34" opacity="0.4"/>
+    <path d="M660 460 v600"/>
+  </g>
+  <text x="600" y="1260" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="54" letter-spacing="16" fill="#808080" font-weight="600">LEATHER JACKET</text>
+  <text x="600" y="1320" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="19" letter-spacing="6" fill="#A0A0A0">SIDE PROFILE</text>
+  <text x="600" y="1400" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="24" letter-spacing="10" fill="#A0A0A0">SDB WEAR</text>
+</svg>

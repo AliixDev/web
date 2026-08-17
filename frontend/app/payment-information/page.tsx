@@ -8,10 +8,10 @@ import Reveal from "@/components/Reveal";
 export const metadata: Metadata = {
   title: "Payment Information",
   description:
-    "SDBBUY payment options — Cash on Delivery, Stripe card payments, JazzCash, and payment security details.",
+    "SDB WEAR payment options — Cash on Delivery, Stripe card payments, JazzCash, and payment security details.",
   openGraph: {
-    title: "Payment Information · SDBBUY",
-    description: "Accepted payment methods and security information for SDBBUY orders.",
+    title: "Payment Information · SDB WEAR",
+    description: "Accepted payment methods and security information for SDB WEAR orders.",
     type: "website",
   },
 };

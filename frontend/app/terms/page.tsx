@@ -6,11 +6,11 @@ import PolicyLayout, { PolicySection } from "@/components/layout/PolicyLayout";
 export const metadata: Metadata = {
   title: "Terms & Conditions",
   description:
-    "Terms and conditions governing your use of the SDBBUY website, purchases, and services.",
+    "Terms and conditions governing your use of the SDB WEAR website, purchases, and services.",
   openGraph: {
-    title: "Terms & Conditions · SDBBUY",
+    title: "Terms & Conditions · SDB WEAR",
     description:
-      "Read the terms and conditions for using SDBBUY, placing orders, and accessing our services.",
+      "Read the terms and conditions for using SDB WEAR, placing orders, and accessing our services.",
     type: "website",
   },
 };
@@ -24,7 +24,7 @@ export default function TermsPage() {
 
       <PolicySection title="1. Acceptance of terms">
         <p>
-          By accessing or using the SDBBUY website (&quot;the site&quot;), you agree to be bound by these
+          By accessing or using the SDB WEAR website (&quot;the site&quot;), you agree to be bound by these
           Terms &amp; Conditions. If you do not agree to these terms, please do not use the site.
         </p>
       </PolicySection>
@@ -120,7 +120,7 @@ export default function TermsPage() {
       <PolicySection title="9. Intellectual property">
         <p>
           All content on this site — including text, graphics, logos, images, product descriptions,
-          and software — is the property of SDBBUY or its content suppliers and is protected by
+          and software — is the property of SDB WEAR or its content suppliers and is protected by
           applicable intellectual property laws. You may not reproduce, distribute, modify, or
           create derivative works from any content on this site without our prior written consent.
         </p>
@@ -139,7 +139,7 @@ export default function TermsPage() {
 
       <PolicySection title="11. Limitation of liability">
         <p>
-          To the fullest extent permitted by law, SDBBUY shall not be liable for any indirect,
+          To the fullest extent permitted by law, SDB WEAR shall not be liable for any indirect,
           incidental, special, consequential, or punitive damages arising from your use of the
           site or purchase of products. Our total liability for any claim shall not exceed the
           amount you paid for the product giving rise to the claim.

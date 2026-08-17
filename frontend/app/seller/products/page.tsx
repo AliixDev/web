@@ -43,6 +43,9 @@ interface ProductDraft {
   stock: string;
   is_active: boolean;
   image_url: string;
+  seoTitle: string;
+  seoDescription: string;
+  seoKeywords: string;
   variants: VariantDraft[];
 }
 
@@ -58,6 +61,9 @@ const EMPTY_DRAFT: ProductDraft = {
   stock: "0",
   is_active: true,
   image_url: "",
+  seoTitle: "",
+  seoDescription: "",
+  seoKeywords: "",
   variants: [],
 };
 
@@ -206,6 +212,9 @@ export default function SellerProductsPage() {
       stock: String(product.stock_quantity),
       is_active: product.is_active,
       image_url: product.image_url ?? "",
+      seoTitle: product.seo_title ?? "",
+      seoDescription: product.seo_description ?? "",
+      seoKeywords: product.seo_keywords ?? "",
       variants,
     });
   }
@@ -255,6 +264,9 @@ export default function SellerProductsPage() {
         stock_quantity: Math.max(0, Math.round(Number(draft.stock) || 0)),
         is_active: draft.is_active,
         image_url: draft.image_url || null,
+        seo_title: draft.seoTitle.trim() || null,
+        seo_description: draft.seoDescription.trim() || null,
+        seo_keywords: draft.seoKeywords.trim() || null,
       };
 
       let productId: string;
@@ -357,6 +369,9 @@ export default function SellerProductsPage() {
           price_pkr_paisa: product.price_pkr_paisa,
           stock_quantity: product.stock_quantity,
           is_active: false,
+          seo_title: product.seo_title,
+          seo_description: product.seo_description,
+          seo_keywords: product.seo_keywords,
         })
         .select("id")
         .single();
@@ -755,6 +770,73 @@ export default function SellerProductsPage() {
                 placeholder="Describe the product…"
               />
             </Field>
+
+            {/* SEO */}
+            <div className="border border-neutral-200 bg-neutral-50/60 p-4">
+              <div className="flex items-center justify-between">
+                <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-neutral-700">
+                  Search engine listing
+                </p>
+                <p className="text-[11px] text-neutral-400">Shown on product pages</p>
+              </div>
+
+              {/* Live preview */}
+              <div className="mt-3 border border-neutral-200 bg-background p-4">
+                <p className="text-[14px] leading-snug text-[#1a0dab]">
+                  {draft.seoTitle.trim() || draft.name.trim() || "Product title"}
+                  <span className="text-neutral-500"> · SDB WEAR</span>
+                </p>
+                <p className="mt-0.5 text-[12px] text-[#006621]">www.sdbbuy.com/products/{draft.slug.trim() || "product-slug"}</p>
+                <p className="mt-1 line-clamp-2 text-[12px] leading-relaxed text-neutral-700">
+                  {draft.seoDescription.trim() || draft.description.trim() || "Meta description will appear here."}
+                </p>
+              </div>
+
+              <div className="mt-4 grid gap-4">
+                <Field label="SEO title" htmlFor="p-seo-title">
+                  <Input
+                    id="p-seo-title"
+                    value={draft.seoTitle}
+                    onChange={(e) => setDraft({ ...draft, seoTitle: e.target.value })}
+                    placeholder="SDB WEAR Premium Black Motorcycle Leather Jacket"
+                    maxLength={70}
+                  />
+                  <div className="flex items-center justify-between text-[11px] text-neutral-400">
+                    <span>About 50–60 characters is ideal.</span>
+                    <span className={draft.seoTitle.length > 60 ? "font-medium text-amber-600" : undefined}>
+                      {draft.seoTitle.length}/70
+                    </span>
+                  </div>
+                </Field>
+
+                <Field label="Meta description" htmlFor="p-seo-description">
+                  <textarea
+                    id="p-seo-description"
+                    value={draft.seoDescription}
+                    onChange={(e) => setDraft({ ...draft, seoDescription: e.target.value })}
+                    rows={3}
+                    maxLength={320}
+                    className="w-full border border-neutral-200 bg-background px-3.5 py-2.5 text-[13px] leading-relaxed transition-colors placeholder:text-neutral-400 hover:border-neutral-300 focus:border-foreground focus:outline-none focus:ring-0"
+                    placeholder="Premium motorcycle leather jacket from SDB WEAR, designed for riders who value protection, durability and timeless biker style."
+                  />
+                  <div className="flex items-center justify-between text-[11px] text-neutral-400">
+                    <span>About 140–160 characters is ideal.</span>
+                    <span className={draft.seoDescription.length > 160 ? "font-medium text-amber-600" : undefined}>
+                      {draft.seoDescription.length}/320
+                    </span>
+                  </div>
+                </Field>
+
+                <Field label="SEO keywords (comma separated)" htmlFor="p-seo-keywords">
+                  <Input
+                    id="p-seo-keywords"
+                    value={draft.seoKeywords}
+                    onChange={(e) => setDraft({ ...draft, seoKeywords: e.target.value })}
+                    placeholder="motorcycle jacket, leather, biker, protection"
+                  />
+                </Field>
+              </div>
+            </div>
 
             {/* Variants */}
             <div>

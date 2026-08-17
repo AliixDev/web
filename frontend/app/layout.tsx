@@ -6,7 +6,7 @@ import "./globals.css";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { getTopLevelCategories } from "@/lib/data";
+import { getCategories, getTopLevelCategories } from "@/lib/data";
 import type { Category } from "@/lib/types";
 
 const inter = Inter({
@@ -21,34 +21,70 @@ const fraunces = Fraunces({
   display: "swap",
 });
 
+const SITE_NAME = "SDB WEAR";
+
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.sdbbuy.com"),
   title: {
-    default: "SDBBUY — Leather, Motorbike Gear & Lifestyle",
-    template: "%s · SDBBUY",
+    default: "SDB WEAR | Premium Motorcycle Protection & Leather Gear",
+    template: "%s · SDB WEAR",
   },
   description:
-    "Leather garments, motorbike riding gear, boxing equipment, and gym wear — from a brand with roots in 2017. Cash on Delivery across Pakistan, secure card checkout worldwide.",
-  applicationName: "SDBBUY",
-  authors: [{ name: "SDBBUY" }],
+    "Premium motorcycle protection, leather jackets, riding gear and stitched gloves from SDB WEAR. Built for the ride — cash on delivery across Pakistan, secure card checkout worldwide.",
+  applicationName: SITE_NAME,
+  authors: [{ name: SITE_NAME }],
+  keywords: [
+    "motorcycle gear",
+    "moto suit",
+    "moto gloves",
+    "moto shoes",
+    "leather jacket",
+    "biker jacket",
+    "handcrafted gloves",
+    "riding gear",
+    "SDB WEAR",
+  ],
   openGraph: {
-    title: "SDBBUY — Leather, Motorbike Gear & Lifestyle",
+    title: "SDB WEAR | Premium Motorcycle Protection & Leather Gear",
     description:
-      "Leather jackets, motorbike riding gear, boxing gear, and fitness wear from SDBBUY — rooted in 2017. Cash on delivery across Pakistan, secure card checkout worldwide.",
+      "Premium motorcycle protection, performance gear and leather craftsmanship designed for riders who demand more.",
     type: "website",
+    locale: "en_US",
+    siteName: SITE_NAME,
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#ffffff",
+  themeColor: "#000000",
+};
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "SDB WEAR",
+  url: "https://www.sdbbuy.com",
+  description:
+    "Premium motorcycle protection & leather gear — moto suits, moto gloves, moto shoes, leather jackets and handcrafted stitched gloves.",
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const categories: Category[] = await getTopLevelCategories();
+  const allCategories: Category[] = await getCategories();
+  const topLevel: Category[] = allCategories.filter((c) => !c.parent_id);
 
   return (
     <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+      </head>
       <body className="min-h-screen">
         {/* Skip to content — accessibility */}
         <a
@@ -58,11 +94,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           Skip to content
         </a>
         <AnnouncementBar />
-        <Header categories={categories} />
+        <Header categories={allCategories} />
         <main id="main" className="animate-page-in min-h-[60vh]">
           {children}
         </main>
-        <Footer categories={categories} />
+        <Footer categories={topLevel} />
       </body>
     </html>
   );

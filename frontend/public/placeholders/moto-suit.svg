@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1500" role="img" aria-label="SDB WEAR moto suit placeholder">
+  <rect width="1200" height="1500" fill="#F7F7F7"/>
+  <rect x="40" y="40" width="1120" height="1420" fill="none" stroke="#E5E5E5" stroke-width="2"/>
+  <g fill="none" stroke="#DDDDDD" stroke-width="5" stroke-linejoin="round">
+    <path d="M600 400 v180"/>
+    <path d="M600 580 l-150 60 v240 h300 v-240 z"/>
+    <path d="M600 580 l150 60 v240"/>
+  </g>
+  <text x="600" y="1050" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="54" letter-spacing="16" fill="#808080" font-weight="600">MOTO SUIT</text>
+  <text x="600" y="1110" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="19" letter-spacing="6" fill="#A0A0A0">PROTECTIVE GEAR</text>
+  <text x="600" y="1370" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="24" letter-spacing="10" fill="#A0A0A0">SDB WEAR</text>
+</svg>
