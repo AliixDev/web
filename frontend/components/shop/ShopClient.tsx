@@ -62,6 +62,26 @@ function ShopContent({ products, categories }: { products: Product[]; categories
 
   const activeCategory = categories.find((c) => c.slug === urlCategory) ?? null;
 
+  // Subcategory support: categories may be nested (parent_id). The nav and
+  // filter lists show top-level categories; when a top-level category is
+  // active, its subcategories are revealed beneath it. Selecting a parent
+  // matches products from itself and all of its children.
+  const topLevelCategories = useMemo(() => categories.filter((c) => !c.parent_id), [categories]);
+  const activeTopLevel =
+    activeCategory && activeCategory.parent_id
+      ? (categories.find((c) => c.id === activeCategory!.parent_id) ?? null)
+      : activeCategory;
+  const subcategoriesOf = useCallback(
+    (category: Category | null) =>
+      category ? categories.filter((c) => c.parent_id === category.id) : [],
+    [categories],
+  );
+  const filterCategoryIds = useMemo(() => {
+    if (!activeCategory) return null;
+    if (activeCategory.parent_id) return [activeCategory.id];
+    return [activeCategory.id, ...subcategoriesOf(activeCategory).map((c) => c.id)];
+  }, [activeCategory, subcategoriesOf]);
+
   // Real price bounds from the live catalog, in the active currency.
   const priceBounds = useMemo(() => {
     if (products.length === 0) return { min: 0, max: 0 };
@@ -87,7 +107,9 @@ function ShopContent({ products, categories }: { products: Product[]; categories
     const maxMinor = priceMax * 100;
 
     let list = products.filter((product) => {
-      if (activeCategory && product.category_id !== activeCategory.id) return false;
+      if (filterCategoryIds && (product.category_id === null || !filterCategoryIds.includes(product.category_id))) {
+        return false;
+      }
       if (term) {
         const haystack = `${product.name} ${product.description}`.toLowerCase();
         if (!haystack.includes(term)) return false;
@@ -119,7 +141,7 @@ function ShopContent({ products, categories }: { products: Product[]; categories
         break;
     }
     return list;
-  }, [products, query, activeCategory, sort, currency, priceMin, priceMax]);
+  }, [products, query, filterCategoryIds, sort, currency, priceMin, priceMax]);
 
   const hasFilters = Boolean(urlQuery) || Boolean(activeCategory) || priceMin > priceBounds.min || priceMax < priceBounds.max;
 
@@ -149,16 +171,34 @@ function ShopContent({ products, categories }: { products: Product[]; categories
               All products
             </FilterRow>
           </li>
-          {categories.map((category) => (
-            <li key={category.id}>
-              <FilterRow
-                active={activeCategory?.id === category.id}
-                onClick={() => updateParams({ category: category.slug })}
-              >
-                {category.name}
-              </FilterRow>
-            </li>
-          ))}
+          {topLevelCategories.map((category) => {
+            const children = subcategoriesOf(category);
+            const isActiveTop = activeTopLevel?.id === category.id;
+            return (
+              <li key={category.id}>
+                <FilterRow
+                  active={isActiveTop}
+                  onClick={() => updateParams({ category: category.slug })}
+                >
+                  {category.name}
+                </FilterRow>
+                {isActiveTop && children.length > 0 && (
+                  <ul className="ml-3 border-l border-neutral-200 pl-3">
+                    {children.map((child) => (
+                      <li key={child.id}>
+                        <FilterRow
+                          active={activeCategory?.id === child.id}
+                          onClick={() => updateParams({ category: child.slug })}
+                        >
+                          {child.name}
+                        </FilterRow>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </div>
 
@@ -219,7 +259,13 @@ function ShopContent({ products, categories }: { products: Product[]; categories
         <Link href="/" className="transition-colors hover:text-foreground">Home</Link>
         <ChevronRight className="h-3 w-3" aria-hidden />
         <span className="font-medium text-foreground">Shop</span>
-        {activeCategory && (
+        {activeTopLevel && (
+          <>
+            <ChevronRight className="h-3 w-3" aria-hidden />
+            <span className="font-medium text-foreground">{activeTopLevel.name}</span>
+          </>
+        )}
+        {activeCategory && activeCategory.parent_id && (
           <>
             <ChevronRight className="h-3 w-3" aria-hidden />
             <span className="font-medium text-foreground">{activeCategory.name}</span>
@@ -327,19 +373,34 @@ function ShopContent({ products, categories }: { products: Product[]; categories
           </form>
 
           {/* Category chips (mobile convenience) */}
-          <div className="no-scrollbar mt-4 flex gap-2 overflow-x-auto pb-1 lg:hidden">
-            <CategoryChip active={!activeCategory} onClick={() => updateParams({ category: "" })}>
-              All
-            </CategoryChip>
-            {categories.map((category) => (
-              <CategoryChip
-                key={category.id}
-                active={activeCategory?.id === category.id}
-                onClick={() => updateParams({ category: category.slug })}
-              >
-                {category.name}
+          <div className="mt-4 lg:hidden">
+            <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
+              <CategoryChip active={!activeCategory} onClick={() => updateParams({ category: "" })}>
+                All
               </CategoryChip>
-            ))}
+              {topLevelCategories.map((category) => (
+                <CategoryChip
+                  key={category.id}
+                  active={activeTopLevel?.id === category.id}
+                  onClick={() => updateParams({ category: category.slug })}
+                >
+                  {category.name}
+                </CategoryChip>
+              ))}
+            </div>
+            {activeTopLevel && subcategoriesOf(activeTopLevel).length > 0 && (
+              <div className="no-scrollbar mt-2 flex gap-2 overflow-x-auto pb-1">
+                {subcategoriesOf(activeTopLevel).map((child) => (
+                  <CategoryChip
+                    key={child.id}
+                    active={activeCategory?.id === child.id}
+                    onClick={() => updateParams({ category: child.slug })}
+                  >
+                    {child.name}
+                  </CategoryChip>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Results */}

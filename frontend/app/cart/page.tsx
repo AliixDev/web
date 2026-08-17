@@ -23,7 +23,8 @@ export default function CartPage() {
         <div>
           <h1 className="font-display text-3xl font-light tracking-tight">Your cart is empty</h1>
           <p className="mx-auto mt-3 max-w-sm text-[14px] leading-[1.7] text-neutral-600">
-            Handcrafted apparel, home textiles, and electronics from Pakistan are waiting for you.
+            Leather jackets, motorbike riding gear, boxing and gym wear from Pakistan are waiting
+            for you.
           </p>
         </div>
         <Link

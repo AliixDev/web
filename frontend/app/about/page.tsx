@@ -9,11 +9,11 @@ import Reveal from "@/components/Reveal";
 export const metadata: Metadata = {
   title: "About Us",
   description:
-    "Learn about SDBBUY — a brand rooted in 2017, specializing in leather garments, fashion apparel, boxing gear, and gym wear.",
+    "Learn about SDBBUY — a brand rooted in 2017, specializing in leather garments, motorbike riding gear, boxing gear, and gym wear.",
   openGraph: {
     title: "About SDBBUY",
     description:
-      "SDBBUY traces its roots to 2017, beginning with leather garments and jackets and expanding into fashion apparel, boxing gear, and lifestyle products.",
+      "SDBBUY traces its roots to 2017, beginning with leather garments and jackets and expanding into motorbike gear, boxing equipment, and lifestyle products.",
     type: "website",
   },
 };
@@ -32,8 +32,8 @@ export default function AboutPage() {
             </h1>
             <p className="mt-6 max-w-xl text-[15px] leading-[1.75] text-neutral-600">
               SDBBUY traces its roots to 2017, beginning with leather garments and jackets. Over
-              the years, the brand expanded its focus into fashion apparel and a broader range of
-              products for modern lifestyles.
+              the years, the brand expanded its focus into motorbike riding gear and a broader
+              range of products for modern lifestyles.
             </p>
           </div>
         </div>
@@ -51,8 +51,8 @@ export default function AboutPage() {
             <Reveal delay={60}>
               <p className="mt-5 text-[14px] leading-[1.8] text-neutral-600">
                 What started as a focus on handcrafted leather garments and jackets grew into a
-                broader vision — fashion apparel, boxing gear, working and gym clothing, and
-                accessories for people who value quality and function.
+                broader vision — motorbike riding gear, boxing equipment, working and gym
+                clothing, and accessories for people who value quality and function.
               </p>
             </Reveal>
             <Reveal delay={120}>
@@ -78,7 +78,7 @@ export default function AboutPage() {
             <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2">
               {[
                 { label: "Leather Garments", desc: "Jackets, coats, and leather outerwear built to endure." },
-                { label: "Fashion Apparel", desc: "Everyday clothing designed with clean lines and solid construction." },
+                { label: "Motorbike Gear", desc: "Helmets, riding jackets, gloves, and protective gear for riders." },
                 { label: "Boxing Gear", desc: "Gloves, wraps, and accessories for training and competition." },
                 { label: "Gym & Fitness Wear", desc: "Working clothing and gym wear for performance and durability." },
               ].map((item, i) => (

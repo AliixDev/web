@@ -6,6 +6,7 @@ export interface Category {
   id: string;
   name: string;
   slug: string;
+  parent_id: string | null;
 }
 
 export interface ProductVariant {
@@ -30,6 +31,14 @@ export interface Product {
   price_pkr_paisa: number;
   is_active: boolean;
   stock_quantity: number;
+  // Optional merchandising fields used by the product page. All are
+  // nullable so existing catalog rows keep working unchanged.
+  brand?: string | null;
+  images?: string[] | null;
+  rating?: number | null;
+  review_count?: number | null;
+  compare_at_price_usd_cents?: number | null;
+  compare_at_price_pkr_paisa?: number | null;
   product_variants?: ProductVariant[];
 }
 

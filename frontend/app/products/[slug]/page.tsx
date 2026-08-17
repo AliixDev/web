@@ -6,6 +6,7 @@ import { createClient } from "@supabase/supabase-js";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import type { Product, ProductVariant } from "@/lib/types";
 import ProductImage from "@/components/product/ProductImage";
+import ProductGallery from "@/components/product/ProductGallery";
 import ProductDetail from "./ProductDetail";
 import ProductGrid from "@/components/product/ProductGrid";
 import Reveal from "@/components/Reveal";
@@ -59,18 +60,29 @@ async function getRelated(product: Product): Promise<Product[]> {
   if (!supabase) return [];
 
   try {
-    const query = supabase
+    // Categories map: id -> parent_id, so subcategory products (e.g. a
+    // helmet inside Motorbikes) can fall back to their parent category
+    // when their own subcategory has fewer than four items.
+    const { data: categories } = await supabase
+      .from("categories")
+      .select("id, parent_id");
+    const parentId = product.category_id
+      ? ((categories ?? []).find((c) => c.id === product.category_id)?.parent_id ?? null)
+      : null;
+
+    const { data, error } = await supabase
       .from("products")
       .select("*, product_variants(*)")
       .eq("is_active", true)
-      .neq("id", product.id)
-      .limit(4);
-
-    if (product.category_id) query.eq("category_id", product.category_id);
-
-    const { data, error } = await query;
+      .neq("id", product.id);
     if (error) return [];
-    return (data ?? []) as Product[];
+
+    const rank = (candidate: Product) => {
+      if (candidate.category_id === product.category_id) return 0;
+      if (parentId && candidate.category_id === parentId) return 1;
+      return 2;
+    };
+    return [...(data ?? [])].sort((a, b) => rank(a) - rank(b)).slice(0, 4) as Product[];
   } catch {
     return [];
   }
@@ -82,12 +94,29 @@ export default async function ProductPage({ params }: { params: { slug: string }
 
   const related = await getRelated(product);
 
+  const galleryImages =
+    product.images && product.images.length > 0
+      ? product.images
+      : product.image_url
+        ? [product.image_url]
+        : [];
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
+    ...(product.brand ? { brand: { "@type": "Brand", name: product.brand } } : {}),
     name: product.name,
     description: product.description,
-    ...(product.image_url ? { image: [product.image_url] } : {}),
+    ...(galleryImages.length > 0 ? { image: galleryImages } : {}),
+    ...(product.rating != null
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: Number(product.rating).toFixed(1),
+            reviewCount: product.review_count ?? 0,
+          },
+        }
+      : {}),
     offers: {
       "@type": "Offer",
       price: (product.price_usd_cents / 100).toFixed(2),
@@ -121,23 +150,19 @@ export default async function ProductPage({ params }: { params: { slug: string }
           <div className="lg:sticky lg:top-28 lg:self-start">
             <div className="relative">
               <div className="absolute -left-4 -top-4 hidden h-16 w-16 border-l border-t border-neutral-200 lg:block" aria-hidden />
-              <div className="relative aspect-square overflow-hidden bg-neutral-100">
-                <ProductImage
-                  src={product.image_url}
-                  alt={product.name}
-                  priority
-                  sizes="(min-width: 1024px) 50vw, 100vw"
-                  imgClassName="transition-transform duration-700 ease-out hover:scale-[1.03]"
-                />
-              </div>
-            </div>
-            <div className="mt-4 flex items-center justify-between">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
-                Product photography
-              </p>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
-                1 / 1
-              </p>
+              {galleryImages.length > 0 ? (
+                <ProductGallery images={galleryImages} alt={product.name} productName={product.name} />
+              ) : (
+                <div className="relative aspect-square overflow-hidden bg-neutral-100">
+                  <ProductImage
+                    src={product.image_url}
+                    alt={product.name}
+                    priority
+                    sizes="(min-width: 1024px) 50vw, 100vw"
+                    imgClassName="transition-transform duration-700 ease-out hover:scale-[1.03]"
+                  />
+                </div>
+              )}
             </div>
           </div>
 

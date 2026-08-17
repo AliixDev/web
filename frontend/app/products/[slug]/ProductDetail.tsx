@@ -3,7 +3,16 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Banknote, Check, Loader2, Minus, Plus, ShieldCheck } from "lucide-react";
+import {
+  Banknote,
+  Check,
+  Heart,
+  Loader2,
+  Minus,
+  Plus,
+  ShieldCheck,
+  Star,
+} from "lucide-react";
 import { useStore } from "@/lib/store";
 import { formatMoney, priceForCurrency } from "@/lib/currency";
 import type { Product, ProductVariant } from "@/lib/types";
@@ -13,6 +22,8 @@ export default function ProductDetail({ product }: { product: Product }) {
   const router = useRouter();
   const currency = useStore((s) => s.currency);
   const addToCart = useStore((s) => s.addToCart);
+  const toggleWishlist = useStore((s) => s.toggleWishlist);
+  const isWishlisted = useStore((s) => s.isWishlisted(product.id));
 
   const variants = product.product_variants?.filter((v) => v.is_active) ?? [];
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
@@ -51,6 +62,24 @@ export default function ProductDetail({ product }: { product: Product }) {
   const stock = selectedVariant ? selectedVariant.stock_quantity : product.stock_quantity;
   const outOfStock = stock <= 0;
 
+  // Sale pricing — compare-at prices are optional; the sale block only
+  // renders when a compare-at price exists and is higher than the sale price.
+  const comparePrice =
+    product.compare_at_price_usd_cents != null
+      ? priceForCurrency(
+          currency,
+          product.compare_at_price_usd_cents,
+          product.compare_at_price_pkr_paisa ?? product.compare_at_price_usd_cents * 280,
+        )
+      : null;
+  const onSale = comparePrice != null && comparePrice > unitPrice;
+  const discountPercent =
+    onSale && comparePrice
+      ? Math.round(((comparePrice - unitPrice) / comparePrice) * 100)
+      : 0;
+
+  const activeSku = selectedVariant?.sku ?? null;
+
   function handleAddToCart() {
     addToCart({
       product_id: product.id,
@@ -79,15 +108,81 @@ export default function ProductDetail({ product }: { product: Product }) {
   return (
     <>
       <div>
-        <p className="eyebrow">{product.category_id ? "From the collection" : "SDBBUY"}</p>
-        <h1 className="mt-3 text-[32px] font-light leading-[1.08] tracking-tight md:text-[42px]">
-          {product.name}
-        </h1>
+        {/* Title row with wishlist */}
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <p className="eyebrow">
+              {product.brand ??
+                (product.category_id ? "From the collection" : "SDBBUY")}
+            </p>
+            <h1 className="mt-3 text-[32px] font-light leading-[1.08] tracking-tight md:text-[42px]">
+              {product.name}
+            </h1>
+          </div>
+          <button
+            type="button"
+            onClick={() => toggleWishlist(product.id)}
+            aria-pressed={isWishlisted}
+            aria-label={isWishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
+            className={cn(
+              "btn-press mt-1 flex h-11 w-11 shrink-0 items-center justify-center border transition-all duration-200",
+              isWishlisted
+                ? "border-foreground bg-foreground text-background"
+                : "border-neutral-200 text-neutral-500 hover:border-foreground hover:text-foreground",
+            )}
+          >
+            <Heart
+              className={cn("h-[18px] w-[18px]", isWishlisted && "fill-current")}
+              strokeWidth={1.5}
+              aria-hidden
+            />
+          </button>
+        </div>
+
+        {/* Rating + review count (only when present in the catalog) */}
+        {product.rating != null && (
+          <div className="mt-4 flex items-center gap-2.5">
+            <div className="flex items-center gap-0.5" aria-hidden>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star
+                  key={i}
+                  className={cn(
+                    "h-3.5 w-3.5",
+                    i < Math.round(product.rating ?? 0)
+                      ? "fill-foreground text-foreground"
+                      : "text-neutral-300",
+                  )}
+                  strokeWidth={1.25}
+                />
+              ))}
+            </div>
+            <p className="text-[13px] text-neutral-600">
+              <span className="font-medium tabular-nums text-foreground">
+                {Number(product.rating).toFixed(1)}
+              </span>
+              {product.review_count != null && product.review_count > 0 && (
+                <span className="text-neutral-400"> · {product.review_count} reviews</span>
+              )}
+            </p>
+          </div>
+        )}
 
         {/* Price */}
-        <div className="mt-5 flex items-baseline gap-3">
-          <p className="text-2xl font-medium tabular-nums">{formatMoney(unitPrice * quantity, currency)}</p>
-          <p className="text-[12px] text-neutral-400">
+        <div className="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <p className="text-2xl font-medium tabular-nums">
+            {formatMoney(unitPrice * quantity, currency)}
+          </p>
+          {onSale && (
+            <>
+              <p className="text-[15px] text-neutral-400 line-through tabular-nums">
+                {formatMoney(comparePrice! * quantity, currency)}
+              </p>
+              <p className="border border-neutral-200 bg-neutral-100 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-700">
+                Save {discountPercent}%
+              </p>
+            </>
+          )}
+          <p className="w-full text-[12px] text-neutral-400">
             {currency === "PKR" ? "Pakistani Rupees" : "US Dollars"} · verified at checkout
           </p>
         </div>
@@ -127,7 +222,7 @@ export default function ProductDetail({ product }: { product: Product }) {
               </div>
               <p className="mt-2.5 text-[12px] text-neutral-400" aria-live="polite">
                 {selectedVariant
-                  ? `${selectedVariant.stock_quantity} available${selectedVariant.sku ? ` · ${selectedVariant.sku}` : ""}`
+                  ? `${selectedVariant.stock_quantity} available${selectedVariant.sku ? ` · SKU ${selectedVariant.sku}` : ""}`
                   : "Select an option"}
               </p>
             </div>
@@ -209,6 +304,13 @@ export default function ProductDetail({ product }: { product: Product }) {
               )}
             </button>
           </div>
+
+          {/* SKU line */}
+          {activeSku && (
+            <p className="text-[11px] uppercase tracking-[0.16em] text-neutral-400">
+              SKU: <span className="tabular-nums">{activeSku}</span>
+            </p>
+          )}
         </div>
 
         {/* Description */}

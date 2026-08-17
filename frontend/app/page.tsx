@@ -46,8 +46,8 @@ export default async function HomePage() {
               className="animate-fade-up mt-6 max-w-md text-[15px] leading-[1.75] text-neutral-600"
               style={{ animationDelay: "160ms" }}
             >
-              Leather jackets, fashion apparel, boxing gear, and gym wear — priced in the
-              currency you choose, verified server-side before any order is placed.
+              Leather jackets, motorbike riding gear, boxing equipment, and gym wear — priced
+              in the currency you choose, verified server-side before any order is placed.
             </p>
             <div
               className="animate-fade-up mt-9 flex flex-wrap items-center gap-3"
@@ -321,7 +321,7 @@ export default async function HomePage() {
               {
                 icon: Package,
                 title: "Made in Pakistan",
-                body: "Leather, apparel, and performance gear from local makers.",
+                body: "Leather, motorbike gear, and performance wear from local makers.",
               },
               {
                 icon: Globe2,

@@ -12,6 +12,7 @@ import { CartItem, Currency } from "./types";
 interface StoreState {
   currency: Currency;
   cart: CartItem[];
+  wishlist: string[];
   setCurrency: (currency: Currency) => void;
   addToCart: (item: CartItem) => void;
   removeFromCart: (productId: string, variantId: string | null) => void;
@@ -19,6 +20,8 @@ interface StoreState {
   clearCart: () => void;
   cartCount: () => number;
   cartSubtotalMinor: () => number;
+  toggleWishlist: (productId: string) => void;
+  isWishlisted: (productId: string) => boolean;
 }
 
 function sameLine(a: CartItem, productId: string, variantId: string | null) {
@@ -30,6 +33,7 @@ export const useStore = create<StoreState>()(
     (set, get) => ({
       currency: "USD",
       cart: [],
+      wishlist: [],
 
       setCurrency: (currency) => set({ currency }),
 
@@ -81,10 +85,24 @@ export const useStore = create<StoreState>()(
           return sum + unit * item.quantity;
         }, 0);
       },
+
+      toggleWishlist: (productId) => {
+        set((state) => ({
+          wishlist: state.wishlist.includes(productId)
+            ? state.wishlist.filter((id) => id !== productId)
+            : [...state.wishlist, productId],
+        }));
+      },
+
+      isWishlisted: (productId) => get().wishlist.includes(productId),
     }),
     {
       name: "storefront-cart-v1",
-      partialize: (state) => ({ currency: state.currency, cart: state.cart }),
+      partialize: (state) => ({
+        currency: state.currency,
+        cart: state.cart,
+        wishlist: state.wishlist,
+      }),
     },
   ),
 );

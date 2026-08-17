@@ -53,9 +53,9 @@ function B2BFooter() {
 const WHOLESALE_CATEGORIES = [
   { name: "Leather Garments", desc: "Outerwear, jackets, and leather essentials." },
   { name: "Leather Jackets", desc: "Classic and modern leather jacket styles." },
-  { name: "Fashion Apparel", desc: "Everyday clothing for retail and resale." },
+  { name: "Motorbike Gear", desc: "Helmets, gloves, jackets, and protective riding gear." },
   { name: "Boxing Gear", desc: "Gloves, wraps, and training accessories." },
-  { name: "Gym / Fitness Wear", desc: "Performance apparel for training environments." },
+  { name: "Gym / Fitness Wear", desc: "Performance wear for training environments." },
   { name: "Accessories", desc: "Complementary lifestyle products." },
 ];
 
@@ -79,8 +79,9 @@ export default function B2BShell() {
               SDBBUY Wholesale
             </h1>
             <p className="mt-6 max-w-xl text-[15px] leading-[1.75] text-neutral-600">
-              We supply leather garments, fashion apparel, boxing gear, and gym wear for retailers
-              and businesses. If you&apos;re interested in wholesale purchasing, we&apos;d like to hear from you.
+              We supply leather garments, motorbike gear, boxing equipment, and gym wear for
+              retailers and businesses. If you&apos;re interested in wholesale purchasing, we&apos;d like to
+              hear from you.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a

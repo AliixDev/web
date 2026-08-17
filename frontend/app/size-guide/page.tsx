@@ -7,7 +7,7 @@ import Reveal from "@/components/Reveal";
 export const metadata: Metadata = {
   title: "Size Guide",
   description:
-    "SDBBUY size guide — find the right fit for leather garments, apparel, boxing gear, and gym wear.",
+    "SDBBUY size guide — find the right fit for leather garments, motorbike gear, boxing gear, and gym wear.",
   openGraph: {
     title: "Size Guide · SDBBUY",
     description: "How to find the right size for SDBBUY products.",

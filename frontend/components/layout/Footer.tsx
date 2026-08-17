@@ -71,9 +71,9 @@ export default function Footer({ categories }: { categories: Category[] }) {
             SDB<span className="font-light text-neutral-400">BUY</span>
           </Link>
           <p className="mt-4 max-w-sm text-[13px] leading-[1.7] text-neutral-600">
-            Since 2017, SDBBUY has grown from leather garments and jackets into fashion
-            apparel, boxing gear, and gym wear for modern lifestyles. Cash on delivery across
-            Pakistan, secure card checkout worldwide.
+            Since 2017, SDBBUY has grown from leather garments and jackets into motorbike
+            riding gear, boxing equipment, and gym wear for modern lifestyles. Cash on delivery
+            across Pakistan, secure card checkout worldwide.
           </p>
           <p className="mt-6 text-[12px] leading-[1.7] text-neutral-400">
             Prices are verified server-side at checkout — no hidden conversions.

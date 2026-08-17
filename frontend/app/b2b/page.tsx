@@ -6,11 +6,11 @@ import B2BShell from "@/components/b2b/B2BShell";
 export const metadata: Metadata = {
   title: "Wholesale & B2B",
   description:
-    "SDBBUY wholesale purchasing for businesses — leather garments, fashion apparel, boxing gear, and gym wear for retailers and distributors.",
+    "SDBBUY wholesale purchasing for businesses — leather garments, motorbike riding gear, boxing gear, and gym wear for retailers and distributors.",
   openGraph: {
     title: "SDBBUY Wholesale | B2B",
     description:
-      "Wholesale and B2B purchasing from SDBBUY. Leather jackets, apparel, boxing gear, and accessories for businesses.",
+      "Wholesale and B2B purchasing from SDBBUY. Leather jackets, motorbike gear, boxing equipment, and accessories for businesses.",
     type: "website",
   },
 };

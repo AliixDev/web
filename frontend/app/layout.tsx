@@ -2,11 +2,11 @@
 
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
-import { createClient } from "@supabase/supabase-js";
 import "./globals.css";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { getTopLevelCategories } from "@/lib/data";
 import type { Category } from "@/lib/types";
 
 const inter = Inter({
@@ -23,17 +23,17 @@ const fraunces = Fraunces({
 
 export const metadata: Metadata = {
   title: {
-    default: "SDBBUY — Leather, Apparel & Lifestyle",
+    default: "SDBBUY — Leather, Motorbike Gear & Lifestyle",
     template: "%s · SDBBUY",
   },
   description:
-    "Leather garments, fashion apparel, boxing gear, and gym wear — from a brand with roots in 2017. Cash on Delivery across Pakistan, secure card checkout worldwide.",
+    "Leather garments, motorbike riding gear, boxing equipment, and gym wear — from a brand with roots in 2017. Cash on Delivery across Pakistan, secure card checkout worldwide.",
   applicationName: "SDBBUY",
   authors: [{ name: "SDBBUY" }],
   openGraph: {
-    title: "SDBBUY — Leather, Apparel & Lifestyle",
+    title: "SDBBUY — Leather, Motorbike Gear & Lifestyle",
     description:
-      "Leather jackets, fashion apparel, boxing gear, and fitness wear from SDBBUY — rooted in 2017. Cash on delivery across Pakistan, secure card checkout worldwide.",
+      "Leather jackets, motorbike riding gear, boxing gear, and fitness wear from SDBBUY — rooted in 2017. Cash on delivery across Pakistan, secure card checkout worldwide.",
     type: "website",
   },
 };
@@ -44,23 +44,8 @@ export const viewport: Viewport = {
   themeColor: "#ffffff",
 };
 
-async function getCategories(): Promise<Category[]> {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!supabaseUrl || !supabaseAnonKey) return [];
-
-  try {
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
-    const { data, error } = await supabase.from("categories").select("id, name, slug").order("name");
-    if (error) return [];
-    return (data ?? []) as Category[];
-  } catch {
-    return [];
-  }
-}
-
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const categories = await getCategories();
+  const categories: Category[] = await getTopLevelCategories();
 
   return (
     <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
