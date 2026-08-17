@@ -1,9 +1,13 @@
-# SDBBUY — Global Jamstack Storefront (Pakistan)
+# SDBBUY — Global Jamstack E-Commerce (Pakistan)
 
-A production-ready, **100% free-to-host** e-commerce platform: a statically
-exported Next.js storefront on **GitHub Pages**, backed entirely by
-**Supabase** (Postgres, Auth, Row Level Security, Edge Functions). There is no
-traditional application server anywhere in this stack.
+SDBBUY is a production-ready, **100% free-to-host** e-commerce platform: a
+statically exported Next.js storefront on **GitHub Pages** (`https://www.sdbbuy.com`),
+backed entirely by **Supabase** (Postgres, Auth, Row Level Security, Edge
+Functions). There is no traditional application server anywhere in this stack.
+
+The brand (roots in 2017, Pakistan) sells leather garments, **motorbike riding
+gear**, boxing equipment, gym/fitness wear, and accessories worldwide — with
+cash on delivery across Pakistan and secure card checkout internationally.
 
 ## Architecture
 
@@ -11,13 +15,13 @@ traditional application server anywhere in this stack.
 Browser (GitHub Pages, static HTML/JS)
    │
    ├── Supabase Postgres (via supabase-js, anon key, RLS-protected reads)
-   │       - public product catalog reads
+   │       - public product/category catalog reads
    │       - authenticated users' own orders
    │
    └── Supabase Edge Functions (Deno, service-role key, the ONLY place
        that computes prices and writes orders/order_items)
            - create-checkout        → Stripe Checkout Session (USD, international)
-           - cod-order               → Cash on Delivery order (PKR, Pakistan)
+           - cod-order               → Cash on Delivery order (PKR, Pakistan only)
            - local-gateway-checkout  → JazzCash / Safepay mock template (PKR)
            - stripe-webhook          → verifies Stripe signature, marks orders paid
 ```
@@ -34,14 +38,61 @@ live catalog.
 
 ```
 .
-├── .github/workflows/deploy.yml   # CI/CD: build+deploy frontend, deploy backend
-├── frontend/                      # Next.js 14 App Router, output: 'export'
+├── .github/workflows/
+│   ├── ci.yml        # Quality gate: typecheck + lint + tests + build (push/PR)
+│   └── deploy.yml    # CI/CD: build+deploy frontend, deploy Supabase backend
+├── frontend/         # Next.js 14 App Router, output: 'export'
 ├── supabase/
-│   ├── migrations/                # SQL schema + RLS policies
-│   ├── functions/                 # Deno Edge Functions
+│   ├── migrations/   # SQL schema, RLS policies, seed catalogs
+│   ├── functions/    # Deno Edge Functions (create-checkout, cod-order, …)
 │   └── config.toml
 └── README.md
 ```
+
+## Catalog
+
+Five top-level categories (the storefront nav, homepage cards, and shop
+filters are driven entirely by the `categories` table — `parent_id` enables
+subcategories):
+
+| Category | Subcategories |
+|---|---|
+| **Motorbikes** | Gloves, Jackets, Moto Suits, Helmets, Boots, Pants, Protective Gear, Riding Gear, Motorcycle Accessories, Other Motorbike Gear — 30 products (3 per subcategory) |
+| **Leather & Jackets** | Biker, bomber, and heritage racing jackets |
+| **Boxing** | Gloves, hand wraps, training shorts |
+| **Gym & Fitness** | Training hoodie, tees, gym shorts |
+| **Accessories** | Belts, bags, wallets |
+
+Products support rich merchandising fields: `brand`, multi-image galleries
+(`images` JSONB, shown with thumbnail navigation on the product page),
+`rating` / `review_count`, optional `compare_at_price_*` sale pricing, and
+size/option variants with unique SKUs. The legacy Apparel/Fashion Apparel
+categories have been removed from the catalog.
+
+## Storefront features
+
+- **Shop page** (`/shop`): search, category + subcategory filters, currency-aware
+  price range, sort (featured, price ↑/↓, name), desktop sidebar + mobile
+  filter sheet, responsive grid.
+- **Product page** (`/products/[slug]`): image gallery with thumbnails,
+  wishlist (persisted client-side), star rating + review count, sale badges,
+  variant/size selection, quantity, Add to cart / Buy now, stock states,
+  mobile sticky buy bar, related products, Product JSON-LD structured data.
+- **Cart**: slide-out drawer + full cart page, quantity editing, mobile
+  sticky checkout bar.
+- **Checkout**: sign-in required, Stripe (international, USD) · COD
+  (Pakistan, PKR) · JazzCash/Safepay (mock template), server-verified totals.
+- **Account** (`/account`): order history + order tracking/confirmation pages.
+- **Seller Central** (`/seller`): role-based admin panel with orders, products,
+  categories, inventory (adjust stock + log), promotions, customers, reports,
+  analytics, notifications (realtime), and settings — protected by the
+  `is_seller()` RLS gate. The designated seller account is promoted on signup.
+- **  Internationalization**: 13 UI languages (English + 12; header selector
+  lives in the footer) and 9 display currencies (USD, PKR, EUR, GBP, AED,
+  SAR, CAD, AUD, CHF).
+- **Info/legal pages**: about, contact, FAQ, size guide, payment information,
+  privacy policy, terms, return/refund/shipping/cancellation policies, cookie
+  policy, order tracking, wholesale/B2B.
 
 ## Prerequisites
 
@@ -61,8 +112,19 @@ cd YOUR_REPO
 cd frontend
 npm install
 cp .env.local.example .env.local
-# edit .env.local with your Supabase project URL + anon key
+# edit .env.local with:
+#   NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+#   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-public-key
+#   NEXT_PUBLIC_SUPABASE_FUNCTIONS_URL=https://YOUR_PROJECT_REF.supabase.co/functions/v1
 npm run dev   # http://localhost:3000
+```
+
+Quality checks (mirrors the CI gate):
+
+```bash
+npm run typecheck   # tsc --noEmit
+npm run lint        # next lint
+npm test            # vitest (lib unit tests)
 ```
 
 ## 2. Initialize and link Supabase
@@ -83,9 +145,22 @@ Find `YOUR_PROJECT_REF` in your Supabase project's dashboard URL:
 supabase db push
 ```
 
-This creates `products`, `product_variants`, `orders`, `order_items`,
-`profiles`, `categories`, the RLS policies, the stock-decrement RPCs, and
-seeds three example products.
+Migrations (in `supabase/migrations/`, applied in order):
+
+1. **Initial schema** — `profiles`, `categories`, `products`, `product_variants`,
+   `orders`, `order_items`, RLS policies, stock-decrement RPCs, Stripe event
+   dedupe table.
+2. **Seller Central** — `profiles.role`, seller RLS policies, `seller_notifications`,
+   `inventory_log`, `promotions`, `seller_settings`, `product-images` storage
+   bucket, `is_seller()` authorization gate, `categories.parent_id` +
+   `is_active`.
+3. **Seller notification preferences** — preference-aware order/payment/stock
+   triggers and low/out-of-stock alerts.
+4. **SDBBUY catalog** — professional seed catalog (leather, boxing, gym,
+   accessories) replacing demo products.
+5. **Motorbike category** — removes the Apparel categories, adds Motorbikes
+   with 10 subcategories and 30 gallery products, plus optional merchandising
+   columns (`brand`, `images`, `rating`, `review_count`, `compare_at_*`).
 
 ## 4. Configure secrets (used by the Edge Functions)
 
@@ -157,15 +232,17 @@ git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
 git push -u origin main
 ```
 
-Pushing to `main` triggers `.github/workflows/deploy.yml`, which:
+Pushing to `main` triggers:
 
-1. Builds the Next.js static export with your Supabase secrets baked in as
-   `NEXT_PUBLIC_*` env vars. No `basePath` is set: the storefront is served
-   from the **root** of the custom domain, so all assets are root-relative
-   (`/_next/...`) and load correctly from `https://www.sdbbuy.com/`.
-2. Publishes `frontend/out` to GitHub Pages.
-3. Links the Supabase project, runs `supabase db push`, deploys all four Edge
-   Functions, and syncs their secrets — in parallel, as a second job.
+- **`ci.yml`** — typecheck, lint, unit tests, and a static build as a quality gate.
+- **`deploy.yml`**, which:
+  1. Builds the Next.js static export with your Supabase secrets baked in as
+     `NEXT_PUBLIC_*` env vars. No `basePath` is set: the storefront is served
+     from the **root** of the custom domain, so all assets are root-relative
+     (`/_next/...`) and load correctly from `https://www.sdbbuy.com/`.
+  2. Publishes `frontend/out` to GitHub Pages.
+  3. Links the Supabase project, runs `supabase db push`, deploys all four Edge
+     Functions, and syncs their secrets — in parallel, as a second job.
 
 Your storefront is live at `https://www.sdbbuy.com/`.
 
@@ -173,8 +250,9 @@ Your storefront is live at `https://www.sdbbuy.com/`.
 
 Because product data is fetched **at build time** (`generateStaticParams` +
 server-component fetches, since there's no server to hit at request time),
-adding or editing a product requires a rebuild. Trigger one from the Actions
-tab (`workflow_dispatch`) or push any commit — no code change is required.
+adding or editing a product (or applying a new Supabase migration) requires a
+rebuild. Trigger one from the Actions tab (`workflow_dispatch`) or push any
+commit — no code change is required.
 
 ## Local currency & COD notes
 
