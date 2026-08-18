@@ -6,7 +6,7 @@
 begin;
 
 -- =====================================================================
--- 0. Ensure columns / uniqueness needed by this migration exist
+-- 1. PRODUCT SEO COLUMNS
 -- =====================================================================
 
 alter table public.products
@@ -14,8 +14,14 @@ alter table public.products
   add column if not exists seo_description text,
   add column if not exists seo_keywords text;
 
--- These indexes make the ON CONFLICT (slug) / ON CONFLICT (sku)
--- statements below valid and safe.
+
+-- =====================================================================
+-- 2. ENSURE REQUIRED UNIQUE CONSTRAINTS
+--
+-- The ON CONFLICT (...) statements below require uniqueness.
+-- Create unique indexes safely if they do not already exist.
+-- =====================================================================
+
 create unique index if not exists categories_slug_unique_idx
   on public.categories (slug);
 
@@ -27,8 +33,10 @@ create unique index if not exists product_variants_sku_unique_idx
 
 
 -- =====================================================================
--- 1. Retire old catalog
+-- 3. RETIRED CATEGORY SLUGS
 -- =====================================================================
+
+-- Deactivate old catalog categories.
 
 update public.categories
 set is_active = false
@@ -57,74 +65,76 @@ where slug in (
 );
 
 
--- =====================================================================
--- 2. Deactivate products belonging to retired categories
--- =====================================================================
+-- Deactivate products belonging to retired categories.
 
 update public.products p
 set is_active = false
-where p.category_id in (
-  select c.id
+where exists (
+  select 1
   from public.categories c
-  where c.slug in (
-    'apparel',
-    'home-living',
-    'electronics',
+  where c.id = p.category_id
+    and c.slug in (
+      'apparel',
+      'home-living',
+      'electronics',
 
-    'leather-jackets',
-    'fashion-apparel',
-    'boxing',
-    'gym-fitness',
-    'accessories',
+      'leather-jackets',
+      'fashion-apparel',
+      'boxing',
+      'gym-fitness',
+      'accessories',
 
-    'motorbikes',
-    'motorbike-gloves',
-    'motorbike-jackets',
-    'moto-suits',
-    'helmets',
-    'motorbike-boots',
-    'motorbike-pants',
-    'protective-gear',
-    'riding-gear',
-    'motorcycle-accessories',
-    'other-motorbike-gear'
-  )
+      'motorbikes',
+      'motorbike-gloves',
+      'motorbike-jackets',
+      'moto-suits',
+      'helmets',
+      'motorbike-boots',
+      'motorbike-pants',
+      'protective-gear',
+      'riding-gear',
+      'motorcycle-accessories',
+      'other-motorbike-gear'
+    )
 );
 
 
 -- =====================================================================
--- 3. Remove old variants that are NOT referenced by order history
+-- 4. REMOVE OLD VARIANTS THAT ARE NOT PART OF ORDER HISTORY
+--
+-- Historical order_items.variant_id must remain valid.
 -- =====================================================================
 
 delete from public.product_variants pv
-where pv.product_id in (
-  select p.id
+where exists (
+  select 1
   from public.products p
   join public.categories c
     on c.id = p.category_id
-  where c.slug in (
-    'apparel',
-    'home-living',
-    'electronics',
+  where p.id = pv.product_id
+    and c.slug in (
+      'apparel',
+      'home-living',
+      'electronics',
 
-    'leather-jackets',
-    'fashion-apparel',
-    'boxing',
-    'gym-fitness',
-    'accessories',
+      'leather-jackets',
+      'fashion-apparel',
+      'boxing',
+      'gym-fitness',
+      'accessories',
 
-    'motorbikes',
-    'motorbike-gloves',
-    'motorbike-jackets',
-    'moto-suits',
-    'helmets',
-    'motorbike-boots',
-    'motorbike-pants',
-    'protective-gear',
-    'riding-gear',
-    'motorcycle-accessories',
-    'other-motorbike-gear'
-  )
+      'motorbikes',
+      'motorbike-gloves',
+      'motorbike-jackets',
+      'moto-suits',
+      'helmets',
+      'motorbike-boots',
+      'motorbike-pants',
+      'protective-gear',
+      'riding-gear',
+      'motorcycle-accessories',
+      'other-motorbike-gear'
+    )
 )
 and not exists (
   select 1
@@ -134,36 +144,37 @@ and not exists (
 
 
 -- =====================================================================
--- 4. Remove old products that are NOT referenced by order history
+-- 5. REMOVE OLD PRODUCTS THAT ARE NOT PART OF ORDER HISTORY
 -- =====================================================================
 
 delete from public.products p
-where p.category_id in (
-  select c.id
+where exists (
+  select 1
   from public.categories c
-  where c.slug in (
-    'apparel',
-    'home-living',
-    'electronics',
+  where c.id = p.category_id
+    and c.slug in (
+      'apparel',
+      'home-living',
+      'electronics',
 
-    'leather-jackets',
-    'fashion-apparel',
-    'boxing',
-    'gym-fitness',
-    'accessories',
+      'leather-jackets',
+      'fashion-apparel',
+      'boxing',
+      'gym-fitness',
+      'accessories',
 
-    'motorbikes',
-    'motorbike-gloves',
-    'motorbike-jackets',
-    'moto-suits',
-    'helmets',
-    'motorbike-boots',
-    'motorbike-pants',
-    'protective-gear',
-    'riding-gear',
-    'motorcycle-accessories',
-    'other-motorbike-gear'
-  )
+      'motorbikes',
+      'motorbike-gloves',
+      'motorbike-jackets',
+      'moto-suits',
+      'helmets',
+      'motorbike-boots',
+      'motorbike-pants',
+      'protective-gear',
+      'riding-gear',
+      'motorcycle-accessories',
+      'other-motorbike-gear'
+    )
 )
 and not exists (
   select 1
@@ -173,10 +184,8 @@ and not exists (
 
 
 -- =====================================================================
--- 5. Delete retired categories only when nothing still references them
+-- 6. REMOVE EMPTY RETIRED CATEGORIES
 -- =====================================================================
--- Categories containing historical products remain in the DB but stay
--- inactive. This preserves historical order relationships.
 
 delete from public.categories c
 where c.slug in (
@@ -210,7 +219,7 @@ and not exists (
 
 
 -- =====================================================================
--- 6. Create / reactivate SDB WEAR top-level categories
+-- 7. NEW SDB WEAR TOP-LEVEL CATEGORIES
 -- =====================================================================
 
 insert into public.categories (
@@ -246,7 +255,7 @@ do update set
 
 
 -- =====================================================================
--- 7. Create / reactivate SDB WEAR subcategories
+-- 8. NEW SUBCATEGORIES
 -- =====================================================================
 
 insert into public.categories (
@@ -264,26 +273,90 @@ from (
   values
 
     -- Motorbike Gear
-    ('Moto Suits',              'moto-suits',              'motorbike-gear'),
-    ('Moto Gloves',             'moto-gloves',             'motorbike-gear'),
-    ('Moto Shoes',              'moto-shoes',              'motorbike-gear'),
+    (
+      'Moto Suits',
+      'moto-suits',
+      'motorbike-gear'
+    ),
+    (
+      'Moto Gloves',
+      'moto-gloves',
+      'motorbike-gear'
+    ),
+    (
+      'Moto Shoes',
+      'moto-shoes',
+      'motorbike-gear'
+    ),
 
     -- Leather Jackets & Biker Fashion
-    ('Biker Leather Jackets',   'biker-leather-jackets',   'leather-jackets-biker-fashion'),
-    ('Casual Leather Jackets',  'casual-leather-jackets',  'leather-jackets-biker-fashion'),
-    ('Heritage Leather',        'heritage-leather',        'leather-jackets-biker-fashion'),
-    ('Racing-Inspired Jackets', 'racing-inspired-jackets', 'leather-jackets-biker-fashion'),
-    ('Biker Fashion',           'biker-fashion',           'leather-jackets-biker-fashion'),
+    (
+      'Biker Leather Jackets',
+      'biker-leather-jackets',
+      'leather-jackets-biker-fashion'
+    ),
+    (
+      'Casual Leather Jackets',
+      'casual-leather-jackets',
+      'leather-jackets-biker-fashion'
+    ),
+    (
+      'Heritage Leather',
+      'heritage-leather',
+      'leather-jackets-biker-fashion'
+    ),
+    (
+      'Racing-Inspired Jackets',
+      'racing-inspired-jackets',
+      'leather-jackets-biker-fashion'
+    ),
+    (
+      'Biker Fashion',
+      'biker-fashion',
+      'leather-jackets-biker-fashion'
+    ),
 
     -- Handcrafted Gloves
-    ('Leather Gloves',          'leather-gloves',           'handcrafted-gloves'),
-    ('Riding Gloves',           'riding-gloves',            'handcrafted-gloves'),
-    ('Driving Gloves',          'driving-gloves',           'handcrafted-gloves'),
-    ('Work Gloves',             'work-gloves',              'handcrafted-gloves'),
-    ('Fashion Gloves',          'fashion-gloves',           'handcrafted-gloves'),
-    ('Mechanic Gloves',         'mechanic-gloves',          'handcrafted-gloves'),
-    ('Tactical Gloves',         'tactical-gloves',          'handcrafted-gloves'),
-    ('Custom Gloves',           'custom-gloves',            'handcrafted-gloves')
+    (
+      'Leather Gloves',
+      'leather-gloves',
+      'handcrafted-gloves'
+    ),
+    (
+      'Riding Gloves',
+      'riding-gloves',
+      'handcrafted-gloves'
+    ),
+    (
+      'Driving Gloves',
+      'driving-gloves',
+      'handcrafted-gloves'
+    ),
+    (
+      'Work Gloves',
+      'work-gloves',
+      'handcrafted-gloves'
+    ),
+    (
+      'Fashion Gloves',
+      'fashion-gloves',
+      'handcrafted-gloves'
+    ),
+    (
+      'Mechanic Gloves',
+      'mechanic-gloves',
+      'handcrafted-gloves'
+    ),
+    (
+      'Tactical Gloves',
+      'tactical-gloves',
+      'handcrafted-gloves'
+    ),
+    (
+      'Custom Gloves',
+      'custom-gloves',
+      'handcrafted-gloves'
+    )
 
 ) as v(name, slug, parent_slug)
 join public.categories p
@@ -296,7 +369,7 @@ do update set
 
 
 -- =====================================================================
--- 8. MOTORBIKE GEAR — PRODUCTS
+-- 9. MOTORBIKE GEAR PRODUCTS
 -- =====================================================================
 
 insert into public.products (
@@ -305,6 +378,7 @@ insert into public.products (
   name,
   seo_title,
   seo_description,
+  seo_keywords,
   description,
   image_url,
   images,
@@ -322,6 +396,7 @@ select
   v.name,
   v.seo_title,
   v.seo_description,
+  v.seo_keywords,
   v.description,
   v.image_url,
   v.images,
@@ -335,17 +410,14 @@ select
 from (
   values
 
-  -- ---------------------------------------------------------------
-  -- Moto Suits
-  -- ---------------------------------------------------------------
-
   (
     'moto-suits',
     'sdb-wear-1-piece-leather-racing-suit',
     'SDB WEAR 1-Piece Leather Racing Suit',
     'SDB WEAR 1-Piece Leather Racing Suit',
-    'One-piece leather racing suit from SDB WEAR — pre-curved limbs, knee pucks, stretch panels, and a secure closure for track days.',
-    'A full one-piece leather suit built for track days. Pre-curved limbs hold the riding position, replaceable knee pucks protect at the pegs, and stretch panels at the shoulders and hips keep movement free. A full-length closure with comfort flap, adjustable waist, and a cut that stays close in a tucked position.',
+    'One-piece leather racing suit from SDB WEAR with a close riding cut, stretch panels and track-focused construction.',
+    'SDB WEAR, motorcycle racing suit, leather racing suit, one piece moto suit',
+    'A full one-piece leather suit built for track days. Pre-curved limbs hold the riding position, replaceable knee pucks protect at the pegs, and stretch panels at the shoulders and hips keep movement free.',
     '/placeholders/moto-suit.svg',
     '["/placeholders/moto-suit.svg","/placeholders/moto-suit-detail.svg","/placeholders/moto-suit-side.svg"]'::jsonb,
     'SDB WEAR',
@@ -361,8 +433,9 @@ from (
     'sdb-wear-2-piece-motorcycle-leather-suit',
     'SDB WEAR 2-Piece Motorcycle Leather Suit',
     'SDB WEAR 2-Piece Motorcycle Leather Suit',
-    'Two-piece motorcycle leather suit from SDB WEAR — sport jacket with matching pants, connection zip, and reinforced knee panels.',
-    'A zippered two-piece leather suit pairing a sport jacket with matching pants. Full-circumference connection zip, adjustable cuff and waist closures, and reinforced knee panels for weekend rides and occasional track use.',
+    'Two-piece motorcycle leather suit from SDB WEAR with sport jacket, matching pants and connection zip.',
+    'SDB WEAR, two piece motorcycle suit, leather motorcycle suit, riding suit',
+    'A zippered two-piece leather suit pairing a sport jacket with matching pants. Full-circumference connection zip, adjustable cuff and waist closures, and reinforced knee panels.',
     '/placeholders/moto-suit.svg',
     '["/placeholders/moto-suit.svg","/placeholders/moto-suit-side.svg","/placeholders/moto-suit-detail.svg"]'::jsonb,
     'SDB WEAR',
@@ -378,8 +451,9 @@ from (
     'sdb-wear-premium-track-racing-suit',
     'SDB WEAR Premium Track Racing Suit',
     'SDB WEAR Premium Track Racing Suit',
-    'Premium track racing suit from SDB WEAR — one-piece race cut, hard knee sliders, perforation zones, and a removable liner.',
-    'The premium track suit: a one-piece racing cut with multi-panel leather construction, hard knee sliders, and generous perforation zones for airflow. Removable liner, ergonomic stretch gussets, and a cut that keeps you anchored at the pegs.',
+    'Premium track racing suit from SDB WEAR with race cut, leather construction, sliders and ventilation zones.',
+    'SDB WEAR, premium racing suit, track suit, motorcycle racing gear',
+    'The premium track suit features a one-piece racing cut, multi-panel leather construction, hard knee sliders and generous perforation zones for airflow.',
     '/placeholders/moto-suit.svg',
     '["/placeholders/moto-suit.svg","/placeholders/moto-suit-detail.svg","/placeholders/moto-suit-side.svg"]'::jsonb,
     'SDB WEAR',
@@ -395,8 +469,9 @@ from (
     'sdb-wear-professional-protection-suit',
     'SDB WEAR Professional Protection Suit',
     'SDB WEAR Professional Protection Suit',
-    'Professional protection suit from SDB WEAR for sport riding — structured leather, armor pockets, and ventilation zips.',
-    'A professional-grade protection suit for sport riding and training. Structured leather panels, integrated armor pockets, ventilation zips, and pre-curved sleeves — protection that moves with you.',
+    'Professional motorcycle protection suit from SDB WEAR with structured leather panels, armor pockets and ventilation.',
+    'SDB WEAR, protection suit, motorcycle protective gear, leather riding suit',
+    'A professional-grade protection suit for sport riding and training. Structured leather panels, integrated armor pockets, ventilation zips and pre-curved sleeves.',
     '/placeholders/moto-suit.svg',
     '["/placeholders/moto-suit.svg","/placeholders/moto-suit-side.svg","/placeholders/moto-suit-detail.svg"]'::jsonb,
     'SDB WEAR',
@@ -407,17 +482,14 @@ from (
     14
   ),
 
-  -- ---------------------------------------------------------------
-  -- Moto Gloves
-  -- ---------------------------------------------------------------
-
   (
     'moto-gloves',
     'sdb-wear-full-finger-racing-gloves',
     'SDB WEAR Full-Finger Racing Gloves',
     'SDB WEAR Full-Finger Racing Gloves',
-    'Full-finger racing gloves from SDB WEAR — padded knuckle, pre-curved fingers, double-layer palm, and vented backhand.',
-    'Full-finger racing gloves with a padded knuckle panel, pre-curved fingers, and a double-layer palm. Perforated backhand vents heat, and the hook-and-loop cuff locks the fit for hard braking.',
+    'Full-finger racing gloves from SDB WEAR with padded knuckles, pre-curved fingers and reinforced palm.',
+    'SDB WEAR, racing gloves, motorcycle gloves, full finger riding gloves',
+    'Full-finger racing gloves with padded knuckle panels, pre-curved fingers and a double-layer palm.',
     '/placeholders/moto-glove.svg',
     '["/placeholders/moto-glove.svg","/placeholders/moto-glove-detail.svg","/placeholders/moto-glove-side.svg"]'::jsonb,
     'SDB WEAR',
@@ -433,8 +505,9 @@ from (
     'sdb-wear-short-cuff-riding-gloves',
     'SDB WEAR Short-Cuff Riding Gloves',
     'SDB WEAR Short-Cuff Riding Gloves',
-    'Short-cuff riding gloves from SDB WEAR — pre-curved fingers, reinforced palm, breathable mesh backhand, touchscreen tips.',
-    'Short-cuff riding gloves for everyday rides. Pre-curved fingers, reinforced palm, and a breathable mesh backhand. Touchscreen fingertips keep navigation within reach.',
+    'Short-cuff riding gloves from SDB WEAR with reinforced palm, breathable backhand and touchscreen fingertips.',
+    'SDB WEAR, short cuff gloves, riding gloves, motorcycle gloves',
+    'Short-cuff riding gloves for everyday rides. Pre-curved fingers, reinforced palm, breathable mesh backhand and touchscreen fingertips.',
     '/placeholders/moto-glove.svg',
     '["/placeholders/moto-glove.svg","/placeholders/moto-glove-side.svg","/placeholders/moto-glove-detail.svg"]'::jsonb,
     'SDB WEAR',
@@ -450,8 +523,9 @@ from (
     'sdb-wear-long-cuff-racing-gloves',
     'SDB WEAR Long-Cuff Racing Gloves',
     'SDB WEAR Long-Cuff Racing Gloves',
-    'Long-cuff racing gloves from SDB WEAR — hard knuckle shell, finger sliders, double-layer palm, and gauntlet cuff.',
-    'Long-cuff racing gloves with a hard knuckle shell, finger sliders, and a double-layer palm. The extended gauntlet secures over the jacket cuff, and accordion panels allow full grip range.',
+    'Long-cuff racing gloves from SDB WEAR with hard knuckle protection, finger sliders and gauntlet cuff.',
+    'SDB WEAR, long cuff racing gloves, motorcycle racing gloves, gauntlet gloves',
+    'Long-cuff racing gloves with a hard knuckle shell, finger sliders, double-layer palm and extended gauntlet cuff.',
     '/placeholders/moto-glove.svg',
     '["/placeholders/moto-glove.svg","/placeholders/moto-glove-detail.svg","/placeholders/moto-glove-side.svg"]'::jsonb,
     'SDB WEAR',
@@ -467,8 +541,9 @@ from (
     'sdb-wear-touring-motorcycle-gloves',
     'SDB WEAR Touring Motorcycle Gloves',
     'SDB WEAR Touring Motorcycle Gloves',
-    'Touring motorcycle gloves from SDB WEAR — waterproof membrane, thermal lining, visor wipe, and touchscreen fingertips.',
-    'Touring gloves built for long days in the saddle. A waterproof membrane keeps rain out, the thermal lining adds warmth, and the visor wipe and touchscreen fingertips handle practical stops.',
+    'Touring motorcycle gloves from SDB WEAR with waterproof membrane, thermal lining and touchscreen fingertips.',
+    'SDB WEAR, touring motorcycle gloves, waterproof riding gloves, motorcycle touring gear',
+    'Touring gloves built for long days in the saddle. A waterproof membrane, thermal lining, visor wipe and touchscreen fingertips handle practical stops.',
     '/placeholders/moto-glove.svg',
     '["/placeholders/moto-glove.svg","/placeholders/moto-glove-side.svg","/placeholders/moto-glove-detail.svg"]'::jsonb,
     'SDB WEAR',
@@ -484,8 +559,9 @@ from (
     'sdb-wear-premium-leather-moto-gloves',
     'SDB WEAR Premium Leather Moto Gloves',
     'SDB WEAR Premium Leather Moto Gloves',
-    'Premium leather moto gloves from SDB WEAR — supple hide, reinforced palm, padded knuckle, and double closure.',
-    'Premium leather moto gloves with a supple hide shell, reinforced palm, and padded knuckle. Perforated panels manage heat while the double closure — strap plus cuff — holds a precise fit.',
+    'Premium leather motorcycle gloves from SDB WEAR with reinforced palm, padded knuckle and double closure.',
+    'SDB WEAR, premium leather moto gloves, motorcycle gloves, leather riding gloves',
+    'Premium leather moto gloves with a supple hide shell, reinforced palm and padded knuckle. Perforated panels manage heat while the double closure holds a precise fit.',
     '/placeholders/moto-glove.svg',
     '["/placeholders/moto-glove.svg","/placeholders/moto-glove-detail.svg","/placeholders/moto-glove-side.svg"]'::jsonb,
     'SDB WEAR',
@@ -496,17 +572,14 @@ from (
     25
   ),
 
-  -- ---------------------------------------------------------------
-  -- Moto Shoes
-  -- ---------------------------------------------------------------
-
   (
     'moto-shoes',
     'sdb-wear-motorcycle-riding-shoes',
     'SDB WEAR Motorcycle Riding Shoes',
     'SDB WEAR Motorcycle Riding Shoes',
-    'Motorcycle riding shoes from SDB WEAR — reinforced toe and heel, oil-resistant sole, waterproof membrane, lace-and-zip closure.',
-    'Ankle-height riding shoes that look right off the bike. Reinforced toe and heel counters, oil-resistant soles, and a waterproof membrane. Lace-and-zip closure secures in seconds.',
+    'Motorcycle riding shoes from SDB WEAR with reinforced toe and heel, oil-resistant sole and waterproof membrane.',
+    'SDB WEAR, motorcycle shoes, riding shoes, motorcycle footwear',
+    'Ankle-height riding shoes that look right off the bike. Reinforced toe and heel counters, oil-resistant soles and a waterproof membrane.',
     '/placeholders/moto-shoe.svg',
     '["/placeholders/moto-shoe.svg","/placeholders/moto-shoe-side.svg","/placeholders/moto-shoe-detail.svg"]'::jsonb,
     'SDB WEAR',
@@ -522,8 +595,9 @@ from (
     'sdb-wear-premium-moto-boots',
     'SDB WEAR Premium Moto Boots',
     'SDB WEAR Premium Moto Boots',
-    'Premium moto boots from SDB WEAR — full-length zip, reinforced ankle, rigid heel and toe, cushioned insole.',
-    'Premium moto boots with a full-length zip, reinforced ankle support, and a cushioned insole. The rigid heel and toe protect the foot while the padded shaft keeps long rides comfortable.',
+    'Premium motorcycle boots from SDB WEAR with reinforced ankle, rigid heel and toe and cushioned insole.',
+    'SDB WEAR, premium moto boots, motorcycle boots, riding boots',
+    'Premium moto boots with a full-length zip, reinforced ankle support and cushioned insole.',
     '/placeholders/moto-shoe.svg',
     '["/placeholders/moto-shoe.svg","/placeholders/moto-shoe-detail.svg","/placeholders/moto-shoe-side.svg"]'::jsonb,
     'SDB WEAR',
@@ -539,8 +613,9 @@ from (
     'sdb-wear-urban-motorcycle-shoes',
     'SDB WEAR Urban Motorcycle Shoes',
     'SDB WEAR Urban Motorcycle Shoes',
-    'Urban motorcycle shoes from SDB WEAR — low-profile silhouette, reinforced toe box, grippy commuter sole, waterproof lining.',
-    'Urban riding shoes with a low-profile silhouette, reinforced toe box, and grippy commuter sole. A hidden waterproof membrane and breathable lining suit daily city riding.',
+    'Urban motorcycle shoes from SDB WEAR with low-profile silhouette, reinforced toe and commuter sole.',
+    'SDB WEAR, urban motorcycle shoes, commuter riding shoes, motorcycle footwear',
+    'Urban riding shoes with a low-profile silhouette, reinforced toe box, grippy commuter sole and waterproof membrane.',
     '/placeholders/moto-shoe.svg',
     '["/placeholders/moto-shoe.svg","/placeholders/moto-shoe-side.svg","/placeholders/moto-shoe-detail.svg"]'::jsonb,
     'SDB WEAR',
@@ -556,8 +631,9 @@ from (
     'sdb-wear-leather-riding-boots',
     'SDB WEAR Leather Riding Boots',
     'SDB WEAR Leather Riding Boots',
-    'Leather riding boots from SDB WEAR — classic profile, reinforced ankle, oil-resistant sole, waterproof membrane, side zip.',
-    'Leather riding boots with a classic profile and modern protection. Reinforced ankle, oil-resistant sole, and a waterproof membrane. Lace front with a side zip for easy entry.',
+    'Leather riding boots from SDB WEAR with reinforced ankle, oil-resistant sole and waterproof membrane.',
+    'SDB WEAR, leather riding boots, motorcycle boots, leather motorcycle footwear',
+    'Leather riding boots with a classic profile and modern protection. Reinforced ankle, oil-resistant sole and waterproof membrane.',
     '/placeholders/moto-shoe.svg',
     '["/placeholders/moto-shoe.svg","/placeholders/moto-shoe-detail.svg","/placeholders/moto-shoe-side.svg"]'::jsonb,
     'SDB WEAR',
@@ -574,6 +650,7 @@ from (
   name,
   seo_title,
   seo_description,
+  seo_keywords,
   description,
   image_url,
   images,
@@ -592,6 +669,7 @@ do update set
   name = excluded.name,
   seo_title = excluded.seo_title,
   seo_description = excluded.seo_description,
+  seo_keywords = excluded.seo_keywords,
   description = excluded.description,
   image_url = excluded.image_url,
   images = excluded.images,
@@ -605,7 +683,7 @@ do update set
 
 
 -- =====================================================================
--- 9. LEATHER JACKETS & BIKER FASHION
+-- 10. LEATHER JACKETS & BIKER FASHION
 -- =====================================================================
 
 insert into public.products (
@@ -614,6 +692,7 @@ insert into public.products (
   name,
   seo_title,
   seo_description,
+  seo_keywords,
   description,
   image_url,
   images,
@@ -631,6 +710,7 @@ select
   v.name,
   v.seo_title,
   v.seo_description,
+  v.seo_keywords,
   v.description,
   v.image_url,
   v.images,
@@ -649,8 +729,9 @@ from (
     'sdb-wear-classic-black-biker-leather-jacket',
     'SDB WEAR Classic Black Biker Leather Jacket',
     'SDB WEAR Classic Black Biker Leather Jacket',
-    'Classic black biker leather jacket from SDB WEAR — full-grain leather, asymmetric zip, quilted shoulders, four pockets.',
-    'The classic black biker jacket: full-grain leather, asymmetric zip, quilted shoulder panels, and four pockets. Ribbed cuffs and hem hold the fit; the structured silhouette ages into its own.',
+    'Classic black biker leather jacket from SDB WEAR with full-grain leather, asymmetric zip and quilted shoulders.',
+    'SDB WEAR, black biker jacket, leather jacket, motorcycle jacket',
+    'The classic black biker jacket: full-grain leather, asymmetric zip, quilted shoulder panels and four pockets.',
     '/placeholders/leather-jacket.svg',
     '["/placeholders/leather-jacket.svg","/placeholders/leather-jacket-side.svg","/placeholders/leather-jacket-detail.svg"]'::jsonb,
     'SDB WEAR',
@@ -666,8 +747,9 @@ from (
     'sdb-wear-premium-motorcycle-leather-jacket',
     'SDB WEAR Premium Motorcycle Leather Jacket',
     'SDB WEAR Premium Motorcycle Leather Jacket',
-    'Premium motorcycle leather jacket from SDB WEAR — riding-oriented cut, pre-curved sleeves, removable thermal liner.',
-    'A premium motorcycle leather jacket with a riding-oriented cut. Pre-curved sleeves, removable thermal liner, adjustable waist, and armor-ready pockets. Built for the road and made to last.',
+    'Premium motorcycle leather jacket from SDB WEAR with riding-oriented cut, pre-curved sleeves and thermal liner.',
+    'SDB WEAR, premium motorcycle jacket, leather riding jacket, biker jacket',
+    'A premium motorcycle leather jacket with a riding-oriented cut, pre-curved sleeves, removable thermal liner and armor-ready pockets.',
     '/placeholders/leather-jacket.svg',
     '["/placeholders/leather-jacket.svg","/placeholders/leather-jacket-detail.svg","/placeholders/leather-jacket-side.svg"]'::jsonb,
     'SDB WEAR',
@@ -683,8 +765,9 @@ from (
     'sdb-wear-urban-biker-leather-jacket',
     'SDB WEAR Urban Biker Leather Jacket',
     'SDB WEAR Urban Biker Leather Jacket',
-    'Urban biker leather jacket from SDB WEAR — streamlined profile, smooth leather, minimal hardware, clean zip front.',
-    'An urban biker jacket with a streamlined profile. Smooth leather, minimal hardware, and a clean zip front. Two exterior and two interior pockets keep daily essentials close.',
+    'Urban biker leather jacket from SDB WEAR with streamlined profile, smooth leather and minimal hardware.',
+    'SDB WEAR, urban biker jacket, leather jacket, city motorcycle jacket',
+    'An urban biker jacket with a streamlined profile, smooth leather, minimal hardware and a clean zip front.',
     '/placeholders/leather-jacket.svg',
     '["/placeholders/leather-jacket.svg","/placeholders/leather-jacket-side.svg","/placeholders/leather-jacket-detail.svg"]'::jsonb,
     'SDB WEAR',
@@ -700,8 +783,9 @@ from (
     'sdb-wear-minimal-black-leather-jacket',
     'SDB WEAR Minimal Black Leather Jacket',
     'SDB WEAR Minimal Black Leather Jacket',
-    'Minimal black leather jacket from SDB WEAR — no visible branding, clean zip front, understated hardware, relaxed fit.',
-    'A minimal black leather jacket with no visible branding. Clean zip front, understated hardware, and a relaxed fit that layers over anything. Leather that earns its place in a rotation.',
+    'Minimal black leather jacket from SDB WEAR with clean zip front and understated hardware.',
+    'SDB WEAR, minimal leather jacket, black leather jacket, casual jacket',
+    'A minimal black leather jacket with clean zip front, understated hardware and a relaxed fit.',
     '/placeholders/leather-jacket.svg',
     '["/placeholders/leather-jacket.svg","/placeholders/leather-jacket-detail.svg","/placeholders/leather-jacket-side.svg"]'::jsonb,
     'SDB WEAR',
@@ -717,8 +801,9 @@ from (
     'sdb-wear-premium-casual-leather-jacket',
     'SDB WEAR Premium Casual Leather Jacket',
     'SDB WEAR Premium Casual Leather Jacket',
-    'Premium casual leather jacket from SDB WEAR — soft hand feel, tailored cut, stand collar, hidden placket.',
-    'A premium casual leather jacket with a soft hand feel and a tailored cut. Stand collar, hidden placket, and functional pockets. Detail is in the stitching and the fit.',
+    'Premium casual leather jacket from SDB WEAR with soft hand feel, tailored cut and stand collar.',
+    'SDB WEAR, premium casual leather jacket, mens leather jacket, casual leather',
+    'A premium casual leather jacket with a soft hand feel and tailored cut. Stand collar, hidden placket and functional pockets.',
     '/placeholders/leather-jacket.svg',
     '["/placeholders/leather-jacket.svg","/placeholders/leather-jacket-side.svg","/placeholders/leather-jacket-detail.svg"]'::jsonb,
     'SDB WEAR',
@@ -734,8 +819,9 @@ from (
     'sdb-wear-relaxed-everyday-leather-jacket',
     'SDB WEAR Relaxed Everyday Leather Jacket',
     'SDB WEAR Relaxed Everyday Leather Jacket',
-    'Relaxed everyday leather jacket from SDB WEAR — softer drape, roomier cut, full-zip front, ribbed collar and cuffs.',
-    'A relaxed everyday leather jacket with a softer drape and roomier cut. Full-zip front, ribbed collar and cuffs, and a smooth lining. Easy to wear, easy to reach for.',
+    'Relaxed everyday leather jacket from SDB WEAR with softer drape, roomier cut and ribbed collar.',
+    'SDB WEAR, relaxed leather jacket, everyday leather jacket, casual biker fashion',
+    'A relaxed everyday leather jacket with a softer drape and roomier cut. Full-zip front, ribbed collar and cuffs.',
     '/placeholders/leather-jacket.svg',
     '["/placeholders/leather-jacket.svg","/placeholders/leather-jacket-detail.svg","/placeholders/leather-jacket-side.svg"]'::jsonb,
     'SDB WEAR',
@@ -751,8 +837,9 @@ from (
     'sdb-wear-heritage-rider-jacket',
     'SDB WEAR Heritage Rider Jacket',
     'SDB WEAR Heritage Rider Jacket',
-    'Heritage rider jacket from SDB WEAR — full-grain leather, racing silhouette, snap collar, quilted lining.',
-    'A heritage rider jacket cut from full-grain leather with a classic racing silhouette. Snap collar, zip front, quilted lining, and four exterior pockets. Sharp, tailored, and built to age well.',
+    'Heritage rider jacket from SDB WEAR with full-grain leather, classic racing silhouette and quilted lining.',
+    'SDB WEAR, heritage rider jacket, vintage leather jacket, classic biker jacket',
+    'A heritage rider jacket cut from full-grain leather with a classic racing silhouette, snap collar, zip front and quilted lining.',
     '/placeholders/leather-jacket.svg',
     '["/placeholders/leather-jacket.svg","/placeholders/leather-jacket-side.svg","/placeholders/leather-jacket-detail.svg"]'::jsonb,
     'SDB WEAR',
@@ -768,8 +855,9 @@ from (
     'sdb-wear-heritage-leather-riding-jacket',
     'SDB WEAR Heritage Leather Riding Jacket',
     'SDB WEAR Heritage Leather Riding Jacket',
-    'Heritage leather riding jacket from SDB WEAR — cafe-racer profile, clean chest panel, pre-curved sleeves.',
-    'A heritage leather riding jacket with a timeless cafe-racer profile. Clean chest panel, secure zip front, and pre-curved sleeves. Reinforced stitching throughout for years of wear.',
+    'Heritage leather riding jacket from SDB WEAR with cafe-racer profile, clean chest panel and pre-curved sleeves.',
+    'SDB WEAR, heritage leather jacket, cafe racer jacket, leather riding jacket',
+    'A heritage leather riding jacket with a timeless cafe-racer profile, clean chest panel, secure zip front and pre-curved sleeves.',
     '/placeholders/leather-jacket.svg',
     '["/placeholders/leather-jacket.svg","/placeholders/leather-jacket-detail.svg","/placeholders/leather-jacket-side.svg"]'::jsonb,
     'SDB WEAR',
@@ -785,8 +873,9 @@ from (
     'sdb-wear-vintage-racing-leather-jacket',
     'SDB WEAR Vintage Racing Leather Jacket',
     'SDB WEAR Vintage Racing Leather Jacket',
-    'Vintage racing leather jacket from SDB WEAR — period-inspired panels, contrast stitching, zip sleeves, modern fit.',
-    'A vintage racing leather jacket with period-inspired panels and a modern fit. Contrast stitching, zip sleeves, and a tapered waist. Racing heritage without the track-day price.',
+    'Vintage racing leather jacket from SDB WEAR with period-inspired panels and modern fit.',
+    'SDB WEAR, vintage racing jacket, racing leather jacket, biker fashion',
+    'A vintage racing leather jacket with period-inspired panels, contrast stitching, zip sleeves and modern fit.',
     '/placeholders/leather-jacket.svg',
     '["/placeholders/leather-jacket.svg","/placeholders/leather-jacket-side.svg","/placeholders/leather-jacket-detail.svg"]'::jsonb,
     'SDB WEAR',
@@ -802,8 +891,9 @@ from (
     'sdb-wear-racing-inspired-leather-jacket',
     'SDB WEAR Racing-Inspired Leather Jacket',
     'SDB WEAR Racing-Inspired Leather Jacket',
-    'Racing-inspired leather jacket from SDB WEAR — aerodynamic paneling, perforated zones, structured shoulders.',
-    'A racing-inspired leather jacket with aerodynamic paneling, perforated ventilation zones, and a secure zip front. Structured shoulders and a close cut for a sharp silhouette.',
+    'Racing-inspired leather jacket from SDB WEAR with aerodynamic paneling, perforated zones and structured shoulders.',
+    'SDB WEAR, racing leather jacket, racing inspired jacket, motorcycle fashion',
+    'A racing-inspired leather jacket with aerodynamic paneling, perforated ventilation zones, structured shoulders and close cut.',
     '/placeholders/leather-jacket.svg',
     '["/placeholders/leather-jacket.svg","/placeholders/leather-jacket-detail.svg","/placeholders/leather-jacket-side.svg"]'::jsonb,
     'SDB WEAR',
@@ -819,8 +909,9 @@ from (
     'sdb-wear-leather-biker-vest',
     'SDB WEAR Leather Biker Vest',
     'SDB WEAR Leather Biker Vest',
-    'Leather biker vest from SDB WEAR — full-grain hide, zip front, four pockets, clean stitching.',
-    'A leather biker vest cut from full-grain hide with a zip front and four pockets. Clean stitching and a straight hem. Layers over a tee or a hoodie for the classic biker look.',
+    'Leather biker vest from SDB WEAR with full-grain hide, zip front and four pockets.',
+    'SDB WEAR, leather biker vest, biker fashion, motorcycle vest',
+    'A leather biker vest cut from full-grain hide with zip front and four pockets. Layers easily over a tee or hoodie.',
     '/placeholders/leather-jacket.svg',
     '["/placeholders/leather-jacket.svg","/placeholders/leather-jacket-detail.svg","/placeholders/leather-jacket-side.svg"]'::jsonb,
     'SDB WEAR',
@@ -836,8 +927,9 @@ from (
     'sdb-wear-biker-fashion-leather-jacket',
     'SDB WEAR Biker Fashion Leather Jacket',
     'SDB WEAR Biker Fashion Leather Jacket',
-    'Biker fashion leather jacket from SDB WEAR — tailored waist, asymmetric zip, quilted accents.',
-    'A biker-fashion leather jacket with a tailored waist, asymmetric zip, and quilted accents. Fashion-forward cut with the same full-grain construction as the rest of the line.',
+    'Biker fashion leather jacket from SDB WEAR with tailored waist, asymmetric zip and quilted accents.',
+    'SDB WEAR, biker fashion jacket, leather biker jacket, fashion leather jacket',
+    'A biker-fashion leather jacket with tailored waist, asymmetric zip and quilted accents.',
     '/placeholders/leather-jacket.svg',
     '["/placeholders/leather-jacket.svg","/placeholders/leather-jacket-side.svg","/placeholders/leather-jacket-detail.svg"]'::jsonb,
     'SDB WEAR',
@@ -854,6 +946,7 @@ from (
   name,
   seo_title,
   seo_description,
+  seo_keywords,
   description,
   image_url,
   images,
@@ -872,6 +965,7 @@ do update set
   name = excluded.name,
   seo_title = excluded.seo_title,
   seo_description = excluded.seo_description,
+  seo_keywords = excluded.seo_keywords,
   description = excluded.description,
   image_url = excluded.image_url,
   images = excluded.images,
@@ -885,7 +979,7 @@ do update set
 
 
 -- =====================================================================
--- 10. HANDCRAFTED GLOVES
+-- 11. HANDCRAFTED GLOVES
 -- =====================================================================
 
 insert into public.products (
@@ -894,6 +988,7 @@ insert into public.products (
   name,
   seo_title,
   seo_description,
+  seo_keywords,
   description,
   image_url,
   images,
@@ -911,6 +1006,7 @@ select
   v.name,
   v.seo_title,
   v.seo_description,
+  v.seo_keywords,
   v.description,
   v.image_url,
   v.images,
@@ -918,7 +1014,7 @@ select
   v.price_usd_cents,
   v.price_pkr_paisa,
   v.compare_price_usd_cents,
-  v.compare_price_pkr_cents,
+  v.compare_price_pkr_paisa,
   v.stock_quantity,
   true
 from (
@@ -929,8 +1025,9 @@ from (
     'sdb-wear-stitched-leather-gloves',
     'SDB WEAR Stitched Leather Gloves',
     'SDB WEAR Stitched Leather Gloves',
-    'Stitched leather gloves from SDB WEAR — full-grain hide, reinforced stitching, snap closure, everyday fit.',
-    'Stitched leather gloves with a clean, tailored silhouette. Full-grain hide, reinforced stitching, and a secure snap closure. An everyday glove with workshop-built construction.',
+    'Stitched leather gloves from SDB WEAR with full-grain hide, reinforced stitching and snap closure.',
+    'SDB WEAR, leather gloves, stitched gloves, handcrafted leather gloves',
+    'Stitched leather gloves with a clean tailored silhouette. Full-grain hide, reinforced stitching and secure snap closure.',
     '/placeholders/gloves.svg',
     '["/placeholders/gloves.svg","/placeholders/gloves-detail.svg","/placeholders/gloves-side.svg"]'::jsonb,
     'SDB WEAR',
@@ -946,8 +1043,9 @@ from (
     'sdb-wear-premium-handcrafted-leather-gloves',
     'SDB WEAR Premium Handcrafted Leather Gloves',
     'SDB WEAR Premium Handcrafted Leather Gloves',
-    'Premium handcrafted leather gloves from SDB WEAR — soft lined interior, precise stitching, perforated knuckles.',
-    'Premium stitched leather gloves with a soft lined interior and precise stitching. Perforated knuckles for flexibility and a classic cut that works on the road and off it.',
+    'Premium handcrafted leather gloves from SDB WEAR with soft lining and precise stitching.',
+    'SDB WEAR, premium leather gloves, handcrafted gloves, leather handwear',
+    'Premium stitched leather gloves with soft lining, precise stitching and perforated knuckles.',
     '/placeholders/gloves.svg',
     '["/placeholders/gloves.svg","/placeholders/gloves-side.svg","/placeholders/gloves-detail.svg"]'::jsonb,
     'SDB WEAR',
@@ -963,8 +1061,9 @@ from (
     'sdb-wear-stitched-riding-gloves',
     'SDB WEAR Stitched Riding Gloves',
     'SDB WEAR Stitched Riding Gloves',
-    'Stitched riding gloves from SDB WEAR — reinforced palm, padded knuckle, pre-curved fingers, secure cuff.',
-    'Stitched riding gloves with a reinforced palm and padded knuckle panel. Pre-curved fingers and a secure cuff. Built for the hand that holds the bars.',
+    'Stitched riding gloves from SDB WEAR with reinforced palm, padded knuckle and pre-curved fingers.',
+    'SDB WEAR, riding gloves, motorcycle gloves, stitched riding gloves',
+    'Stitched riding gloves with reinforced palm, padded knuckle panel, pre-curved fingers and secure cuff.',
     '/placeholders/gloves.svg',
     '["/placeholders/gloves.svg","/placeholders/gloves-detail.svg","/placeholders/gloves-side.svg"]'::jsonb,
     'SDB WEAR',
@@ -980,8 +1079,9 @@ from (
     'sdb-wear-reinforced-stitched-riding-gloves',
     'SDB WEAR Reinforced Stitched Riding Gloves',
     'SDB WEAR Reinforced Stitched Riding Gloves',
-    'Reinforced stitched riding gloves from SDB WEAR — double-layer palm, padded knuckle, touchscreen fingertips.',
-    'Reinforced stitched riding gloves with a double-layer palm and padded knuckle. Touchscreen fingertips and a hook-and-loop cuff. Protection with a stitched, crafted feel.',
+    'Reinforced stitched riding gloves from SDB WEAR with double-layer palm and padded knuckle.',
+    'SDB WEAR, reinforced riding gloves, motorcycle riding gloves, stitched gloves',
+    'Reinforced stitched riding gloves with double-layer palm, padded knuckle, touchscreen fingertips and hook-and-loop cuff.',
     '/placeholders/gloves.svg',
     '["/placeholders/gloves.svg","/placeholders/gloves-side.svg","/placeholders/gloves-detail.svg"]'::jsonb,
     'SDB WEAR',
@@ -997,8 +1097,9 @@ from (
     'sdb-wear-classic-driving-gloves',
     'SDB WEAR Classic Driving Gloves',
     'SDB WEAR Classic Driving Gloves',
-    'Classic driving gloves from SDB WEAR — timeless cut, ventilated backhand, slip-on fit with wrist snap.',
-    'Classic stitched driving gloves with a timeless cut and ventilated backhand. Slip-on fit with a wrist snap. Crafted construction for the purist.',
+    'Classic driving gloves from SDB WEAR with ventilated backhand and wrist snap.',
+    'SDB WEAR, driving gloves, classic leather gloves, handcrafted driving gloves',
+    'Classic stitched driving gloves with timeless cut, ventilated backhand and wrist snap.',
     '/placeholders/gloves.svg',
     '["/placeholders/gloves.svg","/placeholders/gloves-detail.svg","/placeholders/gloves-side.svg"]'::jsonb,
     'SDB WEAR',
@@ -1014,8 +1115,9 @@ from (
     'sdb-wear-perforated-driving-gloves',
     'SDB WEAR Perforated Driving Gloves',
     'SDB WEAR Perforated Driving Gloves',
-    'Perforated driving gloves from SDB WEAR — breathable construction, supple leather, reinforced seams.',
-    'Perforated stitched driving gloves that breathe. Supple leather, reinforced seams, and a close fit that keeps the wheel in hand.',
+    'Perforated driving gloves from SDB WEAR with breathable construction and reinforced seams.',
+    'SDB WEAR, perforated driving gloves, leather driving gloves, handcrafted gloves',
+    'Perforated stitched driving gloves with breathable construction, supple leather and reinforced seams.',
     '/placeholders/gloves.svg',
     '["/placeholders/gloves.svg","/placeholders/gloves-detail.svg","/placeholders/gloves-side.svg"]'::jsonb,
     'SDB WEAR',
@@ -1031,8 +1133,9 @@ from (
     'sdb-wear-stitched-work-gloves',
     'SDB WEAR Stitched Work Gloves',
     'SDB WEAR Stitched Work Gloves',
-    'Stitched work gloves from SDB WEAR — tough leather palm, reinforced fingertips, elasticated wrist.',
-    'Stitched work gloves with a tough leather palm and reinforced fingertips. Elasticated wrist and a practical cut for everyday tasks.',
+    'Stitched work gloves from SDB WEAR with tough leather palm and reinforced fingertips.',
+    'SDB WEAR, work gloves, leather work gloves, handcrafted work gloves',
+    'Stitched work gloves with tough leather palm, reinforced fingertips and elasticated wrist.',
     '/placeholders/gloves.svg',
     '["/placeholders/gloves.svg","/placeholders/gloves-detail.svg","/placeholders/gloves-side.svg"]'::jsonb,
     'SDB WEAR',
@@ -1048,8 +1151,9 @@ from (
     'sdb-wear-reinforced-work-gloves',
     'SDB WEAR Reinforced Work Gloves',
     'SDB WEAR Reinforced Work Gloves',
-    'Reinforced work gloves from SDB WEAR — double-layer palm, padded knuckle, reinforced thumb.',
-    'Reinforced stitched work gloves with a double-layer palm, padded knuckle, and reinforced thumb. Durable construction for the workshop.',
+    'Reinforced work gloves from SDB WEAR with double-layer palm, padded knuckle and reinforced thumb.',
+    'SDB WEAR, reinforced work gloves, leather work gloves, workshop gloves',
+    'Reinforced stitched work gloves with double-layer palm, padded knuckle and reinforced thumb.',
     '/placeholders/gloves.svg',
     '["/placeholders/gloves.svg","/placeholders/gloves-detail.svg","/placeholders/gloves-side.svg"]'::jsonb,
     'SDB WEAR',
@@ -1065,8 +1169,9 @@ from (
     'sdb-wear-fashion-stitch-gloves',
     'SDB WEAR Fashion Stitch Gloves',
     'SDB WEAR Fashion Stitch Gloves',
-    'Fashion stitch gloves from SDB WEAR — slim profile, soft leather, precise stitching, secure snap.',
-    'Fashion stitched gloves with a slim profile and clean lines. Soft leather, precise stitching, and a secure snap. Designed to be seen.',
+    'Fashion stitch gloves from SDB WEAR with slim profile, soft leather and precise stitching.',
+    'SDB WEAR, fashion gloves, leather fashion gloves, stitched gloves',
+    'Fashion stitched gloves with slim profile, clean lines, soft leather and secure snap.',
     '/placeholders/gloves.svg',
     '["/placeholders/gloves.svg","/placeholders/gloves-detail.svg","/placeholders/gloves-side.svg"]'::jsonb,
     'SDB WEAR',
@@ -1082,8 +1187,9 @@ from (
     'sdb-wear-mechanic-stitched-gloves',
     'SDB WEAR Mechanic Stitched Gloves',
     'SDB WEAR Mechanic Stitched Gloves',
-    'Mechanic stitched gloves from SDB WEAR — grippy palm, reinforced seams, snug fit, touchscreen tips.',
-    'Stitched mechanic gloves with a grippy palm, reinforced seams, and a snug fit. Touchscreen fingertips keep tools and phones within reach.',
+    'Mechanic stitched gloves from SDB WEAR with grippy palm, reinforced seams and touchscreen tips.',
+    'SDB WEAR, mechanic gloves, workshop gloves, stitched mechanic gloves',
+    'Stitched mechanic gloves with grippy palm, reinforced seams, snug fit and touchscreen fingertips.',
     '/placeholders/gloves.svg',
     '["/placeholders/gloves.svg","/placeholders/gloves-detail.svg","/placeholders/gloves-side.svg"]'::jsonb,
     'SDB WEAR',
@@ -1099,8 +1205,9 @@ from (
     'sdb-wear-tactical-style-stitched-gloves',
     'SDB WEAR Tactical-Style Stitched Gloves',
     'SDB WEAR Tactical-Style Stitched Gloves',
-    'Tactical-style stitched gloves from SDB WEAR — reinforced palm, padded knuckle, adjustable strap.',
-    'Tactical-style stitched gloves with a reinforced palm, padded knuckle, and adjustable strap. Rugged construction with a precise, tailored feel.',
+    'Tactical-style stitched gloves from SDB WEAR with reinforced palm, padded knuckle and adjustable strap.',
+    'SDB WEAR, tactical style gloves, reinforced gloves, stitched gloves',
+    'Tactical-style stitched gloves with reinforced palm, padded knuckle and adjustable strap.',
     '/placeholders/gloves.svg',
     '["/placeholders/gloves.svg","/placeholders/gloves-side.svg","/placeholders/gloves-detail.svg"]'::jsonb,
     'SDB WEAR',
@@ -1116,8 +1223,9 @@ from (
     'sdb-wear-custom-stitched-gloves',
     'SDB WEAR Custom Stitched Gloves',
     'SDB WEAR Custom Stitched Gloves',
-    'Custom stitched gloves from SDB WEAR — made to your measurements, choose leather and stitching.',
-    'Custom stitched gloves made to your measurements. Choose the leather, the stitching, and the fit — workshop-built around your hand.',
+    'Custom stitched gloves from SDB WEAR made to your measurements with selectable leather and stitching.',
+    'SDB WEAR, custom gloves, handmade gloves, bespoke leather gloves',
+    'Custom stitched gloves made to your measurements. Choose the leather, stitching and fit.',
     '/placeholders/gloves.svg',
     '["/placeholders/gloves.svg","/placeholders/gloves-detail.svg","/placeholders/gloves-side.svg"]'::jsonb,
     'SDB WEAR',
@@ -1134,6 +1242,7 @@ from (
   name,
   seo_title,
   seo_description,
+  seo_keywords,
   description,
   image_url,
   images,
@@ -1141,7 +1250,7 @@ from (
   price_usd_cents,
   price_pkr_paisa,
   compare_price_usd_cents,
-  compare_price_pkr_cents,
+  compare_price_pkr_paisa,
   stock_quantity
 )
 join public.categories c
@@ -1152,6 +1261,7 @@ do update set
   name = excluded.name,
   seo_title = excluded.seo_title,
   seo_description = excluded.seo_description,
+  seo_keywords = excluded.seo_keywords,
   description = excluded.description,
   image_url = excluded.image_url,
   images = excluded.images,
@@ -1165,7 +1275,7 @@ do update set
 
 
 -- =====================================================================
--- 11. Product variants — alpha sizes
+-- 12. PRODUCT VARIANTS — ALPHA SIZES
 -- =====================================================================
 
 insert into public.product_variants (
@@ -1174,7 +1284,8 @@ insert into public.product_variants (
   sku,
   price_usd_cents,
   price_pkr_paisa,
-  stock_quantity
+  stock_quantity,
+  is_active
 )
 select
   p.id,
@@ -1182,14 +1293,15 @@ select
   p.slug || '-' || s.code,
   p.price_usd_cents,
   p.price_pkr_paisa,
-  s.stock
+  s.stock,
+  true
 from public.products p
 cross join (
   values
     ('S',  's',  10),
     ('M',  'm',  14),
     ('L',  'l',  14),
-    ('XL', 'xl', 8)
+    ('XL', 'xl',  8)
 ) as s(name, code, stock)
 where p.slug in (
 
@@ -1233,17 +1345,20 @@ where p.slug in (
   'sdb-wear-mechanic-stitched-gloves',
   'sdb-wear-tactical-style-stitched-gloves',
   'sdb-wear-custom-stitched-gloves'
+
 )
 on conflict (sku)
 do update set
+  product_id = excluded.product_id,
   name = excluded.name,
   price_usd_cents = excluded.price_usd_cents,
   price_pkr_paisa = excluded.price_pkr_paisa,
-  stock_quantity = excluded.stock_quantity;
+  stock_quantity = excluded.stock_quantity,
+  is_active = true;
 
 
 -- =====================================================================
--- 12. Product variants — EU shoe sizes
+-- 13. PRODUCT VARIANTS — EU SHOE SIZES
 -- =====================================================================
 
 insert into public.product_variants (
@@ -1252,7 +1367,8 @@ insert into public.product_variants (
   sku,
   price_usd_cents,
   price_pkr_paisa,
-  stock_quantity
+  stock_quantity,
+  is_active
 )
 select
   p.id,
@@ -1260,7 +1376,8 @@ select
   p.slug || '-' || s.code,
   p.price_usd_cents,
   p.price_pkr_paisa,
-  s.stock
+  s.stock,
+  true
 from public.products p
 cross join (
   values
@@ -1277,24 +1394,36 @@ where p.slug in (
 )
 on conflict (sku)
 do update set
+  product_id = excluded.product_id,
   name = excluded.name,
   price_usd_cents = excluded.price_usd_cents,
   price_pkr_paisa = excluded.price_pkr_paisa,
-  stock_quantity = excluded.stock_quantity;
+  stock_quantity = excluded.stock_quantity,
+  is_active = true;
 
 
 -- =====================================================================
--- 13. Final safety normalization
+-- 14. ENSURE NO SEEDED RATINGS / REVIEWS
 -- =====================================================================
 
--- Ensure all new SDB WEAR products are active.
+update public.products
+set
+  rating = null,
+  review_count = null
+where brand = 'SDB WEAR';
+
+
+-- =====================================================================
+-- 15. FINAL SAFETY CHECKS
+-- =====================================================================
+
+-- All new SDB WEAR products active.
 update public.products
 set is_active = true
-where brand = 'SDB WEAR'
-  and slug like 'sdb-wear-%';
+where brand = 'SDB WEAR';
 
 
--- Ensure new SDB WEAR categories are active.
+-- All new SDB WEAR categories active.
 update public.categories
 set is_active = true
 where slug in (
@@ -1302,14 +1431,12 @@ where slug in (
   'moto-suits',
   'moto-gloves',
   'moto-shoes',
-
   'leather-jackets-biker-fashion',
   'biker-leather-jackets',
   'casual-leather-jackets',
   'heritage-leather',
   'racing-inspired-jackets',
   'biker-fashion',
-
   'handcrafted-gloves',
   'leather-gloves',
   'riding-gloves',
