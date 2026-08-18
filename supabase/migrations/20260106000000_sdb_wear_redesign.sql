@@ -146,7 +146,8 @@ insert into public.products (
 )
 select
   c.id, v.slug, v.name, v.seo_title, v.seo_description, v.description,
-  v.image_url, v.images, v.brand, v.usd, v.pkr, v.compare_usd, v.compare_pkr, v.stock
+  v.image_url, v.images, v.brand, v.price_usd_cents, v.price_pkr_paisa, 
+  v.compare_price_usd_cents, v.compare_price_pkr_paisa, v.stock_quantity
 from (values
   -- Moto Suits
   ('moto-suits', 'sdb-wear-1-piece-leather-racing-suit', 'SDB WEAR 1-Piece Leather Racing Suit',
@@ -245,10 +246,11 @@ from (values
    '["/placeholders/moto-shoe.svg","/placeholders/moto-shoe-detail.svg","/placeholders/moto-shoe-side.svg"]'::jsonb,
    'SDB WEAR', 14900, 4172000, 16900, 4732000, 28)
 ) as v(
-  cat, slug, name, seo_title, seo_description, description,
-  image_url, images, brand, usd, pkr, compare_usd, compare_pkr, stock
+  cat_slug, slug, name, seo_title, seo_description, description,
+  image_url, images, brand, price_usd_cents, price_pkr_paisa, 
+  compare_price_usd_cents, compare_price_pkr_paisa, stock_quantity
 )
-join public.categories c on c.slug = v.cat
+join public.categories c on c.slug = v.cat_slug
 on conflict (slug) do nothing;
 
 -- ---------------------------------------------------------------------
@@ -261,7 +263,8 @@ insert into public.products (
 )
 select
   c.id, v.slug, v.name, v.seo_title, v.seo_description, v.description,
-  v.image_url, v.images, v.brand, v.usd, v.pkr, v.compare_usd, v.compare_pkr, v.stock
+  v.image_url, v.images, v.brand, v.price_usd_cents, v.price_pkr_paisa, 
+  v.compare_price_usd_cents, v.compare_price_pkr_paisa, v.stock_quantity
 from (values
   -- Biker Leather Jackets
   ('biker-leather-jackets', 'sdb-wear-classic-black-biker-leather-jacket', 'SDB WEAR Classic Black Biker Leather Jacket',
@@ -357,10 +360,11 @@ from (values
    '["/placeholders/leather-jacket.svg","/placeholders/leather-jacket-side.svg","/placeholders/leather-jacket-detail.svg"]'::jsonb,
    'SDB WEAR', 17900, 5012000, null, null, 28)
 ) as v(
-  cat, slug, name, seo_title, seo_description, description,
-  image_url, images, brand, usd, pkr, compare_usd, compare_pkr, stock
+  cat_slug, slug, name, seo_title, seo_description, description,
+  image_url, images, brand, price_usd_cents, price_pkr_paisa, 
+  compare_price_usd_cents, compare_price_pkr_paisa, stock_quantity
 )
-join public.categories c on c.slug = v.cat
+join public.categories c on c.slug = v.cat_slug
 on conflict (slug) do nothing;
 
 -- ---------------------------------------------------------------------
@@ -373,7 +377,8 @@ insert into public.products (
 )
 select
   c.id, v.slug, v.name, v.seo_title, v.seo_description, v.description,
-  v.image_url, v.images, v.brand, v.usd, v.pkr, v.compare_usd, v.compare_pkr, v.stock
+  v.image_url, v.images, v.brand, v.price_usd_cents, v.price_pkr_paisa, 
+  v.compare_price_usd_cents, v.compare_price_pkr_paisa, v.stock_quantity
 from (values
   -- Leather Gloves
   ('leather-gloves', 'sdb-wear-stitched-leather-gloves', 'SDB WEAR Stitched Leather Gloves',
@@ -475,10 +480,11 @@ from (values
    '["/placeholders/gloves.svg","/placeholders/gloves-detail.svg","/placeholders/gloves-side.svg"]'::jsonb,
    'SDB WEAR', 11900, 3332000, null, null, 20)
 ) as v(
-  cat, slug, name, seo_title, seo_description, description,
-  image_url, images, brand, usd, pkr, compare_usd, compare_pkr, stock
+  cat_slug, slug, name, seo_title, seo_description, description,
+  image_url, images, brand, price_usd_cents, price_pkr_paisa, 
+  compare_price_usd_cents, compare_price_pkr_paisa, stock_quantity
 )
-join public.categories c on c.slug = v.cat
+join public.categories c on c.slug = v.cat_slug
 on conflict (slug) do nothing;
 
 -- ---------------------------------------------------------------------
