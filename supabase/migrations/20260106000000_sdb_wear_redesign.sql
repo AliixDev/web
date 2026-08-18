@@ -17,9 +17,6 @@ alter table public.products
 
 -- =====================================================================
 -- 2. ENSURE REQUIRED UNIQUE CONSTRAINTS
---
--- The ON CONFLICT (...) statements below require uniqueness.
--- Create unique indexes safely if they do not already exist.
 -- =====================================================================
 
 create unique index if not exists categories_slug_unique_idx
@@ -36,21 +33,17 @@ create unique index if not exists product_variants_sku_unique_idx
 -- 3. RETIRED CATEGORY SLUGS
 -- =====================================================================
 
--- Deactivate old catalog categories.
-
 update public.categories
 set is_active = false
 where slug in (
   'apparel',
   'home-living',
   'electronics',
-
   'leather-jackets',
   'fashion-apparel',
   'boxing',
   'gym-fitness',
   'accessories',
-
   'motorbikes',
   'motorbike-gloves',
   'motorbike-jackets',
@@ -65,7 +58,9 @@ where slug in (
 );
 
 
--- Deactivate products belonging to retired categories.
+-- =====================================================================
+-- 4. DEACTIVATE PRODUCTS IN RETIRED CATEGORIES
+-- =====================================================================
 
 update public.products p
 set is_active = false
@@ -77,13 +72,11 @@ where exists (
       'apparel',
       'home-living',
       'electronics',
-
       'leather-jackets',
       'fashion-apparel',
       'boxing',
       'gym-fitness',
       'accessories',
-
       'motorbikes',
       'motorbike-gloves',
       'motorbike-jackets',
@@ -100,9 +93,7 @@ where exists (
 
 
 -- =====================================================================
--- 4. REMOVE OLD VARIANTS THAT ARE NOT PART OF ORDER HISTORY
---
--- Historical order_items.variant_id must remain valid.
+-- 5. REMOVE OLD VARIANTS NOT USED BY ORDER HISTORY
 -- =====================================================================
 
 delete from public.product_variants pv
@@ -116,13 +107,11 @@ where exists (
       'apparel',
       'home-living',
       'electronics',
-
       'leather-jackets',
       'fashion-apparel',
       'boxing',
       'gym-fitness',
       'accessories',
-
       'motorbikes',
       'motorbike-gloves',
       'motorbike-jackets',
@@ -144,7 +133,7 @@ and not exists (
 
 
 -- =====================================================================
--- 5. REMOVE OLD PRODUCTS THAT ARE NOT PART OF ORDER HISTORY
+-- 6. REMOVE OLD PRODUCTS NOT USED BY ORDER HISTORY
 -- =====================================================================
 
 delete from public.products p
@@ -156,13 +145,11 @@ where exists (
       'apparel',
       'home-living',
       'electronics',
-
       'leather-jackets',
       'fashion-apparel',
       'boxing',
       'gym-fitness',
       'accessories',
-
       'motorbikes',
       'motorbike-gloves',
       'motorbike-jackets',
@@ -184,7 +171,7 @@ and not exists (
 
 
 -- =====================================================================
--- 6. REMOVE EMPTY RETIRED CATEGORIES
+-- 7. REMOVE EMPTY RETIRED CATEGORIES
 -- =====================================================================
 
 delete from public.categories c
@@ -192,13 +179,11 @@ where c.slug in (
   'apparel',
   'home-living',
   'electronics',
-
   'leather-jackets',
   'fashion-apparel',
   'boxing',
   'gym-fitness',
   'accessories',
-
   'motorbikes',
   'motorbike-gloves',
   'motorbike-jackets',
@@ -219,7 +204,7 @@ and not exists (
 
 
 -- =====================================================================
--- 7. NEW SDB WEAR TOP-LEVEL CATEGORIES
+-- 8. NEW SDB WEAR TOP-LEVEL CATEGORIES
 -- =====================================================================
 
 insert into public.categories (
@@ -255,7 +240,7 @@ do update set
 
 
 -- =====================================================================
--- 8. NEW SUBCATEGORIES
+-- 9. NEW SUBCATEGORIES
 -- =====================================================================
 
 insert into public.categories (
@@ -271,93 +256,24 @@ select
   true
 from (
   values
+    ('Moto Suits', 'moto-suits', 'motorbike-gear'),
+    ('Moto Gloves', 'moto-gloves', 'motorbike-gear'),
+    ('Moto Shoes', 'moto-shoes', 'motorbike-gear'),
 
-    -- Motorbike Gear
-    (
-      'Moto Suits',
-      'moto-suits',
-      'motorbike-gear'
-    ),
-    (
-      'Moto Gloves',
-      'moto-gloves',
-      'motorbike-gear'
-    ),
-    (
-      'Moto Shoes',
-      'moto-shoes',
-      'motorbike-gear'
-    ),
+    ('Biker Leather Jackets', 'biker-leather-jackets', 'leather-jackets-biker-fashion'),
+    ('Casual Leather Jackets', 'casual-leather-jackets', 'leather-jackets-biker-fashion'),
+    ('Heritage Leather', 'heritage-leather', 'leather-jackets-biker-fashion'),
+    ('Racing-Inspired Jackets', 'racing-inspired-jackets', 'leather-jackets-biker-fashion'),
+    ('Biker Fashion', 'biker-fashion', 'leather-jackets-biker-fashion'),
 
-    -- Leather Jackets & Biker Fashion
-    (
-      'Biker Leather Jackets',
-      'biker-leather-jackets',
-      'leather-jackets-biker-fashion'
-    ),
-    (
-      'Casual Leather Jackets',
-      'casual-leather-jackets',
-      'leather-jackets-biker-fashion'
-    ),
-    (
-      'Heritage Leather',
-      'heritage-leather',
-      'leather-jackets-biker-fashion'
-    ),
-    (
-      'Racing-Inspired Jackets',
-      'racing-inspired-jackets',
-      'leather-jackets-biker-fashion'
-    ),
-    (
-      'Biker Fashion',
-      'biker-fashion',
-      'leather-jackets-biker-fashion'
-    ),
-
-    -- Handcrafted Gloves
-    (
-      'Leather Gloves',
-      'leather-gloves',
-      'handcrafted-gloves'
-    ),
-    (
-      'Riding Gloves',
-      'riding-gloves',
-      'handcrafted-gloves'
-    ),
-    (
-      'Driving Gloves',
-      'driving-gloves',
-      'handcrafted-gloves'
-    ),
-    (
-      'Work Gloves',
-      'work-gloves',
-      'handcrafted-gloves'
-    ),
-    (
-      'Fashion Gloves',
-      'fashion-gloves',
-      'handcrafted-gloves'
-    ),
-    (
-      'Mechanic Gloves',
-      'mechanic-gloves',
-      'handcrafted-gloves'
-    ),
-    (
-      'Tactical Gloves',
-      'tactical-gloves',
-      'handcrafted-gloves'
-    ),
-    (
-      'Custom Gloves',
-      'custom-gloves',
-      'handcrafted-gloves'
-    )
-
+    ('Leather Gloves', 'leather-gloves', 'handcrafted-gloves'),
+    ('Riding Gloves', 'riding-gloves', 'handcrafted-gloves'),
+    ('Driving Gloves', 'driving-gloves', 'handcrafted-gloves'),
+    ('Work Gloves', 'work-gloves', 'handcrafted-gloves'),
+    ('Fashion Gloves', 'fashion-gloves', 'handcrafted-gloves'),
+    ('Mechanic Gloves', 'mechanic-gloves', 'handcrafted-gloves'),
+    ('Tactical Gloves', 'tactical-gloves', 'handcrafted-gloves'),
+    ('Custom Gloves', 'custom-gloves', 'handcrafted-gloves')
 ) as v(name, slug, parent_slug)
 join public.categories p
   on p.slug = v.parent_slug
@@ -369,7 +285,7 @@ do update set
 
 
 -- =====================================================================
--- 9. MOTORBIKE GEAR PRODUCTS
+-- 10. MOTORBIKE GEAR PRODUCTS
 -- =====================================================================
 
 insert into public.products (
@@ -403,8 +319,8 @@ select
   v.brand,
   v.price_usd_cents,
   v.price_pkr_paisa,
-  v.compare_price_usd_cents,
-  v.compare_price_pkr_paisa,
+  v.compare_at_price_usd_cents,
+  v.compare_at_price_pkr_paisa,
   v.stock_quantity,
   true
 from (
@@ -657,8 +573,8 @@ from (
   brand,
   price_usd_cents,
   price_pkr_paisa,
-  compare_price_usd_cents,
-  compare_price_pkr_paisa,
+  compare_at_price_usd_cents,
+  compare_at_price_pkr_paisa,
   stock_quantity
 )
 join public.categories c
@@ -683,7 +599,7 @@ do update set
 
 
 -- =====================================================================
--- 10. LEATHER JACKETS & BIKER FASHION
+-- 11. LEATHER JACKETS & BIKER FASHION
 -- =====================================================================
 
 insert into public.products (
@@ -717,8 +633,8 @@ select
   v.brand,
   v.price_usd_cents,
   v.price_pkr_paisa,
-  v.compare_price_usd_cents,
-  v.compare_price_pkr_paisa,
+  v.compare_at_price_usd_cents,
+  v.compare_at_price_pkr_paisa,
   v.stock_quantity,
   true
 from (
@@ -953,8 +869,8 @@ from (
   brand,
   price_usd_cents,
   price_pkr_paisa,
-  compare_price_usd_cents,
-  compare_price_pkr_paisa,
+  compare_at_price_usd_cents,
+  compare_at_price_pkr_paisa,
   stock_quantity
 )
 join public.categories c
@@ -979,7 +895,7 @@ do update set
 
 
 -- =====================================================================
--- 11. HANDCRAFTED GLOVES
+-- 12. HANDCRAFTED GLOVES
 -- =====================================================================
 
 insert into public.products (
@@ -1013,8 +929,8 @@ select
   v.brand,
   v.price_usd_cents,
   v.price_pkr_paisa,
-  v.compare_price_usd_cents,
-  v.compare_price_pkr_paisa,
+  v.compare_at_price_usd_cents,
+  v.compare_at_price_pkr_paisa,
   v.stock_quantity,
   true
 from (
@@ -1249,8 +1165,8 @@ from (
   brand,
   price_usd_cents,
   price_pkr_paisa,
-  compare_price_usd_cents,
-  compare_price_pkr_paisa,
+  compare_at_price_usd_cents,
+  compare_at_price_pkr_paisa,
   stock_quantity
 )
 join public.categories c
@@ -1275,7 +1191,7 @@ do update set
 
 
 -- =====================================================================
--- 12. PRODUCT VARIANTS — ALPHA SIZES
+-- 13. PRODUCT VARIANTS — ALPHA SIZES
 -- =====================================================================
 
 insert into public.product_variants (
@@ -1298,27 +1214,23 @@ select
 from public.products p
 cross join (
   values
-    ('S',  's',  10),
-    ('M',  'm',  14),
-    ('L',  'l',  14),
-    ('XL', 'xl',  8)
+    ('S', 's', 10),
+    ('M', 'm', 14),
+    ('L', 'l', 14),
+    ('XL', 'xl', 8)
 ) as s(name, code, stock)
 where p.slug in (
-
-  -- Moto suits
   'sdb-wear-1-piece-leather-racing-suit',
   'sdb-wear-2-piece-motorcycle-leather-suit',
   'sdb-wear-premium-track-racing-suit',
   'sdb-wear-professional-protection-suit',
 
-  -- Moto gloves
   'sdb-wear-full-finger-racing-gloves',
   'sdb-wear-short-cuff-riding-gloves',
   'sdb-wear-long-cuff-racing-gloves',
   'sdb-wear-touring-motorcycle-gloves',
   'sdb-wear-premium-leather-moto-gloves',
 
-  -- Jackets
   'sdb-wear-classic-black-biker-leather-jacket',
   'sdb-wear-premium-motorcycle-leather-jacket',
   'sdb-wear-urban-biker-leather-jacket',
@@ -1332,7 +1244,6 @@ where p.slug in (
   'sdb-wear-leather-biker-vest',
   'sdb-wear-biker-fashion-leather-jacket',
 
-  -- Handcrafted gloves
   'sdb-wear-stitched-leather-gloves',
   'sdb-wear-premium-handcrafted-leather-gloves',
   'sdb-wear-stitched-riding-gloves',
@@ -1345,7 +1256,6 @@ where p.slug in (
   'sdb-wear-mechanic-stitched-gloves',
   'sdb-wear-tactical-style-stitched-gloves',
   'sdb-wear-custom-stitched-gloves'
-
 )
 on conflict (sku)
 do update set
@@ -1358,7 +1268,7 @@ do update set
 
 
 -- =====================================================================
--- 13. PRODUCT VARIANTS — EU SHOE SIZES
+-- 14. PRODUCT VARIANTS — EU SHOE SIZES
 -- =====================================================================
 
 insert into public.product_variants (
@@ -1403,7 +1313,7 @@ do update set
 
 
 -- =====================================================================
--- 14. ENSURE NO SEEDED RATINGS / REVIEWS
+-- 15. ENSURE NO SEEDED RATINGS / REVIEWS
 -- =====================================================================
 
 update public.products
@@ -1414,16 +1324,14 @@ where brand = 'SDB WEAR';
 
 
 -- =====================================================================
--- 15. FINAL SAFETY CHECKS
+-- 16. FINAL SAFETY CHECKS
 -- =====================================================================
 
--- All new SDB WEAR products active.
 update public.products
 set is_active = true
 where brand = 'SDB WEAR';
 
 
--- All new SDB WEAR categories active.
 update public.categories
 set is_active = true
 where slug in (
@@ -1431,12 +1339,14 @@ where slug in (
   'moto-suits',
   'moto-gloves',
   'moto-shoes',
+
   'leather-jackets-biker-fashion',
   'biker-leather-jackets',
   'casual-leather-jackets',
   'heritage-leather',
   'racing-inspired-jackets',
   'biker-fashion',
+
   'handcrafted-gloves',
   'leather-gloves',
   'riding-gloves',
