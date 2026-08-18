@@ -1,6 +1,7 @@
 -- =====================================================================
 -- SDB WEAR — Brand + Catalog Redesign
 -- Supabase / PostgreSQL
+-- Migration: 20260106000000_sdb_wear_redesign.sql
 -- =====================================================================
 
 begin;
@@ -16,7 +17,7 @@ alter table public.products
 
 
 -- =====================================================================
--- 2. ENSURE REQUIRED UNIQUE CONSTRAINTS
+-- 2. REQUIRED UNIQUE INDEXES
 -- =====================================================================
 
 create unique index if not exists categories_slug_unique_idx
@@ -204,7 +205,7 @@ and not exists (
 
 
 -- =====================================================================
--- 8. NEW SDB WEAR TOP-LEVEL CATEGORIES
+-- 8. TOP-LEVEL SDB WEAR CATEGORIES
 -- =====================================================================
 
 insert into public.categories (
@@ -240,7 +241,7 @@ do update set
 
 
 -- =====================================================================
--- 9. NEW SUBCATEGORIES
+-- 9. SUBCATEGORIES
 -- =====================================================================
 
 insert into public.categories (
@@ -317,11 +318,11 @@ select
   v.image_url,
   v.images,
   v.brand,
-  v.price_usd_cents,
-  v.price_pkr_paisa,
-  v.compare_at_price_usd_cents,
-  v.compare_at_price_pkr_paisa,
-  v.stock_quantity,
+  v.price_usd_cents::integer,
+  v.price_pkr_paisa::integer,
+  v.compare_at_price_usd_cents::integer,
+  v.compare_at_price_pkr_paisa::integer,
+  v.stock_quantity::integer,
   true
 from (
   values
@@ -339,8 +340,8 @@ from (
     'SDB WEAR',
     44900,
     12572000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     10
   ),
 
@@ -357,8 +358,8 @@ from (
     'SDB WEAR',
     37900,
     10612000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     12
   ),
 
@@ -393,8 +394,8 @@ from (
     'SDB WEAR',
     39900,
     11172000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     14
   ),
 
@@ -411,8 +412,8 @@ from (
     'SDB WEAR',
     11900,
     3332000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     40
   ),
 
@@ -429,8 +430,8 @@ from (
     'SDB WEAR',
     10900,
     3052000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     45
   ),
 
@@ -483,8 +484,8 @@ from (
     'SDB WEAR',
     15900,
     4452000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     25
   ),
 
@@ -501,8 +502,8 @@ from (
     'SDB WEAR',
     12900,
     3612000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     35
   ),
 
@@ -519,8 +520,8 @@ from (
     'SDB WEAR',
     17900,
     5012000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     25
   ),
 
@@ -537,8 +538,8 @@ from (
     'SDB WEAR',
     10900,
     3052000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     40
   ),
 
@@ -631,11 +632,11 @@ select
   v.image_url,
   v.images,
   v.brand,
-  v.price_usd_cents,
-  v.price_pkr_paisa,
-  v.compare_at_price_usd_cents,
-  v.compare_at_price_pkr_paisa,
-  v.stock_quantity,
+  v.price_usd_cents::integer,
+  v.price_pkr_paisa::integer,
+  v.compare_at_price_usd_cents::integer,
+  v.compare_at_price_pkr_paisa::integer,
+  v.stock_quantity::integer,
   true
 from (
   values
@@ -653,8 +654,8 @@ from (
     'SDB WEAR',
     22900,
     6412000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     25
   ),
 
@@ -689,8 +690,8 @@ from (
     'SDB WEAR',
     19900,
     5572000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     30
   ),
 
@@ -707,8 +708,8 @@ from (
     'SDB WEAR',
     17900,
     5012000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     30
   ),
 
@@ -725,8 +726,8 @@ from (
     'SDB WEAR',
     19900,
     5572000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     26
   ),
 
@@ -743,8 +744,8 @@ from (
     'SDB WEAR',
     16900,
     4732000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     32
   ),
 
@@ -779,8 +780,8 @@ from (
     'SDB WEAR',
     21900,
     6132000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     22
   ),
 
@@ -797,8 +798,8 @@ from (
     'SDB WEAR',
     25900,
     7252000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     15
   ),
 
@@ -815,8 +816,8 @@ from (
     'SDB WEAR',
     23900,
     6692000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     20
   ),
 
@@ -833,8 +834,8 @@ from (
     'SDB WEAR',
     14900,
     4172000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     35
   ),
 
@@ -851,8 +852,8 @@ from (
     'SDB WEAR',
     17900,
     5012000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     28
   )
 
@@ -927,11 +928,11 @@ select
   v.image_url,
   v.images,
   v.brand,
-  v.price_usd_cents,
-  v.price_pkr_paisa,
-  v.compare_at_price_usd_cents,
-  v.compare_at_price_pkr_paisa,
-  v.stock_quantity,
+  v.price_usd_cents::integer,
+  v.price_pkr_paisa::integer,
+  v.compare_at_price_usd_cents::integer,
+  v.compare_at_price_pkr_paisa::integer,
+  v.stock_quantity::integer,
   true
 from (
   values
@@ -949,8 +950,8 @@ from (
     'SDB WEAR',
     7900,
     2212000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     60
   ),
 
@@ -967,8 +968,8 @@ from (
     'SDB WEAR',
     9900,
     2772000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     45
   ),
 
@@ -985,8 +986,8 @@ from (
     'SDB WEAR',
     6900,
     1932000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     70
   ),
 
@@ -1003,8 +1004,8 @@ from (
     'SDB WEAR',
     8900,
     2492000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     55
   ),
 
@@ -1021,8 +1022,8 @@ from (
     'SDB WEAR',
     5900,
     1652000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     80
   ),
 
@@ -1039,8 +1040,8 @@ from (
     'SDB WEAR',
     6900,
     1932000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     75
   ),
 
@@ -1057,8 +1058,8 @@ from (
     'SDB WEAR',
     3900,
     1092000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     120
   ),
 
@@ -1075,8 +1076,8 @@ from (
     'SDB WEAR',
     4900,
     1372000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     100
   ),
 
@@ -1093,8 +1094,8 @@ from (
     'SDB WEAR',
     5900,
     1652000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     65
   ),
 
@@ -1111,8 +1112,8 @@ from (
     'SDB WEAR',
     4500,
     1260000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     90
   ),
 
@@ -1129,8 +1130,8 @@ from (
     'SDB WEAR',
     7900,
     2212000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     50
   ),
 
@@ -1147,8 +1148,8 @@ from (
     'SDB WEAR',
     11900,
     3332000,
-    null,
-    null,
+    null::integer,
+    null::integer,
     20
   )
 
