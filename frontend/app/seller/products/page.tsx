@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
-import { Copy, ImagePlus, Loader2, Package, Plus, Trash2 } from "lucide-react";
+import { CheckSquare, Copy, ImagePlus, Loader2, Package, Plus, Trash2 } from "lucide-react";
 import { getSupabase, isSupabaseConfigured } from "@/lib/supabaseClient";
 import {
   fromMinor,
@@ -87,6 +87,9 @@ export default function SellerProductsPage() {
   const [deleting, setDeleting] = useState<SellerProduct | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
   const [focusId, setFocusId] = useState<string | null>(null);
+  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const [bulkDeleteTarget, setBulkDeleteTarget] = useState<"active" | "all" | null>(null);
 
   const load = useCallback(async () => {
     if (!isSupabaseConfigured()) {
@@ -179,7 +182,7 @@ export default function SellerProductsPage() {
     return filtered.slice(start, start + pageSize);
   }, [filtered, page, pageSize]);
 
-  useEffect(() => setPage(1), [query, categoryFilter, statusFilter]);
+  useEffect(() => { setPage(1); setSelectedKeys(new Set()); }, [query, categoryFilter, statusFilter]);
 
   const categoryName = useCallback(
     (id: string | null) => categories.find((c) => c.id === id)?.name ?? "Uncategorized",
@@ -317,6 +320,57 @@ export default function SellerProductsPage() {
     }
   }
 
+  // ── Bulk helpers ───────────────────────────────────────────────────
+  const selectedList = useMemo(() => [...selectedKeys], [selectedKeys]);
+
+  async function bulkSetActive(active: boolean) {
+    if (selectedList.length === 0) return;
+    setBulkBusy(true);
+    try {
+      const supabase = getSupabase();
+      const { error } = await supabase
+        .from("products")
+        .update({ is_active: active })
+        .in("id", selectedList);
+      if (error) throw error;
+      toast({ title: `${selectedList.length} product${selectedList.length === 1 ? "" : "s"} ${active ? "activated" : "deactivated"}`, variant: "success" });
+      setSelectedKeys(new Set());
+      await load();
+    } catch (err) {
+      toast({ title: "Bulk update failed", description: err instanceof Error ? err.message : "Please try again.", variant: "error" });
+    } finally {
+      setBulkBusy(false);
+    }
+  }
+
+  async function bulkDelete() {
+    if (selectedList.length === 0) return;
+    setBulkBusy(true);
+    try {
+      const supabase = getSupabase();
+      const { error } = await supabase.from("products").delete().in("id", selectedList);
+      if (error) throw error;
+      toast({ title: `${selectedList.length} product${selectedList.length === 1 ? "" : "s"} deleted`, variant: "success" });
+      setSelectedKeys(new Set());
+      setBulkDeleteTarget(null);
+      await load();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "";
+      if (/foreign key|order_items/i.test(message)) {
+        toast({
+          title: "Some products couldn't be deleted",
+          description: "Products with order history can't be deleted — deactivate those instead.",
+          variant: "error",
+        });
+      } else {
+        toast({ title: "Bulk delete failed", description: message || "Please try again.", variant: "error" });
+      }
+    } finally {
+      setBulkBusy(false);
+    }
+  }
+
+  // ── Single-row helpers ──────────────────────────────────────────────
   async function handleDelete() {
     if (!deleting) return;
     setDeleteBusy(true);
@@ -556,9 +610,53 @@ export default function SellerProductsPage() {
             </select>
           </div>
 
+          {/* Bulk action bar */}
+          {selectedList.length > 0 && (
+            <div className="flex flex-wrap items-center gap-3 border border-neutral-200 bg-neutral-50 px-4 py-3">
+              <span className="flex items-center gap-2 text-[13px] font-medium">
+                <CheckSquare className="h-4 w-4" aria-hidden />
+                {selectedList.length} selected
+              </span>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => void bulkSetActive(true)}
+                  disabled={bulkBusy}
+                  className="h-8 border border-neutral-200 px-3 text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors hover:border-neutral-400 disabled:opacity-50"
+                >
+                  Activate
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void bulkSetActive(false)}
+                  disabled={bulkBusy}
+                  className="h-8 border border-neutral-200 px-3 text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors hover:border-neutral-400 disabled:opacity-50"
+                >
+                  Deactivate
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBulkDeleteTarget("all")}
+                  disabled={bulkBusy}
+                  className="h-8 border border-destructive/30 px-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-destructive transition-colors hover:border-destructive/60 disabled:opacity-50"
+                >
+                  Delete
+                </button>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedKeys(new Set())}
+                className="ml-auto text-[12px] font-medium text-neutral-500 transition-colors hover:text-foreground"
+              >
+                Clear selection
+              </button>
+            </div>
+          )}
+
           <DataTable
             columns={columns}
             rows={paginated}
+            allRows={filtered}
             keyField={(p) => p.id}
             loading={loading}
             sortKey={sortKey}
@@ -573,6 +671,8 @@ export default function SellerProductsPage() {
             onPageChange={setPage}
             onRowClick={(p) => openEdit(p)}
             rowClassName={(p) => (focusId === p.id ? "bg-neutral-50" : undefined)}
+            selectedKeys={selectedKeys}
+            onSelectionChange={setSelectedKeys}
             empty={
               <div className="flex flex-col items-center gap-4 px-6 py-16 text-center">
                 <Package className="h-8 w-8 text-neutral-300" strokeWidth={1.25} aria-hidden />
@@ -958,7 +1058,7 @@ export default function SellerProductsPage() {
         )}
       </Modal>
 
-      {/* Delete confirm */}
+      {/* Delete confirm (single) */}
       <ConfirmDialog
         open={deleting !== null}
         onClose={() => !deleteBusy && setDeleting(null)}
@@ -972,6 +1072,18 @@ export default function SellerProductsPage() {
         confirmLabel="Delete"
         destructive
         busy={deleteBusy}
+      />
+
+      {/* Delete confirm (bulk) */}
+      <ConfirmDialog
+        open={bulkDeleteTarget !== null}
+        onClose={() => !bulkBusy && setBulkDeleteTarget(null)}
+        onConfirm={() => void bulkDelete()}
+        title="Delete products"
+        body={`Delete ${selectedList.length} product${selectedList.length === 1 ? "" : "s"}? Products with order history can't be deleted — those will fail. Consider deactivating instead.`}
+        confirmLabel="Delete all selected"
+        destructive
+        busy={bulkBusy}
       />
     </div>
   );
