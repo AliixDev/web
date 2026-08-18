@@ -61,10 +61,6 @@ export default function RefundPolicyPage() {
             <strong>Credit / Debit Card (Stripe):</strong> refunds are issued to the original
             payment card.
           </li>
-          <li>
-            <strong>Cash on Delivery:</strong> refunds for COD orders are issued via [COD REFUND
-            METHOD — BUSINESS TO CONFIRM].
-          </li>
         </ul>
       </PolicySection>
 

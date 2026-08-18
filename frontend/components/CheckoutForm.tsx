@@ -3,7 +3,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import { Banknote, CreditCard, Loader2, Lock, ShieldCheck, Smartphone, Wallet } from "lucide-react";
+import { CreditCard, Loader2, Lock, ShieldCheck, Smartphone, Wallet } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { callEdgeFunction, getSupabase } from "@/lib/supabaseClient";
 import { formatMoney, priceForCurrency } from "@/lib/currency";
@@ -13,7 +13,7 @@ import ProductImage from "@/components/product/ProductImage";
 import AuthModal from "@/components/auth/AuthModal";
 import { cn } from "@/lib/utils";
 
-type PaymentMethod = "stripe" | "cod" | "jazzcash" | "safepay";
+type PaymentMethod = "stripe" | "jazzcash" | "safepay";
 
 interface ShippingDetails {
   name: string;
@@ -34,12 +34,6 @@ const PAYMENT_OPTIONS: Record<
   PaymentMethod,
   { label: string; description: string; icon: typeof CreditCard; region: "PKR" | "USD" }
 > = {
-  cod: {
-    label: "Cash on Delivery",
-    description: "Pay in cash when your order arrives — Pakistan only.",
-    icon: Banknote,
-    region: "PKR",
-  },
   jazzcash: {
     label: "JazzCash",
     description: "Pay with a JazzCash mobile wallet.",
@@ -77,7 +71,7 @@ export default function CheckoutForm() {
   });
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(
-    currency === "PKR" ? "cod" : "stripe",
+    currency === "PKR" ? "jazzcash" : "stripe",
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -111,11 +105,6 @@ export default function CheckoutForm() {
       setError("Your cart is empty.");
       return;
     }
-    if (paymentMethod === "cod" && shipping.country.trim().toLowerCase() !== "pakistan") {
-      setError("Cash on Delivery is only available for addresses in Pakistan.");
-      return;
-    }
-
     setIsSubmitting(true);
     try {
       const signedIn = await ensureSignedIn();
@@ -143,16 +132,6 @@ export default function CheckoutForm() {
           clearCart();
           window.location.href = result.url;
         }
-        return;
-      }
-
-      if (paymentMethod === "cod") {
-        const result = await callEdgeFunction<CheckoutResponse>("cod-order", {
-          items: cartLines,
-          shipping: shippingPayload,
-        });
-        clearCart();
-        router.push(`/order-confirmation/?order_id=${result.order_id}&cod=1`);
         return;
       }
 
@@ -351,7 +330,7 @@ export default function CheckoutForm() {
           </button>
           <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-[11px] text-neutral-400">
             <ShieldCheck className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
-            Secure checkout · Stripe for international cards · COD across Pakistan
+            Secure checkout · Card payments via Stripe worldwide
           </p>
         </section>
       </div>

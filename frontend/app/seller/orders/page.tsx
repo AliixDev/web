@@ -18,7 +18,7 @@ import { ErrorState, Modal, PageHeader, StatusBadge, orderStatusTone, paymentSta
 import { toast } from "@/components/seller/Toast";
 import { cn } from "@/lib/utils";
 
-const STATUS_TABS = ["all", "pending_payment", "cod_pending", "paid", "processing", "shipped", "delivered", "cancelled", "refunded"] as const;
+const STATUS_TABS = ["all", "pending_payment", "paid", "processing", "shipped", "delivered", "cancelled", "refunded"] as const;
 
 export default function SellerOrdersPage() {
   const [orders, setOrders] = useState<SellerOrder[]>([]);

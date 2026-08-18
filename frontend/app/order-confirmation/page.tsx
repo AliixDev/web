@@ -19,7 +19,6 @@ interface OrderSummary {
 function OrderConfirmationContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("order_id");
-  const isCod = searchParams.get("cod") === "1";
 
   const [order, setOrder] = useState<OrderSummary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -98,7 +97,7 @@ function OrderConfirmationContent() {
                 {[
                   "We've received your order and are preparing it.",
                   order.payment_method === "cod"
-                    ? "Keep cash ready — you'll pay the delivery partner when your order arrives."
+                    ? "Payment is collected when your order arrives."
                     : "Your payment is being confirmed. You'll receive a confirmation once it clears.",
                   "Track your order anytime from your account.",
                 ].map((step, index) => (
@@ -111,10 +110,6 @@ function OrderConfirmationContent() {
                 ))}
               </ol>
             </>
-          ) : isCod ? (
-            <p className="border border-neutral-200 bg-neutral-50 px-5 py-4 text-[13px] leading-relaxed text-neutral-700">
-              Your Cash on Delivery order has been placed — pay in cash when it arrives.
-            </p>
           ) : (
             <p className="border border-neutral-200 bg-neutral-50 px-5 py-4 text-[13px] leading-relaxed text-neutral-700">
               We couldn&apos;t load this order&apos;s details, but your reference number above is saved.

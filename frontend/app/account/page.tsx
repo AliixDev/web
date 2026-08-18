@@ -38,7 +38,7 @@ interface Order {
 
 const STATUS_LABEL: Record<string, string> = {
   pending_payment: "Payment pending",
-  cod_pending: "Order placed (COD)",
+  cod_pending: "Order placed",
   paid: "Paid",
   processing: "Processing",
   shipped: "Shipped",

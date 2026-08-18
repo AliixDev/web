@@ -59,8 +59,7 @@ export default function OrderTrackingPage() {
               available) are included in your shipping confirmation.
             </p>
             <p>
-              <strong>4. Delivered</strong> — your order has arrived. For Cash on Delivery orders,
-              have your payment ready.
+              <strong>4. Delivered</strong> — your order has arrived.
             </p>
           </div>
         </section>

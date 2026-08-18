@@ -77,9 +77,6 @@ export default function CancellationPolicyPage() {
           <li>
             <strong>Credit / Debit Card:</strong> refund issued to the original card.
           </li>
-          <li>
-            <strong>Cash on Delivery:</strong> [COD CANCELLATION REFUND METHOD — BUSINESS TO CONFIRM].
-          </li>
         </ul>
       </PolicySection>
 

@@ -4,7 +4,7 @@ import Link from "next/link";
 import {
   ArrowRight,
   ArrowUpRight,
-  Banknote,
+  BadgeCheck,
   Globe2,
   ShieldCheck,
 } from "lucide-react";
@@ -459,13 +459,13 @@ export default async function HomePage() {
         <div className="container py-14 md:py-16">
           <div className="grid grid-cols-1 gap-10 sm:grid-cols-3">
             {[
-              {
-                icon: Banknote,
-                title: "Cash on delivery",
-                body: "Pay in cash when your order arrives — available across Pakistan.",
-              },
-              {
-                icon: ShieldCheck,
+            {
+              icon: BadgeCheck,
+              title: "Verified pricing",
+              body: "Every price is recomputed server-side at checkout — no hidden conversions.",
+            },
+            {
+              icon: ShieldCheck,
                 title: "Secure checkout",
                 body: "International card payments processed by Stripe, worldwide.",
               },

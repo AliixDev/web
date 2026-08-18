@@ -71,13 +71,12 @@ export default function TermsPage() {
       <PolicySection title="5. Payment">
         <p>We accept the following payment methods:</p>
         <ul className="mt-2 list-disc pl-5 space-y-1.5">
-          <li><strong>Cash on Delivery (COD):</strong> available for delivery addresses within Pakistan.</li>
           <li><strong>Credit / Debit Card via Stripe:</strong> available for international orders (USD).</li>
           <li><strong>JazzCash:</strong> available for select transactions.</li>
         </ul>
         <p>
-          Payment is processed at the time of order placement or upon delivery (for COD). Card
-          information is handled entirely by Stripe and is never stored on our servers.
+          Payment is processed at the time of order placement. Card information is handled
+          entirely by Stripe and is never stored on our servers.
         </p>
       </PolicySection>
 

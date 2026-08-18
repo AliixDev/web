@@ -13,7 +13,7 @@ const FAQ_CATEGORIES = [
     items: [
       {
         q: "How do I place an order?",
-        a: "Browse our shop, add products to your cart, and proceed to checkout. You can pay via Cash on Delivery (Pakistan) or credit/debit card via Stripe (worldwide).",
+        a: "Browse our shop, add products to your cart, and proceed to checkout. You can pay by credit/debit card via Stripe (worldwide) or JazzCash.",
       },
       {
         q: "Can I change or cancel my order?",
@@ -30,7 +30,7 @@ const FAQ_CATEGORIES = [
     items: [
       {
         q: "What payment methods do you accept?",
-        a: "We accept Cash on Delivery (Pakistan), credit/debit cards via Stripe (USD, worldwide), and JazzCash.",
+        a: "We accept credit/debit cards via Stripe (USD, worldwide) and JazzCash.",
       },
       {
         q: "Is my payment information secure?",

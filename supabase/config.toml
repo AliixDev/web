@@ -33,9 +33,6 @@ policy = "oneshot"
 [functions.create-checkout]
 verify_jwt = true
 
-[functions.cod-order]
-verify_jwt = true
-
 [functions.local-gateway-checkout]
 verify_jwt = true
 

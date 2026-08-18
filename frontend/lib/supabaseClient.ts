@@ -45,8 +45,8 @@ export function isSupabaseConfigured(): boolean {
  * Base URL for calling Supabase Edge Functions directly via fetch.
  *
  * An env var injected as an empty string (rather than unset) would slip
- * past `??` and produce a broken relative URL like "/cod-order" — the
- * browser would then hit the static host (HTML 405) instead of Supabase.
+ * past `??` and produce a broken relative URL like "/create-checkout" —
+ * the browser would then hit the static host (HTML 405) instead of Supabase.
  * Empty values therefore fall back to the derived URL, and trailing
  * slashes are stripped so the caller can append "/<function-name>".
  */

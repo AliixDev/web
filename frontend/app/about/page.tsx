@@ -114,8 +114,7 @@ export default function AboutPage() {
             <Reveal delay={120}>
               <p className="mt-4 text-[14px] leading-[1.8] text-neutral-600">
                 Prices are verified server-side before any order is placed. You see the real cost
-                in your chosen currency — whether PKR for cash on delivery across Pakistan or USD
-                for international card checkout.
+                in your chosen currency — verified at checkout with no hidden conversions.
               </p>
             </Reveal>
           </div>

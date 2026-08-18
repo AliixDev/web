@@ -177,8 +177,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                 <span className="text-[15px] font-medium tabular-nums">{formatMoney(subtotal, currency)}</span>
               </div>
               <p className="text-[12px] leading-relaxed text-neutral-400">
-                Shipping and final total are calculated at checkout. Cash on delivery is available
-                across Pakistan.
+                Shipping and final total are calculated at checkout.
               </p>
               <Link
                 href="/checkout"

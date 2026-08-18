@@ -25,10 +25,6 @@ export default function ShippingPolicyPage() {
         <p>We offer the following shipping options:</p>
         <ul className="mt-2 list-disc pl-5 space-y-1.5">
           <li>
-            <strong>Cash on Delivery (COD):</strong> available for delivery addresses within
-            Pakistan. Payment is collected upon delivery.
-          </li>
-          <li>
             <strong>Standard / Express shipping (international):</strong> available for orders
             placed with credit or debit card via Stripe (USD).
           </li>
@@ -63,8 +59,8 @@ export default function ShippingPolicyPage() {
 
       <PolicySection title="4. Domestic shipping (Pakistan)">
         <p>
-          Cash on Delivery is available across Pakistan. Standard delivery within major cities
-          typically takes [DOMESTIC DELIVERY TIME — BUSINESS TO CONFIRM] business days.
+          Standard delivery within major cities typically takes [DOMESTIC DELIVERY TIME —
+          BUSINESS TO CONFIRM] business days.
         </p>
       </PolicySection>
 

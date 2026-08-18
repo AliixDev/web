@@ -7,7 +7,7 @@
 // your webhook / return URL with a signed status.
 //
 // This function is intentionally NOT wired to a live gateway: it
-// creates the order exactly like create-checkout / cod-order, then
+// creates the order exactly like create-checkout, then
 // returns a *mock* redirect URL so the frontend flow can be built and
 // tested end-to-end today. To go live, replace `callMockGateway()`
 // below with a real call to the Safepay or JazzCash API using

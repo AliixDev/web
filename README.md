@@ -7,7 +7,7 @@ Functions). There is no traditional application server anywhere in this stack.
 
 The brand (roots in 2017, Pakistan) sells **premium motorcycle protection and
 leather gear** — moto suits, moto gloves, moto shoes, leather jackets and
-handcrafted stitched gloves — with cash on delivery across Pakistan and secure
+handcrafted stitched gloves — with secure
 card checkout internationally.
 
 ## Architecture
@@ -22,7 +22,6 @@ Browser (GitHub Pages, static HTML/JS)
    └── Supabase Edge Functions (Deno, service-role key, the ONLY place
        that computes prices and writes orders/order_items)
            - create-checkout        → Stripe Checkout Session (USD, international)
-           - cod-order               → Cash on Delivery order (PKR, Pakistan only)
            - local-gateway-checkout  → JazzCash / Safepay mock template (PKR)
            - stripe-webhook          → verifies Stripe signature, marks orders paid
 ```
@@ -45,7 +44,7 @@ live catalog.
 ├── frontend/         # Next.js 14 App Router, output: 'export'
 ├── supabase/
 │   ├── migrations/   # SQL schema, RLS policies, seed catalogs
-│   ├── functions/    # Deno Edge Functions (create-checkout, cod-order, …)
+│   ├── functions/    # Deno Edge Functions (create-checkout, local-gateway-checkout, …)
 │   └── config.toml
 └── README.md
 ```
@@ -93,8 +92,8 @@ fake product photography.
   nothing is fabricated).
 - **Cart**: slide-out drawer + full cart page, quantity editing, mobile
   sticky checkout bar.
-- **Checkout**: sign-in required, Stripe (international, USD) · COD
-  (Pakistan, PKR) · JazzCash/Safepay (mock template), server-verified totals.
+- **Checkout**: sign-in required, Stripe (international, USD) ·
+  JazzCash/Safepay (PKR, mock template), server-verified totals.
 - **Account** (`/account`): order history + order tracking/confirmation pages.
 - **Seller Central** (`/seller`): role-based admin panel with orders, products
   (including a live Google-style SEO preview with title/meta/keywords fields),
@@ -203,7 +202,6 @@ likewise auto-injected.
 
 ```bash
 supabase functions deploy create-checkout
-supabase functions deploy cod-order
 supabase functions deploy local-gateway-checkout
 supabase functions deploy stripe-webhook --no-verify-jwt
 ```
@@ -262,7 +260,7 @@ Pushing to `main` triggers:
      from the **root** of the custom domain, so all assets are root-relative
      (`/_next/...`) and load correctly from `https://www.sdbbuy.com/`.
   2. Publishes `frontend/out` to GitHub Pages.
-  3. Links the Supabase project, runs `supabase db push`, deploys all four Edge
+  3. Links the Supabase project, runs `supabase db push`, deploys all three Edge
      Functions, and syncs their secrets — in parallel, as a second job.
 
 Your storefront is live at `https://www.sdbbuy.com/`.
@@ -275,12 +273,10 @@ adding or editing a product (or applying a new Supabase migration) requires a
 rebuild. Trigger one from the Actions tab (`workflow_dispatch`) or push any
 commit — no code change is required.
 
-## Local currency & COD notes
+## Local currency notes
 
 - Prices are stored as integer minor units (`price_usd_cents`,
   `price_pkr_paisa`) to avoid floating-point rounding bugs.
-- Cash on Delivery (`cod-order`) is restricted to shipping addresses in
-  Pakistan and always charges in PKR.
 - `local-gateway-checkout` is a **mock template** for JazzCash/Safepay: it
   creates a real order row with the correct server-computed total, but
   returns a mock redirect instead of calling a live gateway. See the comment

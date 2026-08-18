@@ -140,7 +140,7 @@ export const LOW_STOCK_THRESHOLD = 5;
 
 export const ORDER_STATUS_LABELS: Record<string, string> = {
   pending_payment: "Payment pending",
-  cod_pending: "Order placed (COD)",
+  cod_pending: "Order placed",
   paid: "Paid",
   processing: "Processing",
   shipped: "Shipped",
@@ -158,7 +158,6 @@ export const PAYMENT_STATUS_LABELS: Record<string, string> = {
 
 export const PAYMENT_METHOD_LABELS: Record<string, string> = {
   stripe: "Stripe",
-  cod: "Cash on delivery",
   jazzcash: "JazzCash",
   safepay: "Safepay",
 };
@@ -166,7 +165,6 @@ export const PAYMENT_METHOD_LABELS: Record<string, string> = {
 /** Statuses the seller may move an order to (matches the DB enum). */
 export const ORDER_STATUS_OPTIONS = [
   "pending_payment",
-  "cod_pending",
   "processing",
   "shipped",
   "delivered",

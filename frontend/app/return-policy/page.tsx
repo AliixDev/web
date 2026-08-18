@@ -84,10 +84,7 @@ export default function ReturnPolicyPage() {
           decision. Approved refunds are processed within [REFUND PROCESSING TIME — BUSINESS TO
           CONFIRM] to the original payment method.
         </p>
-        <p>
-          For Cash on Delivery orders, refunds are issued via [COD REFUND METHOD — BUSINESS TO
-          CONFIRM].
-        </p>
+
       </PolicySection>
 
       <PolicySection title="6. Non-returnable items">

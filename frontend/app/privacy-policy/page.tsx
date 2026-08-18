@@ -43,7 +43,7 @@ export default function PrivacyPolicyPage() {
           <li><strong>Contact information:</strong> details you submit through our contact forms or customer support.</li>
           <li><strong>Shipping information:</strong> delivery address, city, and postal details required to fulfil your order.</li>
           <li><strong>Order information:</strong> products you purchase, quantities, and order history.</li>
-          <li><strong>Payment information:</strong> payment is processed through Stripe or Cash on Delivery. We do not store your card details on our servers.</li>
+          <li><strong>Payment information:</strong> payment is processed through Stripe. We do not store your card details on our servers.</li>
         </ul>
 
         <h3 className="mt-4 text-[13px] font-semibold text-foreground">Information collected automatically</h3>

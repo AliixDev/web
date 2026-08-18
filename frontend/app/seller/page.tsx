@@ -77,7 +77,7 @@ export default function SellerDashboardPage() {
     const outOfStock = products.filter((p) => p.stock_quantity <= 0);
     const lowStock = products.filter((p) => p.stock_quantity > 0 && p.stock_quantity <= LOW_STOCK_THRESHOLD);
 
-    const pending = orders.filter((o) => ["pending_payment", "cod_pending", "paid"].includes(o.status));
+    const pending = orders.filter((o) => ["pending_payment", "paid"].includes(o.status));
     const processing = orders.filter((o) => o.status === "processing" || o.status === "shipped");
 
     const customers = profiles.filter((p) => p.role === "customer");

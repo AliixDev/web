@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     template: "%s · SDB WEAR",
   },
   description:
-    "Premium motorcycle protection, leather jackets, riding gear and stitched gloves from SDB WEAR. Built for the ride — cash on delivery across Pakistan, secure card checkout worldwide.",
+    "Premium motorcycle protection, leather jackets, riding gear and stitched gloves from SDB WEAR. Built for the ride — secure card checkout worldwide.",
   applicationName: SITE_NAME,
   authors: [{ name: SITE_NAME }],
   keywords: [

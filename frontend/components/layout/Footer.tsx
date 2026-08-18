@@ -175,7 +175,6 @@ export default function Footer({ categories }: { categories: Category[] }) {
                 Wholesale / B2B
               </a>
             </li>
-            <li className="text-neutral-600">Cash on Delivery</li>
             <li className="text-neutral-600">Stripe (international)</li>
             <li className="text-neutral-600">JazzCash</li>
           </ul>

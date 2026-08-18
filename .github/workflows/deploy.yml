@@ -108,7 +108,6 @@ jobs:
           SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
         run: |
           supabase functions deploy create-checkout --project-ref "$SUPABASE_PROJECT_REF"
-          supabase functions deploy cod-order --project-ref "$SUPABASE_PROJECT_REF"
           supabase functions deploy local-gateway-checkout --project-ref "$SUPABASE_PROJECT_REF"
           supabase functions deploy stripe-webhook --project-ref "$SUPABASE_PROJECT_REF" --no-verify-jwt
 

@@ -4,7 +4,6 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
-  Banknote,
   Check,
   Heart,
   Loader2,
@@ -308,16 +307,7 @@ export default function ProductDetail({ product }: { product: Product }) {
         </div>
 
         {/* Delivery info */}
-        <div className="mt-8 space-y-5 border-t border-neutral-200 pt-8">
-          <div className="flex items-start gap-3.5">
-            <Banknote className="mt-0.5 h-5 w-5 shrink-0 text-neutral-400" strokeWidth={1.25} aria-hidden />
-            <div>
-              <p className="text-[13px] font-medium">Cash on delivery</p>
-              <p className="mt-0.5 text-[13px] leading-relaxed text-neutral-600">
-                Available for delivery addresses in Pakistan.
-              </p>
-            </div>
-          </div>
+        <div className="mt-8 border-t border-neutral-200 pt-8">
           <div className="flex items-start gap-3.5">
             <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-neutral-400" strokeWidth={1.25} aria-hidden />
             <div>
