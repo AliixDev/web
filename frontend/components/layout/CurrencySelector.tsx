@@ -22,7 +22,7 @@ const CURRENCY_NAMES: Record<Currency, string> = {
   PKR: "Pakistani Rupee",
 };
 
-export default function CurrencySelector() {
+export default function CurrencySelector({ dark = false }: { dark?: boolean } = {}) {
   const currency = useStore((s) => s.currency);
   const setCurrency = useStore((s) => s.setCurrency);
   const [open, setOpen] = useState(false);
@@ -41,7 +41,7 @@ export default function CurrencySelector() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex h-10 items-center gap-1.5 px-2 text-[12px] font-semibold tracking-wider text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-foreground"
+        className={cn("flex h-10 items-center gap-1.5 px-2 text-[12px] font-semibold tracking-wider transition-colors", dark ? "text-neutral-400 hover:bg-white/5 hover:text-white" : "text-neutral-600 hover:bg-neutral-100 hover:text-foreground")}
         aria-label={`Currency: ${currency}`}
         aria-expanded={open}
         aria-haspopup="listbox"
@@ -59,7 +59,7 @@ export default function CurrencySelector() {
         <div
           role="listbox"
           aria-label="Select currency"
-          className="animate-scale-in absolute right-0 top-[calc(100%+6px)] z-50 w-56 border border-border bg-background py-1.5 shadow-panel"
+          className={cn("animate-scale-in absolute right-0 top-[calc(100%+6px)] z-50 w-56 border py-1.5 shadow-panel", dark ? "border-neutral-700 bg-[#111]" : "border-border bg-background")}
         >
           {DISPLAY_CURRENCIES.map((c) => (
             <button
@@ -73,9 +73,9 @@ export default function CurrencySelector() {
               }}
               className={cn(
                 "flex w-full items-center justify-between px-4 py-2.5 text-[13px] transition-colors",
-                c === currency
-                  ? "font-medium text-foreground"
-                  : "text-neutral-600 hover:bg-neutral-50 hover:text-foreground",
+                dark
+                  ? (c === currency ? "font-medium text-white" : "text-neutral-400 hover:bg-white/5 hover:text-white")
+                  : (c === currency ? "font-medium text-foreground" : "text-neutral-600 hover:bg-neutral-50 hover:text-foreground"),
               )}
             >
               <span>{c} — {CURRENCY_NAMES[c]}</span>

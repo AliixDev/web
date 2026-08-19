@@ -200,6 +200,19 @@
   .link-underline:focus-visible {
     background-size: 100% 1px;
   }
+
+  /* Dark section wrapper — inverts light-themed components for dark backgrounds */
+  .dark-section {
+    filter: invert(1) hue-rotate(180deg);
+  }
+  .dark-section img {
+    filter: invert(1) hue-rotate(180deg);
+  }
+
+  /* Hero scroll-pinning spacer */
+  .hero-spacer {
+    position: relative;
+  }
 }
 
 @keyframes page-in {
@@ -296,5 +309,11 @@
   .reveal {
     opacity: 1;
     transform: none;
+  }
+  .hero-canvas-wrapper canvas {
+    display: none;
+  }
+  .hero-static-fallback {
+    display: block !important;
   }
 }

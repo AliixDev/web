@@ -57,6 +57,7 @@ export default function Header({ categories }: HeaderProps) {
   // query string after mount to compute nav active states.
   useEffect(() => setMounted(true), []);
   const searchString = mounted ? window.location.search : "";
+  const isHomePage = pathname === "/";
 
   const mobileRef = useDialog(mobileOpen, () => setMobileOpen(false));
 
@@ -203,14 +204,24 @@ export default function Header({ categories }: HeaderProps) {
 
   const accountInitial = user?.email?.charAt(0).toUpperCase() ?? "";
 
+  // Dark theme for homepage, light for all other pages
+  const headerBg = isHomePage
+    ? (scrolled ? "border-b border-neutral-800 bg-[#080808]/95 backdrop-blur-xl" : "border-b border-transparent bg-transparent")
+    : (scrolled ? "border-b border-border bg-background/95 shadow-[0_1px_0_rgba(0,0,0,0.04)] backdrop-blur-xl" : "border-b border-transparent bg-background");
+  const headerText = isHomePage ? "text-white" : "text-foreground";
+  const headerMuted = isHomePage ? "text-neutral-400 hover:text-white" : "text-neutral-600 hover:text-foreground";
+  const headerHover = isHomePage ? "hover:bg-white/5" : "hover:bg-neutral-100";
+  const headerLogo = isHomePage
+    ? ("font-display text-[21px] font-medium tracking-tight transition-opacity hover:opacity-70 lg:text-[24px] text-white")
+    : ("font-display text-[21px] font-medium tracking-tight transition-opacity hover:opacity-70 lg:text-[24px]");
+  const headerLogoAccent = isHomePage ? "font-light text-neutral-500" : "font-light text-neutral-400";
+
   return (
     <>
       <header
         className={cn(
           "sticky top-0 z-50 transition-all duration-300 ease-premium",
-          scrolled
-            ? "border-b border-border bg-background/95 shadow-[0_1px_0_rgba(0,0,0,0.04)] backdrop-blur-xl"
-            : "border-b border-transparent bg-background",
+          headerBg,
         )}
       >
         <div className="container flex h-[60px] items-center justify-between gap-4 lg:h-[68px]">
@@ -219,7 +230,7 @@ export default function Header({ categories }: HeaderProps) {
             <button
               type="button"
               onClick={() => setMobileOpen(true)}
-              className="-ml-1 flex h-11 w-11 shrink-0 items-center justify-center text-foreground transition-colors hover:bg-neutral-100 lg:hidden"
+              className={cn("-ml-1 flex h-11 w-11 shrink-0 items-center justify-center transition-colors lg:hidden", headerText, headerHover)}
               aria-label="Open menu"
               aria-expanded={mobileOpen}
             >
@@ -227,9 +238,9 @@ export default function Header({ categories }: HeaderProps) {
             </button>
             <Link
               href="/"
-              className="font-display text-[21px] font-medium tracking-tight transition-opacity hover:opacity-70 lg:text-[24px]"
+              className={headerLogo}
             >
-              SDB<span className="font-light text-neutral-400">WEAR</span>
+              SDB<span className={headerLogoAccent}>WEAR</span>
             </Link>
           </div>
 
@@ -240,7 +251,7 @@ export default function Header({ categories }: HeaderProps) {
               const children = link.family ? (childrenByParent.get(link.family.id) ?? []) : [];
               const linkClass = cn(
                 "link-underline relative py-1 text-[13px] font-medium tracking-wide transition-colors duration-200",
-                isActive ? "text-foreground" : "text-neutral-600 hover:text-foreground",
+                isActive ? headerText : headerMuted,
               );
 
               if (children.length === 0) {
@@ -276,13 +287,13 @@ export default function Header({ categories }: HeaderProps) {
                     aria-label={`${link.label} subcategories`}
                     className="invisible absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3 opacity-0 transition-all duration-200 ease-premium group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100"
                   >
-                    <div className="min-w-[230px] border border-border bg-background py-2 shadow-panel-sm">
+                    <div className={cn("min-w-[230px] border py-2 shadow-panel-sm", isHomePage ? "border-neutral-700 bg-[#111]" : "border-border bg-background")}>
                       {children.map((child) => (
                         <Link
                           key={child.id}
                           href={`/shop?category=${child.slug}`}
                           role="menuitem"
-                          className="block px-4 py-2.5 text-[13px] text-neutral-600 transition-colors hover:bg-neutral-50 hover:text-foreground"
+                          className={cn("block px-4 py-2.5 text-[13px] transition-colors", isHomePage ? "text-neutral-400 hover:bg-white/5 hover:text-white" : "text-neutral-600 hover:bg-neutral-50 hover:text-foreground")}
                         >
                           {child.name}
                         </Link>
@@ -303,14 +314,14 @@ export default function Header({ categories }: HeaderProps) {
                   className={cn(
                     "flex items-center overflow-hidden transition-all duration-300 ease-premium",
                     searchExpanded
-                      ? "w-72 border border-neutral-200 bg-background shadow-panel-sm"
+                      ? (isHomePage ? "w-72 border border-neutral-700 bg-[#111] shadow-panel-sm" : "w-72 border border-neutral-200 bg-background shadow-panel-sm")
                       : "w-10 border border-transparent",
                   )}
                 >
                   <button
                     type={searchExpanded ? "submit" : "button"}
                     onClick={searchExpanded ? undefined : toggleSearch}
-                    className="flex h-10 w-10 shrink-0 items-center justify-center text-neutral-600 transition-colors hover:text-foreground"
+                    className={cn("flex h-10 w-10 shrink-0 items-center justify-center transition-colors", headerMuted)}
                     aria-label={searchExpanded ? "Search" : "Open search"}
                   >
                     <Search className="h-4 w-4" strokeWidth={1.75} aria-hidden />
@@ -328,7 +339,7 @@ export default function Header({ categories }: HeaderProps) {
                         }}
                         placeholder="Search the collection…"
                         aria-label="Search products"
-                        className="h-10 w-full min-w-0 bg-transparent pr-1 text-[13px] placeholder:text-neutral-400 focus:outline-none"
+                        className={cn("h-10 w-full min-w-0 bg-transparent pr-1 text-[13px] focus:outline-none", isHomePage ? "placeholder:text-neutral-600 text-white" : "placeholder:text-neutral-400 text-foreground")}
                       />
                       {query && (
                         <button
@@ -346,9 +357,9 @@ export default function Header({ categories }: HeaderProps) {
               </form>
 
               {searchExpanded && showRecent && recent.length > 0 && (
-                <div className="absolute right-0 top-[calc(100%+6px)] w-72 border border-border bg-background shadow-panel">
+                <div className={cn("absolute right-0 top-[calc(100%+6px)] w-72 border shadow-panel", isHomePage ? "border-neutral-700 bg-[#111]" : "border-border bg-background")}>
                   <div className="flex items-center justify-between px-4 pb-1 pt-3">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
                       Recent searches
                     </p>
                     <button
@@ -357,7 +368,7 @@ export default function Header({ categories }: HeaderProps) {
                         clearRecentSearches();
                         refreshRecent();
                       }}
-                      className="flex h-6 w-6 items-center justify-center text-neutral-400 transition-colors hover:text-destructive"
+                      className="flex h-6 w-6 items-center justify-center text-neutral-500 transition-colors hover:text-red-500"
                       aria-label="Clear recent searches"
                     >
                       <Trash2 className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
@@ -369,9 +380,9 @@ export default function Header({ categories }: HeaderProps) {
                         <button
                           type="button"
                           onClick={() => runSearch(term)}
-                          className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-[13px] text-neutral-700 transition-colors hover:bg-neutral-50 hover:text-foreground"
+                          className={cn("flex w-full items-center gap-3 px-4 py-2.5 text-left text-[13px] transition-colors", isHomePage ? "text-neutral-400 hover:bg-white/5 hover:text-white" : "text-neutral-700 hover:bg-neutral-50 hover:text-foreground")}
                         >
-                          <Clock3 className="h-3.5 w-3.5 shrink-0 text-neutral-400" strokeWidth={1.5} aria-hidden />
+                          <Clock3 className="h-3.5 w-3.5 shrink-0 text-neutral-500" strokeWidth={1.5} aria-hidden />
                           <span className="truncate">{term}</span>
                         </button>
                       </li>
@@ -383,7 +394,7 @@ export default function Header({ categories }: HeaderProps) {
 
             {/* Currency selector */}
             <div className="hidden items-center sm:flex">
-              <CurrencySelector />
+              <CurrencySelector dark={isHomePage} />
             </div>
 
             {/* Account */}
@@ -396,7 +407,7 @@ export default function Header({ categories }: HeaderProps) {
                     aria-label="Account menu"
                     aria-expanded={accountOpen}
                     aria-haspopup="menu"
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200 bg-neutral-50 text-[12px] font-semibold text-neutral-700 transition-colors hover:border-foreground hover:text-foreground"
+                    className={cn("flex h-10 w-10 items-center justify-center rounded-full text-[12px] font-semibold transition-colors", isHomePage ? "border border-neutral-600 bg-neutral-800 text-neutral-300 hover:border-white/40 hover:text-white" : "border border-neutral-200 bg-neutral-50 text-neutral-700 hover:border-foreground hover:text-foreground")}
                   >
                     {accountInitial}
                   </button>
@@ -404,26 +415,26 @@ export default function Header({ categories }: HeaderProps) {
                     <div
                       role="menu"
                       aria-label="Account"
-                      className="animate-scale-in absolute right-0 top-[calc(100%+6px)] z-50 w-64 border border-border bg-background py-1.5 shadow-panel"
+                      className={cn("animate-scale-in absolute right-0 top-[calc(100%+6px)] z-50 w-64 border py-1.5 shadow-panel", isHomePage ? "border-neutral-700 bg-[#111]" : "border-border bg-background")}
                     >
-                      <p className="mb-1 truncate border-b border-border px-4 py-2.5 text-[12px] text-neutral-400">
+                      <p className={cn("mb-1 truncate px-4 py-2.5 text-[12px]", isHomePage ? "border-b border-neutral-700 text-neutral-500" : "border-b border-border text-neutral-400")}>
                         {user.email}
                       </p>
                       <Link
                         href="/account"
                         role="menuitem"
                         onClick={() => setAccountOpen(false)}
-                        className="flex items-center gap-2.5 px-4 py-2.5 text-[13px] font-medium transition-colors hover:bg-neutral-50"
+                        className={cn("flex items-center gap-2.5 px-4 py-2.5 text-[13px] font-medium transition-colors", isHomePage ? "text-neutral-400 hover:bg-white/5 hover:text-white" : "hover:bg-neutral-50")}
                       >
-                        <Package className="h-4 w-4 text-neutral-400" strokeWidth={1.5} aria-hidden /> My orders
+                        <Package className="h-4 w-4 text-neutral-500" strokeWidth={1.5} aria-hidden /> My orders
                       </Link>
                       <button
                         type="button"
                         role="menuitem"
                         onClick={handleSignOut}
-                        className="flex w-full items-center gap-2.5 px-4 py-2.5 text-[13px] font-medium transition-colors hover:bg-neutral-50"
+                        className={cn("flex w-full items-center gap-2.5 px-4 py-2.5 text-[13px] font-medium transition-colors", isHomePage ? "text-neutral-400 hover:bg-white/5 hover:text-white" : "hover:bg-neutral-50")}
                       >
-                        <LogOut className="h-4 w-4 text-neutral-400" strokeWidth={1.5} aria-hidden /> Sign out
+                        <LogOut className="h-4 w-4 text-neutral-500" strokeWidth={1.5} aria-hidden /> Sign out
                       </button>
                     </div>
                   )}
@@ -432,7 +443,7 @@ export default function Header({ categories }: HeaderProps) {
                 <button
                   type="button"
                   onClick={() => setAuthOpen(true)}
-                  className="flex h-10 w-10 items-center justify-center text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-foreground"
+                  className={cn("flex h-10 w-10 items-center justify-center transition-colors", headerMuted, headerHover)}
                   aria-label="Sign in"
                 >
                   <User className="h-[18px] w-[18px]" strokeWidth={1.5} aria-hidden />
@@ -444,14 +455,14 @@ export default function Header({ categories }: HeaderProps) {
             <button
               type="button"
               onClick={() => setCartOpen(true)}
-              className="relative flex h-10 w-10 items-center justify-center text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-foreground"
+              className={cn("relative flex h-10 w-10 items-center justify-center transition-colors", headerMuted, headerHover)}
               aria-label={`Open cart, ${cartCount} ${cartCount === 1 ? "item" : "items"}`}
             >
               <ShoppingBag className="h-[18px] w-[18px]" strokeWidth={1.5} aria-hidden />
               {cartCount > 0 && (
                 <span
                   key={cartCount}
-                  className="animate-scale-in absolute right-0 top-0.5 flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-foreground px-1 text-[9px] font-bold tabular-nums leading-none text-background"
+                  className={cn("animate-scale-in absolute right-0 top-0.5 flex h-[16px] min-w-[16px] items-center justify-center rounded-full px-1 text-[9px] font-bold tabular-nums leading-none", isHomePage ? "bg-white text-black" : "bg-foreground text-background")}
                   aria-live="polite"
                 >
                   {cartCount}
@@ -478,25 +489,25 @@ export default function Header({ categories }: HeaderProps) {
             onClick={() => setMobileOpen(false)}
             className="animate-fade-in absolute inset-0 cursor-default bg-black/30 backdrop-blur-[2px]"
           />
-          <div className="animate-slide-in-right absolute inset-y-0 right-0 flex w-[86%] max-w-[380px] flex-col bg-background shadow-panel">
+          <div className={cn("animate-slide-in-right absolute inset-y-0 right-0 flex w-[86%] max-w-[380px] flex-col shadow-panel", isHomePage ? "bg-[#0a0a0a]" : "bg-background")}>
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-border px-5 py-4">
-              <span className="font-display text-lg font-medium tracking-tight">Menu</span>
+            <div className={cn("flex items-center justify-between border-b px-5 py-4", isHomePage ? "border-neutral-800" : "border-border")}>
+              <span className="font-display text-lg font-medium tracking-tight text-white">Menu</span>
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
                 aria-label="Close menu"
-                className="flex h-9 w-9 items-center justify-center text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-foreground"
+                className="flex h-9 w-9 items-center justify-center text-neutral-500 transition-colors hover:bg-white/5 hover:text-white"
               >
                 <X className="h-[18px] w-[18px]" strokeWidth={1.5} aria-hidden />
               </button>
             </div>
 
             {/* Mobile search */}
-            <form onSubmit={handleSearchSubmit} role="search" className="border-b border-border px-5 py-4">
+            <form onSubmit={handleSearchSubmit} role="search" className={cn("border-b px-5 py-4", isHomePage ? "border-neutral-800" : "border-border")}>
               <div className="relative">
                 <Search
-                  className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400"
+                  className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500"
                   aria-hidden
                 />
                 <input
@@ -505,7 +516,7 @@ export default function Header({ categories }: HeaderProps) {
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search the collection"
                   aria-label="Search products"
-                  className="h-11 w-full border border-neutral-200 bg-neutral-50 pl-9 pr-3 text-[13px] placeholder:text-neutral-400 focus:border-foreground focus:outline-none focus:ring-0"
+                  className={cn("h-11 w-full pl-9 pr-3 text-[13px] placeholder:text-neutral-500 focus:outline-none focus:ring-0", isHomePage ? "border border-neutral-700 bg-neutral-900 text-white focus:border-neutral-500" : "border border-neutral-200 bg-neutral-50 focus:border-foreground")}
                 />
               </div>
             </form>
@@ -523,9 +534,9 @@ export default function Header({ categories }: HeaderProps) {
                         aria-current={isActive ? "page" : undefined}
                         className={cn(
                           "flex items-center justify-between rounded px-3 py-3.5 text-[15px] font-medium transition-colors",
-                          isActive
-                            ? "bg-neutral-100 text-foreground"
-                            : "text-neutral-700 hover:bg-neutral-50 hover:text-foreground",
+                          isHomePage
+                            ? (isActive ? "bg-white/10 text-white" : "text-neutral-400 hover:bg-white/5 hover:text-white")
+                            : (isActive ? "bg-neutral-100 text-foreground" : "text-neutral-700 hover:bg-neutral-50 hover:text-foreground"),
                         )}
                       >
                         {link.label}
@@ -539,12 +550,12 @@ export default function Header({ categories }: HeaderProps) {
                 })}
               </ul>
 
-              <div className="my-4 border-t border-border" />
+              <div className={cn("my-4 border-t", isHomePage ? "border-neutral-800" : "border-border")} />
 
               <div className="space-y-0.5">
                 {/* Mobile currency */}
                 <div className="flex items-center gap-1 px-3 py-2">
-                  <CurrencySelector />
+                  <CurrencySelector dark={isHomePage} />
                 </div>
 
                 {user ? (
@@ -583,14 +594,14 @@ export default function Header({ categories }: HeaderProps) {
             </nav>
 
             {/* Mobile cart CTA */}
-            <div className="border-t border-border px-5 py-4">
+            <div className={cn("border-t px-5 py-4", isHomePage ? "border-neutral-800" : "border-border")}>
               <button
                 type="button"
                 onClick={() => {
                   setMobileOpen(false);
                   setCartOpen(true);
                 }}
-                className="flex h-12 w-full items-center justify-center gap-2 bg-foreground text-[13px] font-medium text-background transition-opacity hover:opacity-90"
+                className={cn("flex h-12 w-full items-center justify-center gap-2 text-[13px] font-medium transition-opacity hover:opacity-90", isHomePage ? "bg-white text-black" : "bg-foreground text-background")}
               >
                 <ShoppingBag className="h-4 w-4" strokeWidth={1.5} aria-hidden />
                 View cart {cartCount > 0 && `(${cartCount})`}
