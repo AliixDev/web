@@ -1,5 +1,5 @@
 /* frontend/app/globals.css
-   SDBBUY — Premium black & white editorial design system */
+   RACEVOR — Premium black motorcycle protection design system */
 
 @tailwind base;
 @tailwind components;
@@ -11,27 +11,27 @@
       "Helvetica Neue", Arial, sans-serif;
     --font-display: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
 
-    /* Core palette — grayscale only */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 0%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 0%;
-    --primary: 0 0% 0%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 97%; /* #F7F7F7 */
-    --secondary-foreground: 0 0% 10%;
-    --muted: 0 0% 97%;
-    --muted-foreground: 0 0% 40%; /* #666666 */
-    --accent: 0 0% 95%; /* #F2F2F2 */
-    --accent-foreground: 0 0% 10%;
+    /* Core palette — dark motorcycle aesthetic */
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 100%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 5%;
+    --secondary-foreground: 0 0% 90%;
+    --muted: 0 0% 8%;
+    --muted-foreground: 0 0% 50%;
+    --accent: 0 0% 8%;
+    --accent-foreground: 0 0% 90%;
     --destructive: 0 72% 47%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 90%; /* ~#E5E5E5 */
-    --input: 0 0% 84%;
-    --ring: 0 0% 0%;
+    --border: 0 0% 12%;
+    --input: 0 0% 10%;
+    --ring: 0 0% 100%;
     --radius: 0px;
 
-    /* Extended neutral scale (anchored on brand neutrals) */
+    /* Extended neutral scale */
     --neutral-50: #FFFFFF;
     --neutral-100: #F7F7F7;
     --neutral-150: #F2F2F2;
@@ -66,7 +66,7 @@
   }
 
   ::selection {
-    @apply bg-foreground text-background;
+    @apply bg-white text-black;
   }
 
   /* Typography defaults */
@@ -79,15 +79,15 @@
     text-wrap: pretty;
   }
 
-  /* Premium editorial eyebrow */
+  /* Premium eyebrow */
   .eyebrow {
-    @apply text-[10px] font-semibold uppercase tracking-wide2 text-neutral-500;
+    @apply text-[10px] font-semibold uppercase text-neutral-500;
     letter-spacing: 0.22em;
   }
 
-  /* Visible focus states (never sacrifice accessibility) */
+  /* Visible focus states */
   :focus-visible {
-    @apply outline-none ring-2 ring-foreground ring-offset-2 ring-offset-background;
+    @apply outline-none ring-2 ring-white ring-offset-2 ring-offset-black;
   }
 
   /* Hide horizontal scrollbars */
@@ -108,15 +108,15 @@
     background: transparent;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: hsl(var(--border));
+    background: rgba(255,255,255,0.08);
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--neutral-400));
+    background: rgba(255,255,255,0.15);
   }
 }
 
 /* ------------------------------------------------------------------ */
-/* Premium motion system                                               */
+/* RACEVOR motion system                                               */
 /* ------------------------------------------------------------------ */
 
 @layer utilities {
@@ -175,13 +175,13 @@
     transform: scale(0.97);
   }
 
-  /* Skeleton pulse */
+  /* Skeleton pulse — light-on-dark for dark theme */
   .skeleton {
     background: linear-gradient(
       90deg,
-      hsl(var(--neutral-100)) 0%,
-      hsl(var(--neutral-150)) 40%,
-      hsl(var(--neutral-100)) 80%
+      hsl(0 0% 5%) 0%,
+      hsl(0 0% 10%) 40%,
+      hsl(0 0% 5%) 80%
     );
     background-size: 400% 100%;
     animation: skeleton-shimmer 1.8s ease-in-out infinite;

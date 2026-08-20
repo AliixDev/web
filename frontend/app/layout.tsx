@@ -21,33 +21,34 @@ const fraunces = Fraunces({
   display: "swap",
 });
 
-const SITE_NAME = "SDB WEAR";
+const SITE_NAME = "RACEVOR";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.sdbbuy.com"),
+  metadataBase: new URL("https://www.racevor.com"),
   title: {
-    default: "SDB WEAR | Premium Motorcycle Protection & Leather Gear",
-    template: "%s · SDB WEAR",
+    default: "RACEVOR | Premium Motorcycle Protection & Suits",
+    template: "%s · RACEVOR",
   },
   description:
-    "Premium motorcycle protection, leather jackets, riding gear and stitched gloves from SDB WEAR. Built for the ride — secure card checkout worldwide.",
+    "Premium motorcycle protection, racing suits, armor systems, and leather gear from RACEVOR. Engineered for impact. Built for the ride — secure checkout worldwide.",
   applicationName: SITE_NAME,
   authors: [{ name: SITE_NAME }],
   keywords: [
-    "motorcycle gear",
-    "moto suit",
-    "moto gloves",
-    "moto shoes",
-    "leather jacket",
-    "biker jacket",
-    "handcrafted gloves",
+    "motorcycle suits",
+    "motorcycle protection",
+    "CE Level 2 armor",
+    "moto gear",
+    "leather suit",
+    "racing suit",
+    "motorcycle armor",
     "riding gear",
-    "SDB WEAR",
+    "RACEVOR",
+    "bio-armor",
   ],
   openGraph: {
-    title: "SDB WEAR | Premium Motorcycle Protection & Leather Gear",
+    title: "RACEVOR | Premium Motorcycle Protection & Suits",
     description:
-      "Premium motorcycle protection, performance gear and leather craftsmanship designed for riders who demand more.",
+      "Premium motorcycle protection, racing suits, and leather craftsmanship engineered for riders who demand more.",
     type: "website",
     locale: "en_US",
     siteName: SITE_NAME,
@@ -67,10 +68,10 @@ export const viewport: Viewport = {
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "SDB WEAR",
-  url: "https://www.sdbbuy.com",
+  name: "RACEVOR",
+  url: "https://www.racevor.com",
   description:
-    "Premium motorcycle protection & leather gear — moto suits, moto gloves, moto shoes, leather jackets and handcrafted stitched gloves.",
+    "Premium motorcycle protection & racing suits — CE Level 2 armor, bio-armor system, full-grain leather construction.",
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -85,17 +86,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
       </head>
-      <body className="min-h-screen">
+      <body className="min-h-screen bg-[#000000]">
         {/* Skip to content — accessibility */}
         <a
           href="#main"
-          className="sr-only z-[100] bg-foreground px-4 py-2 text-[13px] font-medium text-background focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+          className="sr-only z-[100] bg-white px-4 py-2 text-[13px] font-medium text-black focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
         >
           Skip to content
         </a>
         <AnnouncementBar />
         <Header categories={allCategories} />
-        <main id="main" className="animate-page-in min-h-[60vh]">
+        <main id="main" className="min-h-[60vh]">
           {children}
         </main>
         <Footer categories={topLevel} />

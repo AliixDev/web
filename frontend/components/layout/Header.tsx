@@ -48,13 +48,12 @@ export default function Header({ categories }: HeaderProps) {
   const [searchExpanded, setSearchExpanded] = useState(false);
   const [showRecent, setShowRecent] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [navVisible, setNavVisible] = useState(false);
 
   const accountRef = useRef<HTMLDivElement | null>(null);
   const searchBoxRef = useRef<HTMLDivElement | null>(null);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Static export: window is unavailable during render, so we read the
-  // query string after mount to compute nav active states.
   useEffect(() => setMounted(true), []);
   const searchString = mounted ? window.location.search : "";
   const isHomePage = pathname === "/";
@@ -64,12 +63,26 @@ export default function Header({ categories }: HeaderProps) {
   // Track scroll position for header styling
   useEffect(() => {
     function onScroll() {
-      setScrolled(window.scrollY > 8);
+      const y = window.scrollY;
+      setScrolled(y > 8);
+      // On homepage, fade in nav after small scroll (cinematic feel)
+      if (isHomePage) {
+        setNavVisible(y > 40);
+      } else {
+        setNavVisible(true);
+      }
     }
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [isHomePage]);
+
+  // On homepage, show nav after loading screen
+  useEffect(() => {
+    if (!isHomePage) return;
+    const timer = window.setTimeout(() => setNavVisible(true), 2500);
+    return () => clearTimeout(timer);
+  }, [isHomePage]);
 
   // Track auth state
   useEffect(() => {
@@ -89,7 +102,6 @@ export default function Header({ categories }: HeaderProps) {
     return () => unsubscribe?.();
   }, []);
 
-  // Close account dropdown on outside click
   useEffect(() => {
     function onClick(event: MouseEvent) {
       if (accountRef.current && !accountRef.current.contains(event.target as Node)) {
@@ -100,7 +112,6 @@ export default function Header({ categories }: HeaderProps) {
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
-  // Collapse the search dropdown when clicking elsewhere
   useEffect(() => {
     function onClick(event: MouseEvent) {
       if (searchBoxRef.current && !searchBoxRef.current.contains(event.target as Node)) {
@@ -111,15 +122,11 @@ export default function Header({ categories }: HeaderProps) {
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
-  // Close the mobile menu when the route changes
   useEffect(() => setMobileOpen(false), [pathname]);
 
-  // Short nav labels for the three SDB WEAR product families. The full
-  // category names (Motorbike Gear, Leather Jackets & Biker Fashion,
-  // Handcrafted Gloves) remain in the shop filters and category pages.
   const NAV_LABELS: Record<string, string> = {
-    "motorbike-gear": "Motorbike",
-    "leather-jackets-biker-fashion": "Leather",
+    "motorbike-gear": "Moto Suits",
+    "leather-jackets-biker-fashion": "Jackets",
     "handcrafted-gloves": "Gloves",
   };
 
@@ -133,14 +140,13 @@ export default function Header({ categories }: HeaderProps) {
   }
 
   const navLinks = [
-    { label: "Shop all", href: "/shop", family: null as Category | null },
+    { label: "Shop All", href: "/shop", family: null as Category | null },
     ...topLevelCategories.map((c) => ({
       label: NAV_LABELS[c.slug] ?? c.name,
       href: `/shop?category=${c.slug}`,
       family: c,
     })),
     { label: "About", href: "/about", family: null },
-    { label: "Contact", href: "/contact", family: null },
   ];
 
   function isNavActive(href: string): boolean {
@@ -204,24 +210,22 @@ export default function Header({ categories }: HeaderProps) {
 
   const accountInitial = user?.email?.charAt(0).toUpperCase() ?? "";
 
-  // Dark theme for homepage, light for all other pages
-  const headerBg = isHomePage
-    ? (scrolled ? "border-b border-neutral-800 bg-[#080808]/95 backdrop-blur-xl" : "border-b border-transparent bg-transparent")
-    : (scrolled ? "border-b border-border bg-background/95 shadow-[0_1px_0_rgba(0,0,0,0.04)] backdrop-blur-xl" : "border-b border-transparent bg-background");
-  const headerText = isHomePage ? "text-white" : "text-foreground";
-  const headerMuted = isHomePage ? "text-neutral-400 hover:text-white" : "text-neutral-600 hover:text-foreground";
-  const headerHover = isHomePage ? "hover:bg-white/5" : "hover:bg-neutral-100";
-  const headerLogo = isHomePage
-    ? ("font-display text-[21px] font-medium tracking-tight transition-opacity hover:opacity-70 lg:text-[24px] text-white")
-    : ("font-display text-[21px] font-medium tracking-tight transition-opacity hover:opacity-70 lg:text-[24px]");
-  const headerLogoAccent = isHomePage ? "font-light text-neutral-500" : "font-light text-neutral-400";
+  // Always dark theme
+  const headerBg = scrolled
+    ? "border-b border-white/[0.06] bg-black/90 backdrop-blur-xl"
+    : "border-b border-transparent bg-transparent";
+  const headerText = "text-white";
+  const headerMuted = "text-neutral-400 hover:text-white";
+  const headerHover = "hover:bg-white/5";
 
   return (
     <>
       <header
         className={cn(
-          "sticky top-0 z-50 transition-all duration-300 ease-premium",
+          "sticky top-0 z-50 transition-all duration-500 ease-premium",
           headerBg,
+          isHomePage && !navVisible && "opacity-0 pointer-events-none",
+          isHomePage && navVisible && "opacity-100",
         )}
       >
         <div className="container flex h-[60px] items-center justify-between gap-4 lg:h-[68px]">
@@ -238,13 +242,13 @@ export default function Header({ categories }: HeaderProps) {
             </button>
             <Link
               href="/"
-              className={headerLogo}
+              className="font-display text-[21px] font-medium tracking-tight transition-opacity hover:opacity-70 lg:text-[24px] text-white"
             >
-              SDB<span className={headerLogoAccent}>WEAR</span>
+              RACE<span className="font-light text-neutral-500">VOR</span>
             </Link>
           </div>
 
-          {/* Center: desktop nav with family dropdowns */}
+          {/* Center: desktop nav */}
           <nav aria-label="Primary" className="hidden items-center gap-7 lg:flex">
             {navLinks.map((link) => {
               const isActive = isNavActive(link.href);
@@ -277,7 +281,7 @@ export default function Header({ categories }: HeaderProps) {
                   >
                     {link.label}
                     <ChevronDown
-                      className="h-3 w-3 text-neutral-400 transition-transform duration-200 group-hover:rotate-180"
+                      className="h-3 w-3 text-neutral-500 transition-transform duration-200 group-hover:rotate-180"
                       strokeWidth={1.75}
                       aria-hidden
                     />
@@ -287,13 +291,13 @@ export default function Header({ categories }: HeaderProps) {
                     aria-label={`${link.label} subcategories`}
                     className="invisible absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3 opacity-0 transition-all duration-200 ease-premium group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100"
                   >
-                    <div className={cn("min-w-[230px] border py-2 shadow-panel-sm", isHomePage ? "border-neutral-700 bg-[#111]" : "border-border bg-background")}>
+                    <div className="min-w-[230px] border border-white/[0.06] bg-[#0a0a0a] py-2 shadow-panel-sm">
                       {children.map((child) => (
                         <Link
                           key={child.id}
                           href={`/shop?category=${child.slug}`}
                           role="menuitem"
-                          className={cn("block px-4 py-2.5 text-[13px] transition-colors", isHomePage ? "text-neutral-400 hover:bg-white/5 hover:text-white" : "text-neutral-600 hover:bg-neutral-50 hover:text-foreground")}
+                          className="block px-4 py-2.5 text-[13px] text-neutral-400 transition-colors hover:bg-white/5 hover:text-white"
                         >
                           {child.name}
                         </Link>
@@ -307,14 +311,14 @@ export default function Header({ categories }: HeaderProps) {
 
           {/* Right: search + currency + account + cart */}
           <div className="flex items-center gap-0.5 sm:gap-1">
-            {/* Desktop search with recent searches */}
+            {/* Desktop search */}
             <div ref={searchBoxRef} className="relative hidden md:block">
               <form onSubmit={handleSearchSubmit} role="search" aria-label="Search products">
                 <div
                   className={cn(
                     "flex items-center overflow-hidden transition-all duration-300 ease-premium",
                     searchExpanded
-                      ? (isHomePage ? "w-72 border border-neutral-700 bg-[#111] shadow-panel-sm" : "w-72 border border-neutral-200 bg-background shadow-panel-sm")
+                      ? "w-72 border border-white/[0.08] bg-[#0a0a0a] shadow-panel-sm"
                       : "w-10 border border-transparent",
                   )}
                 >
@@ -339,13 +343,13 @@ export default function Header({ categories }: HeaderProps) {
                         }}
                         placeholder="Search the collection…"
                         aria-label="Search products"
-                        className={cn("h-10 w-full min-w-0 bg-transparent pr-1 text-[13px] focus:outline-none", isHomePage ? "placeholder:text-neutral-600 text-white" : "placeholder:text-neutral-400 text-foreground")}
+                        className="h-10 w-full min-w-0 bg-transparent pr-1 text-[13px] text-white placeholder:text-neutral-600 focus:outline-none"
                       />
                       {query && (
                         <button
                           type="button"
                           onClick={() => setQuery("")}
-                          className="mr-1 flex h-7 w-7 shrink-0 items-center justify-center text-neutral-400 transition-colors hover:text-foreground"
+                          className="mr-1 flex h-7 w-7 shrink-0 items-center justify-center text-neutral-400 transition-colors hover:text-white"
                           aria-label="Clear search"
                         >
                           <X className="h-3.5 w-3.5" aria-hidden />
@@ -357,7 +361,7 @@ export default function Header({ categories }: HeaderProps) {
               </form>
 
               {searchExpanded && showRecent && recent.length > 0 && (
-                <div className={cn("absolute right-0 top-[calc(100%+6px)] w-72 border shadow-panel", isHomePage ? "border-neutral-700 bg-[#111]" : "border-border bg-background")}>
+                <div className="absolute right-0 top-[calc(100%+6px)] w-72 border border-white/[0.06] bg-[#0a0a0a] shadow-panel">
                   <div className="flex items-center justify-between px-4 pb-1 pt-3">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
                       Recent searches
@@ -380,7 +384,7 @@ export default function Header({ categories }: HeaderProps) {
                         <button
                           type="button"
                           onClick={() => runSearch(term)}
-                          className={cn("flex w-full items-center gap-3 px-4 py-2.5 text-left text-[13px] transition-colors", isHomePage ? "text-neutral-400 hover:bg-white/5 hover:text-white" : "text-neutral-700 hover:bg-neutral-50 hover:text-foreground")}
+                          className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-[13px] text-neutral-400 transition-colors hover:bg-white/5 hover:text-white"
                         >
                           <Clock3 className="h-3.5 w-3.5 shrink-0 text-neutral-500" strokeWidth={1.5} aria-hidden />
                           <span className="truncate">{term}</span>
@@ -394,7 +398,7 @@ export default function Header({ categories }: HeaderProps) {
 
             {/* Currency selector */}
             <div className="hidden items-center sm:flex">
-              <CurrencySelector dark={isHomePage} />
+              <CurrencySelector dark />
             </div>
 
             {/* Account */}
@@ -407,7 +411,7 @@ export default function Header({ categories }: HeaderProps) {
                     aria-label="Account menu"
                     aria-expanded={accountOpen}
                     aria-haspopup="menu"
-                    className={cn("flex h-10 w-10 items-center justify-center rounded-full text-[12px] font-semibold transition-colors", isHomePage ? "border border-neutral-600 bg-neutral-800 text-neutral-300 hover:border-white/40 hover:text-white" : "border border-neutral-200 bg-neutral-50 text-neutral-700 hover:border-foreground hover:text-foreground")}
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-[12px] font-semibold border border-neutral-600 bg-neutral-800 text-neutral-300 transition-colors hover:border-white/40 hover:text-white"
                   >
                     {accountInitial}
                   </button>
@@ -415,16 +419,16 @@ export default function Header({ categories }: HeaderProps) {
                     <div
                       role="menu"
                       aria-label="Account"
-                      className={cn("animate-scale-in absolute right-0 top-[calc(100%+6px)] z-50 w-64 border py-1.5 shadow-panel", isHomePage ? "border-neutral-700 bg-[#111]" : "border-border bg-background")}
+                      className="animate-scale-in absolute right-0 top-[calc(100%+6px)] z-50 w-64 border border-white/[0.06] bg-[#0a0a0a] py-1.5 shadow-panel"
                     >
-                      <p className={cn("mb-1 truncate px-4 py-2.5 text-[12px]", isHomePage ? "border-b border-neutral-700 text-neutral-500" : "border-b border-border text-neutral-400")}>
+                      <p className="mb-1 truncate px-4 py-2.5 text-[12px] border-b border-white/[0.06] text-neutral-500">
                         {user.email}
                       </p>
                       <Link
                         href="/account"
                         role="menuitem"
                         onClick={() => setAccountOpen(false)}
-                        className={cn("flex items-center gap-2.5 px-4 py-2.5 text-[13px] font-medium transition-colors", isHomePage ? "text-neutral-400 hover:bg-white/5 hover:text-white" : "hover:bg-neutral-50")}
+                        className="flex items-center gap-2.5 px-4 py-2.5 text-[13px] font-medium text-neutral-400 transition-colors hover:bg-white/5 hover:text-white"
                       >
                         <Package className="h-4 w-4 text-neutral-500" strokeWidth={1.5} aria-hidden /> My orders
                       </Link>
@@ -432,7 +436,7 @@ export default function Header({ categories }: HeaderProps) {
                         type="button"
                         role="menuitem"
                         onClick={handleSignOut}
-                        className={cn("flex w-full items-center gap-2.5 px-4 py-2.5 text-[13px] font-medium transition-colors", isHomePage ? "text-neutral-400 hover:bg-white/5 hover:text-white" : "hover:bg-neutral-50")}
+                        className="flex w-full items-center gap-2.5 px-4 py-2.5 text-[13px] font-medium text-neutral-400 transition-colors hover:bg-white/5 hover:text-white"
                       >
                         <LogOut className="h-4 w-4 text-neutral-500" strokeWidth={1.5} aria-hidden /> Sign out
                       </button>
@@ -462,7 +466,7 @@ export default function Header({ categories }: HeaderProps) {
               {cartCount > 0 && (
                 <span
                   key={cartCount}
-                  className={cn("animate-scale-in absolute right-0 top-0.5 flex h-[16px] min-w-[16px] items-center justify-center rounded-full px-1 text-[9px] font-bold tabular-nums leading-none", isHomePage ? "bg-white text-black" : "bg-foreground text-background")}
+                  className="animate-scale-in absolute right-0 top-0.5 flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-white px-1 text-[9px] font-bold tabular-nums leading-none text-black"
                   aria-live="polite"
                 >
                   {cartCount}
@@ -487,11 +491,11 @@ export default function Header({ categories }: HeaderProps) {
             tabIndex={-1}
             aria-label="Close menu"
             onClick={() => setMobileOpen(false)}
-            className="animate-fade-in absolute inset-0 cursor-default bg-black/30 backdrop-blur-[2px]"
+            className="animate-fade-in absolute inset-0 cursor-default bg-black/40 backdrop-blur-[2px]"
           />
-          <div className={cn("animate-slide-in-right absolute inset-y-0 right-0 flex w-[86%] max-w-[380px] flex-col shadow-panel", isHomePage ? "bg-[#0a0a0a]" : "bg-background")}>
+          <div className="animate-slide-in-right absolute inset-y-0 right-0 flex w-[86%] max-w-[380px] flex-col bg-[#050505] shadow-panel">
             {/* Header */}
-            <div className={cn("flex items-center justify-between border-b px-5 py-4", isHomePage ? "border-neutral-800" : "border-border")}>
+            <div className="flex items-center justify-between border-b border-white/[0.06] px-5 py-4">
               <span className="font-display text-lg font-medium tracking-tight text-white">Menu</span>
               <button
                 type="button"
@@ -504,7 +508,7 @@ export default function Header({ categories }: HeaderProps) {
             </div>
 
             {/* Mobile search */}
-            <form onSubmit={handleSearchSubmit} role="search" className={cn("border-b px-5 py-4", isHomePage ? "border-neutral-800" : "border-border")}>
+            <form onSubmit={handleSearchSubmit} role="search" className="border-b border-white/[0.06] px-5 py-4">
               <div className="relative">
                 <Search
                   className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500"
@@ -516,7 +520,7 @@ export default function Header({ categories }: HeaderProps) {
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search the collection"
                   aria-label="Search products"
-                  className={cn("h-11 w-full pl-9 pr-3 text-[13px] placeholder:text-neutral-500 focus:outline-none focus:ring-0", isHomePage ? "border border-neutral-700 bg-neutral-900 text-white focus:border-neutral-500" : "border border-neutral-200 bg-neutral-50 focus:border-foreground")}
+                  className="h-11 w-full border border-white/[0.08] bg-neutral-900 pl-9 pr-3 text-[13px] text-white placeholder:text-neutral-500 focus:border-neutral-500 focus:outline-none focus:ring-0"
                 />
               </div>
             </form>
@@ -534,14 +538,12 @@ export default function Header({ categories }: HeaderProps) {
                         aria-current={isActive ? "page" : undefined}
                         className={cn(
                           "flex items-center justify-between rounded px-3 py-3.5 text-[15px] font-medium transition-colors",
-                          isHomePage
-                            ? (isActive ? "bg-white/10 text-white" : "text-neutral-400 hover:bg-white/5 hover:text-white")
-                            : (isActive ? "bg-neutral-100 text-foreground" : "text-neutral-700 hover:bg-neutral-50 hover:text-foreground"),
+                          isActive ? "bg-white/10 text-white" : "text-neutral-400 hover:bg-white/5 hover:text-white",
                         )}
                       >
                         {link.label}
                         <ArrowRight
-                          className={cn("h-4 w-4 transition-colors", isActive ? "text-foreground" : "text-neutral-300")}
+                          className={cn("h-4 w-4 transition-colors", isActive ? "text-white" : "text-neutral-600")}
                           aria-hidden
                         />
                       </Link>
@@ -550,12 +552,11 @@ export default function Header({ categories }: HeaderProps) {
                 })}
               </ul>
 
-              <div className={cn("my-4 border-t", isHomePage ? "border-neutral-800" : "border-border")} />
+              <div className="my-4 border-t border-white/[0.06]" />
 
               <div className="space-y-0.5">
-                {/* Mobile currency */}
                 <div className="flex items-center gap-1 px-3 py-2">
-                  <CurrencySelector dark={isHomePage} />
+                  <CurrencySelector dark />
                 </div>
 
                 {user ? (
@@ -563,9 +564,9 @@ export default function Header({ categories }: HeaderProps) {
                     <Link
                       href="/account"
                       onClick={() => setMobileOpen(false)}
-                      className="flex items-center gap-2.5 rounded px-3 py-3.5 text-[13px] font-medium text-neutral-700 transition-colors hover:bg-neutral-50 hover:text-foreground"
+                      className="flex items-center gap-2.5 rounded px-3 py-3.5 text-[13px] font-medium text-neutral-400 transition-colors hover:bg-white/5 hover:text-white"
                     >
-                      <Package className="h-4 w-4 text-neutral-400" strokeWidth={1.5} aria-hidden /> My orders
+                      <Package className="h-4 w-4 text-neutral-500" strokeWidth={1.5} aria-hidden /> My orders
                     </Link>
                     <button
                       type="button"
@@ -573,9 +574,9 @@ export default function Header({ categories }: HeaderProps) {
                         setMobileOpen(false);
                         handleSignOut();
                       }}
-                      className="flex w-full items-center gap-2.5 rounded px-3 py-3.5 text-[13px] font-medium text-neutral-700 transition-colors hover:bg-neutral-50 hover:text-foreground"
+                      className="flex w-full items-center gap-2.5 rounded px-3 py-3.5 text-[13px] font-medium text-neutral-400 transition-colors hover:bg-white/5 hover:text-white"
                     >
-                      <LogOut className="h-4 w-4 text-neutral-400" strokeWidth={1.5} aria-hidden /> Sign out
+                      <LogOut className="h-4 w-4 text-neutral-500" strokeWidth={1.5} aria-hidden /> Sign out
                     </button>
                   </>
                 ) : (
@@ -585,23 +586,23 @@ export default function Header({ categories }: HeaderProps) {
                       setMobileOpen(false);
                       setAuthOpen(true);
                     }}
-                    className="flex w-full items-center gap-2.5 rounded px-3 py-3.5 text-[13px] font-medium text-neutral-700 transition-colors hover:bg-neutral-50 hover:text-foreground"
+                    className="flex w-full items-center gap-2.5 rounded px-3 py-3.5 text-[13px] font-medium text-neutral-400 transition-colors hover:bg-white/5 hover:text-white"
                   >
-                    <User className="h-4 w-4 text-neutral-400" strokeWidth={1.5} aria-hidden /> Sign in
+                    <User className="h-4 w-4 text-neutral-500" strokeWidth={1.5} aria-hidden /> Sign in
                   </button>
                 )}
               </div>
             </nav>
 
             {/* Mobile cart CTA */}
-            <div className={cn("border-t px-5 py-4", isHomePage ? "border-neutral-800" : "border-border")}>
+            <div className="border-t border-white/[0.06] px-5 py-4">
               <button
                 type="button"
                 onClick={() => {
                   setMobileOpen(false);
                   setCartOpen(true);
                 }}
-                className={cn("flex h-12 w-full items-center justify-center gap-2 text-[13px] font-medium transition-opacity hover:opacity-90", isHomePage ? "bg-white text-black" : "bg-foreground text-background")}
+                className="flex h-12 w-full items-center justify-center gap-2 bg-white text-[13px] font-medium text-black transition-opacity hover:opacity-90"
               >
                 <ShoppingBag className="h-4 w-4" strokeWidth={1.5} aria-hidden />
                 View cart {cartCount > 0 && `(${cartCount})`}
