@@ -9,7 +9,6 @@ import CategoryGrid from "@/components/homepage/CategoryGrid";
 import FeaturedProducts from "@/components/homepage/FeaturedProducts";
 import PromoBanner from "@/components/homepage/PromoBanner";
 import Benefits from "@/components/homepage/Benefits";
-import Newsletter from "@/components/homepage/Newsletter";
 import Reveal from "@/components/Reveal";
 
 /** Products in a category including its subcategories. */
@@ -43,7 +42,7 @@ export default async function HomePage() {
       <CinematicHero />
 
       {/* ── Editorial strip ─────────────────────────────────────── */}
-      <section aria-hidden className="border-y border-neutral-800 bg-[#050505] py-4">
+      <section aria-hidden className="border-y border-white/[0.06] bg-[#030303] py-4">
         <div className="container flex flex-wrap items-center justify-center gap-x-10 gap-y-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-neutral-600">
           <span>Protection</span>
           <span className="text-neutral-700">·</span>
@@ -63,19 +62,19 @@ export default async function HomePage() {
 
       {/* ── Leather Craft Section ───────────────────────────────── */}
       {leather.length > 0 && (
-        <section className="border-b border-neutral-800 bg-[#080808]">
+        <section className="border-b border-white/[0.06] bg-[#060606]">
           <div className="container grid items-center gap-12 py-16 md:py-24 lg:grid-cols-2 lg:gap-16">
             <Reveal className="order-2 lg:order-1">
-              <div className="relative aspect-[4/5] overflow-hidden bg-neutral-900">
+              <div className="relative aspect-[4/5] overflow-hidden bg-neutral-950">
                 {leatherImage ? (
                   <img
                     src={leatherImage}
-                    alt="SDB WEAR leather jackets"
-                    className="h-full w-full object-cover grayscale opacity-80 transition-all duration-700 hover:scale-105 hover:opacity-90"
+                    alt="RACEVOR leather jackets"
+                    className="h-full w-full object-cover opacity-80 transition-all duration-700 hover:scale-105 hover:opacity-90"
                     loading="lazy"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-neutral-900 to-neutral-950">
+                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-neutral-950 to-black">
                     <span className="font-display text-[48px] font-light text-neutral-800">01</span>
                   </div>
                 )}
@@ -90,14 +89,13 @@ export default async function HomePage() {
               </h2>
               <p className="mt-6 max-w-md text-[13px] leading-[1.8] text-neutral-500">
                 Full-grain construction, reinforced stitching, and hardware built to be used every
-                day. From classic biker cuts to heritage and racing-inspired silhouettes — leather
-                made for the road and beyond.
+                day. From racing suits to classic silhouettes — leather made for the road and beyond.
               </p>
               <ul className="mt-8 space-y-3 text-[13px]">
                 {[
-                  { name: "Biker leather jackets", slug: "biker-leather-jackets" },
-                  { name: "Casual leather jackets", slug: "casual-leather-jackets" },
-                  { name: "Heritage leather", slug: "heritage-leather" },
+                  { name: "Motorbike gear", slug: "motorbike-gear" },
+                  { name: "Leather jackets", slug: "leather-jackets-biker-fashion" },
+                  { name: "Handcrafted gloves", slug: "handcrafted-gloves" },
                 ].map((link) => (
                   <li key={link.slug}>
                     <Link
@@ -119,20 +117,20 @@ export default async function HomePage() {
       )}
 
       {/* ── Brand Statement ─────────────────────────────────────── */}
-      <section className="border-b border-neutral-800 bg-[#050505]">
+      <section className="border-b border-white/[0.06] bg-[#030303]">
         <Reveal>
           <div className="px-6 py-24 text-center md:py-32">
             <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-neutral-600">
-              SDB WEAR
+              RACEVOR
             </p>
             <h2 className="mx-auto mt-6 max-w-3xl font-display text-[32px] font-light leading-[1.1] tracking-tight text-white sm:text-4xl md:text-[48px]">
-              Made for the road.
+              Protection engineered.
               <br />
-              <span className="text-neutral-500">Designed to last.</span>
+              <span className="text-neutral-500">Built around the rider.</span>
             </h2>
             <p className="mx-auto mt-6 max-w-xl text-[13px] leading-[1.8] text-neutral-500">
-              Every piece is built around a simple idea: gear that protects, leather that ages
-              well, and construction you can trust ride after ride.
+              Since 2017, every RACEVOR piece is built around a simple idea: gear that protects,
+              leather that ages well, and construction you can trust ride after ride.
             </p>
           </div>
         </Reveal>
@@ -144,20 +142,17 @@ export default async function HomePage() {
       {/* ── Benefits ────────────────────────────────────────────── */}
       <Benefits />
 
-      {/* ── Newsletter ──────────────────────────────────────────── */}
-      <Newsletter />
-
       {/* ── Final CTA ──────────────────────────────────────────── */}
-      <section className="bg-[#0a0a0a]">
+      <section className="bg-[#050505]">
         <div className="px-6 py-20 text-center md:py-28">
           <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-neutral-600">
-            SDB WEAR
+            RACEVOR
           </p>
           <h2 className="mx-auto mt-6 max-w-2xl font-display text-[28px] font-light leading-[1.12] tracking-tight text-white sm:text-4xl md:text-5xl">
-            Ride with SDB WEAR.
+            Ride with RACEVOR.
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-[13px] leading-[1.8] text-neutral-500">
-            Protective gear, leather jackets, and stitched gloves — priced in the currency you
+            Motorcycle protection, racing suits, and premium gear — priced in the currency you
             choose and verified server-side before any order is placed.
           </p>
           <Link

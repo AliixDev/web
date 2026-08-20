@@ -6,15 +6,15 @@ export default function HeroLoading({ progress }: { progress: number }) {
 
   return (
     <div
-      className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-[#050505]"
+      className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-[#000000]"
       role="status"
       aria-label={`Loading experience: ${pct}%`}
     >
       <p className="font-display text-[28px] font-light tracking-tight text-white sm:text-[36px]">
-        SDB<span className="text-neutral-500">WEAR</span>
+        RACE<span className="text-neutral-500">VOR</span>
       </p>
-      <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.25em] text-neutral-500">
-        Gear
+      <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.25em] text-neutral-600">
+        Motorcycle Protection
       </p>
 
       <div className="mt-10 w-48">
